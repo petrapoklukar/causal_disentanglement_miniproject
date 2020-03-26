@@ -70,7 +70,7 @@ def make_img(img,shape_id,color_id,size,cp,color,r=20,a=40,b=40/4):
 # X:= U1+(centroid(u=img_size/2+n,u=img_size/2+m))
 # Y:= U2+m(color spectrum)
 # Z:= X*Y*k
-
+save_pkl=False
 num_img=5000
 save_list=[]
 
@@ -112,9 +112,21 @@ for i in range(num_img):
 	save_list.append(img)
 
 
-with open('causal_data.pkl', 'wb') as f:
-        pickle.dump(save_list, f)
+#make examples
+grid=10
+grid_v=[]
+for i in range(grid):
+	grid_h=[]
+	for j in range(grid):
+		grid_h.append(save_list[i*j])
 
+	grid_v.append(np.concatenate([grid_h[x] for x in range(len(grid_h))],axis=1))
+cv2.imwrite("causal_examples.png",np.concatenate([grid_v[x] for x in range(len(grid_v))],axis=0))
 
+if save_pkl:
+	with open('causal_data.pkl', 'wb') as f:
+	        pickle.dump(save_list, f)
+
+print("pkl save: " + str(save_pkl))
 print("generated: " + str(len(save_list)) + " images.")
 print("Causality Girls done!")
