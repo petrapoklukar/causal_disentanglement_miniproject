@@ -10,34 +10,6 @@ import pickle
 import random
 import math  
 
-# def pick_color(colors_low,colors_high):
-# 	color=[-1,-1,-1]
-# 	if colors_low[0]<colors_high[0]:
-# 		color[0]=random.randint(colors_low[0],colors_high[0])
-# 	elif colors_low[0]>colors_high[0]:
-# 		color[0]=random.randint(colors_high[0],colors_low[0])
-# 	else:
-# 		color[0]=colors_low[0]
-
-# 	if colors_low[1]<colors_high[1]:
-# 		color[1]=random.randint(colors_low[1],colors_high[1])
-# 	elif colors_low[1]>colors_high[1]:
-# 		color[1]=random.randint(colors_high[1],colors_low[1])
-# 	else:
-# 		color[1]=colors_low[1]
-
-# 	if colors_low[2]<colors_high[2]:
-# 		color[2]=random.randint(colors_low[2],colors_high[2])
-# 	elif colors_low[2]>colors_high[2]:
-# 		color[2]=random.randint(colors_high[2],colors_low[2])
-# 	else:
-# 		color[2]=colors_low[2]
-
-# 	return color
-
-
-
-
 
 def make_img(img,shape_id,color_id,size,cp,color,r=20,a=40,b=40/4):
 
@@ -61,9 +33,6 @@ def make_img(img,shape_id,color_id,size,cp,color,r=20,a=40,b=40/4):
 		p1=[int(cp[0]-a/2),int(cp[1]+h/2)]
 		p2=[int(cp[0]+a/2),int(cp[1]+h/2)]
 		p3=[int(cp[0]),int(cp[1]-h/2)]
-		print(p1)
-		print(p2)
-		print(p3)
 		pts = np.array([p1,p2,p3], np.int32)
 		pts = pts.reshape((-1,1,2))
 		img=cv2.fillPoly(img,[pts],color)
@@ -88,17 +57,7 @@ def make_img(img,shape_id,color_id,size,cp,color,r=20,a=40,b=40/4):
 		pts = pts.reshape((-1,1,2))
 		img=cv2.fillPoly(img,[pts],color)
 
-
-
-
-
-
-
-
 	return img
-
-
-
 
 
 
