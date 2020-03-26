@@ -1,2 +1,1 @@
-# petra.poklukar-gmail.com
-causal_disentanglement_miniproject
+# causal_disentanglement_miniproject
