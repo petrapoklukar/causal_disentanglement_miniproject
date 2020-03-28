@@ -14,7 +14,7 @@ import math
 def make_img(img,shape_id,color_id,size,cp,colors,r=20,a=40,b=40/4):
 
     #circle
-    color=colors[color_id]
+    color=(int(colors[color_id][0]),int(colors[color_id][1]),int(colors[color_id][2]))
     if shape_id==1: 
         r=int(size+r)
         img=cv2.circle(img, cp, r, color, -1) 
@@ -22,8 +22,8 @@ def make_img(img,shape_id,color_id,size,cp,colors,r=20,a=40,b=40/4):
     #square
     if shape_id==2:
         a=a+size
-        p1=(cp[0]-a/2,cp[1]-a/2)
-        p2=(cp[0]+a/2,cp[1]+a/2)
+        p1=(int(cp[0]-a/2),int(cp[1]-a/2))
+        p2=(int(cp[0]+a/2),int(cp[1]+a/2))
         img=cv2.rectangle(img,p1,p2,color,-1)
 
     #triangle
@@ -74,7 +74,7 @@ save_pkl=False
 num_img=5000
 save_list=[]
 
-seed=12345
+seed=1234
 img_size=256
 mu=0
 sigma=10
@@ -89,17 +89,23 @@ for i in range(num_img):
     u2=random.randint(1, 5) 
     n,m= np.random.normal(mu, sigma, 2)
     c=np.random.normal(mu, sigma, 3)
-    c=np.clip(c,0,255).astype('int')
+    
+    print(c)
     red=(220+c[0],39+c[1],0+c[2])
+    red=np.clip(red,0,255).astype('int')
     blue=(12+c[0],54+c[1],211+c[2])
+    blue=np.clip(blue,0,255).astype('int')
     green=(35+c[0],204+c[1],1+c[2])
+    green=np.clip(green,0,255).astype('int')
     yellow=(229+c[0],222+c[1],0+c[2])
+    yellow=np.clip(yellow,0,255).astype('int')
     pink=(245+c[0],0+c[1],204+c[2])
+    pink=np.clip(pink,0,255).astype('int')
     colors=[red,blue,green,yellow,pink]
     n=int(n)
     m=int(m)
     #center point
-    cp=(img_size/2+n,img_size/2+m)
+    cp=(int(img_size/2+n),int(img_size/2+m))
     z=abs(u1*u2)*k
 
     img=np.ones((img_size,img_size,3),np.uint8)*255
@@ -118,7 +124,7 @@ grid_v=[]
 for i in range(grid):
     grid_h=[]
     for j in range(grid):
-        grid_h.append(save_list[i*j])
+        grid_h.append(save_list[i*grid+j])
 
     grid_v.append(np.concatenate([grid_h[x] for x in range(len(grid_h))],axis=1))
 cv2.imwrite("causal_examples.png",np.concatenate([grid_v[x] for x in range(len(grid_v))],axis=0))
