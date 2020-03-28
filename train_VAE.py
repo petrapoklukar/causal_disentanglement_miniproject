@@ -14,20 +14,20 @@ from algorithms import VAE_Algorithm as alg
 from dataloader import CausalDataset
 
 parser = argparse.ArgumentParser()
-# parser.add_argument('--exp_vae', type=str, required=True, default='', 
-#                     help='config file with parameters of the vae model')
-# parser.add_argument('--chpnt_path', type=str, default='', 
-#                     help='path to the checkpoint')
-# parser.add_argument('--num_workers', type=int, default=0,      
-#                     help='number of data loading workers')
-# parser.add_argument('--cuda' , type=bool, default=False, help='enables cuda')
+parser.add_argument('--exp_vae', type=str, required=True, default='', 
+                    help='config file with parameters of the vae model')
+parser.add_argument('--chpnt_path', type=str, default='', 
+                    help='path to the checkpoint')
+parser.add_argument('--num_workers', type=int, default=0,      
+                    help='number of data loading workers')
+parser.add_argument('--cuda' , type=bool, default=False, help='enables cuda')
 args_opt = parser.parse_args()
 
-# # Laptop TESTING
-args_opt.exp_vae = 'VAE_CausalData_ld2'
-args_opt.chpnt_path = ''#models/VAE_CausalData_ld2/vae_lastCheckpoint.pth'#'
-args_opt.num_workers = 0
-args_opt.cuda = None
+# # # Laptop TESTING
+# args_opt.exp_vae = 'VAE_CausalData_ld2'
+# args_opt.chpnt_path = ''#models/VAE_CausalData_ld2/vae_lastCheckpoint.pth'#'
+# args_opt.num_workers = 0
+# args_opt.cuda = None
 
 
 # Load VAE config file
