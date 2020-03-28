@@ -11,7 +11,7 @@ import random
 import math  
 
 
-def make_img(img,shape_id,color_id,size,cp,color,r=20,a=40,b=40/4):
+def make_img(img,shape_id,color_id,size,cp,colors,r=20,a=40,b=40/4):
 
 	#circle
 	color=colors[color_id]
