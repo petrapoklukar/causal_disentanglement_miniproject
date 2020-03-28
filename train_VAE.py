@@ -10,7 +10,7 @@ from __future__ import print_function
 import argparse
 import os
 from importlib.machinery import SourceFileLoader
-import algorithms.VAE_Algorithm as alg
+from algorithms import VAE_Algorithm as alg
 from dataloader import CausalDataset
 
 parser = argparse.ArgumentParser()
@@ -25,7 +25,7 @@ args_opt = parser.parse_args()
 
 # # Laptop TESTING
 args_opt.exp_vae = 'VAE_CausalData_ld2'
-args_opt.chpnt_path = 'models/VAE_CausalData_ld2/vae_lastCheckpoint.pth'#'
+args_opt.chpnt_path = ''#models/VAE_CausalData_ld2/vae_lastCheckpoint.pth'#'
 args_opt.num_workers = 0
 args_opt.cuda = None
 

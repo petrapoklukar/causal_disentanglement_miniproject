@@ -292,16 +292,16 @@ class VAE_Algorithm():
 
     def train(self, train_dataset, test_dataset, num_workers=0, chpnt_path=''):
         """Trains a model with given hyperparameters."""
-#        Debugging & Testing
-        import torch.utils.data as data
-        train_sampler = data.SubsetRandomSampler(
-            np.random.choice(list(range(len(train_dataset))),
-                            64, replace=False))
-        # TODO: shuffle, sampler
+        # # Debugging & Testing
+        # import torch.utils.data as data
+        # train_sampler = data.SubsetRandomSampler(
+        #     np.random.choice(list(range(len(train_dataset))),
+        #                     64, replace=False))
+        # # TODO: shuffle, sampler
 
         dataloader = torch.utils.data.DataLoader(
-                train_dataset, batch_size=self.batch_size, shuffle=False,
-                num_workers=num_workers, drop_last=True, sampler=train_sampler)
+                train_dataset, batch_size=self.batch_size, shuffle=True,
+                num_workers=num_workers, drop_last=True)#, sampler=train_sampler)
         n_data = len(train_dataset)
         assert(train_dataset.dataset_name == test_dataset.dataset_name)
 
@@ -423,7 +423,6 @@ class VAE_Algorithm():
         # Save the model
         torch.save(self.model.state_dict(), self.model_path)
         self.save_logs(train_dataset, test_dataset)
-        self.save_distance_logs()
 
 
     def save_logs(self, train_dataset, test_dataset):
@@ -515,6 +514,7 @@ class VAE_Algorithm():
         self.beta_range = checkpoint['beta_range']
         self.beta_steps = checkpoint['beta_steps']
         self.beta_idx = checkpoint['beta_idx']
+        self.current_epoch = checkpoint['last_epoch']
 
         self.snapshot = checkpoint['snapshot']
         self.console_print = checkpoint['console_print']
