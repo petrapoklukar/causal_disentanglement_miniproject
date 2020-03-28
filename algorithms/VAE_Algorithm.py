@@ -77,8 +77,8 @@ class VAE_Algorithm():
         """
         plt_data = np.stack(self.epoch_losses)
         plt_labels = ['loss', 'recon loss', 'kl loss']
-        for i in range(4):
-            plt.subplot(4,1,i+1)
+        for i in range(len(plt_labels)):
+            plt.subplot(len(plt_labels),1,i+1)
             plt.plot(np.arange(self.snapshot)+(self.current_epoch//self.snapshot)*self.snapshot,
                      plt_data[self.current_epoch-self.snapshot+1:self.current_epoch+1, i],
                      label=plt_labels[i])
@@ -94,8 +94,8 @@ class VAE_Algorithm():
         """Plots epochs vs model loss."""
         plt_data = np.stack(self.epoch_losses)
         plt_labels = ['loss', 'recon loss', 'kl loss']
-        for i in range(6):
-            plt.subplot(6,1,i+1)
+        for i in range(len(plt_labels)):
+            plt.subplot(len(plt_labels),1,i+1)
             plt.plot(np.arange(self.current_epoch+1),
                      plt_data[:, i],
                      label=plt_labels[i])
@@ -135,7 +135,7 @@ class VAE_Algorithm():
         counter = 0
         for i, yi in enumerate(grid_x):
             for j, xi in enumerate(grid_y):
-                digit = images[counter].detach().cpu().numpy()
+                digit = images[counter].detach().cpu().numpy().transpose(1, 2, 0)
                 figure[i * digit_size: (i + 1) * digit_size,
                        j * digit_size: (j + 1) * digit_size] = digit
                 counter += 1
@@ -155,8 +155,8 @@ class VAE_Algorithm():
 
         # Non weighted losses
         plt_labels = ['loss', 'recon', 'kl']
-        for i in range(6):
-            plt.subplot(6,1,i+1)
+        for i in range(len(plt_labels)):
+            plt.subplot(len(plt_labels),1,i+1)
             plt.plot(train_losses_np[:, i], 'go-',
                      linewidth=3, label='Train ' + plt_labels[i])
             plt.plot(valid_losses_np[:, i], 'bo--',
@@ -218,13 +218,13 @@ class VAE_Algorithm():
         valid_dataloader = torch.utils.data.DataLoader(
                 valid_dataset, batch_size, drop_last=True)
 
-        losses = np.zeros(3)
+        losses = np.zeros(4)
         
         for batch_idx, img in enumerate(valid_dataloader):
             img = img.to(self.device)
             
             # VAE loss on img1
-            dec_mean, dec_logvar, enc_mean, enc_logvar = self.model(img1)
+            dec_mean, dec_logvar, enc_mean, enc_logvar = self.model(img)
             the_loss, rec_loss, kl_loss = self.compute_loss(
                     img, dec_mean, dec_logvar, enc_mean, enc_logvar)
 
@@ -293,15 +293,15 @@ class VAE_Algorithm():
     def train(self, train_dataset, test_dataset, num_workers=0, chpnt_path=''):
         """Trains a model with given hyperparameters."""
 #        Debugging & Testing
-#        import torch.utils.data as data
-#        train_sampler = data.SubsetRandomSampler(
-#            np.random.choice(list(range(len(train_dataset))),
-#                             64, replace=False))
-#        TODO: shuffle, sampler
+        import torch.utils.data as data
+        train_sampler = data.SubsetRandomSampler(
+            np.random.choice(list(range(len(train_dataset))),
+                            64, replace=False))
+        # TODO: shuffle, sampler
 
         dataloader = torch.utils.data.DataLoader(
-                train_dataset, batch_size=self.batch_size, shuffle=True,
-                num_workers=num_workers, drop_last=True) #, sampler=train_sampler)
+                train_dataset, batch_size=self.batch_size, shuffle=False,
+                num_workers=num_workers, drop_last=True, sampler=train_sampler)
         n_data = len(train_dataset)
         assert(train_dataset.dataset_name == test_dataset.dataset_name)
 
@@ -356,12 +356,12 @@ class VAE_Algorithm():
             self.model.train()
             self.update_beta()
             self.update_learning_rate(self.vae_optimiser)
-            epoch_loss = np.zeros(11)
-            for batch_idx, img1 in enumerate(dataloader):
+            epoch_loss = np.zeros(4)
+            for batch_idx, img in enumerate(dataloader):
                 img = img.to(self.device)
                 
                 # VAE loss on img
-                dec_mean1 dec_logvar, enc_mean, enc_logvar = self.model(img1)
+                dec_mean, dec_logvar, enc_mean, enc_logvar = self.model(img)
                 the_loss, rec_loss, kl_loss = self.compute_loss(
                         img, dec_mean, dec_logvar, enc_mean, enc_logvar)
 
@@ -405,8 +405,8 @@ class VAE_Algorithm():
             if (self.current_epoch + 1) % self.snapshot == 0:
 
                 # Plot reconstructions
-                self.plot_grid(dec_mean1)
-                self.plot_grid(img1, name="input")
+                self.plot_grid(dec_mean)
+                self.plot_grid(img, name="input")
                 self.model.eval()
 
                 # Plot training and validation loss

@@ -70,8 +70,8 @@ def make_img(img,shape_id,color_id,size,cp,colors,r=20,a=40,b=40/4):
 # X:= U1+(centroid(u=img_size/2+n,u=img_size/2+m))
 # Y:= U2+m(color spectrum)
 # Z:= X*Y*k
-save_pkl=False
-num_img=5000
+save_pkl=True
+num_img=10000
 save_list=[]
 
 seed=1234
