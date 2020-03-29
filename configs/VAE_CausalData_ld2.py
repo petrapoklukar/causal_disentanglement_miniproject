@@ -54,11 +54,11 @@ vae_opt = {
     'console_print': 1,
     'beta_min': 1,
     'beta_max': 1,
-    'beta_steps': 100,
+    'beta_steps': 1,
     'kl_anneal': False,
     
     'epochs': 200,
-    'lr_schedule': [(0, 1e-03), (20, 1e-04), (300, 1e-5)],
+    'lr_schedule': [(0, 1e-04), (20, 1e-05), (100, 1e-6)],
     'optim_type': 'Adam',
     'random_seed': 1201
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SOURCE_PATH="${HOME}/Workspace/InfoGAN"
+SOURCE_PATH="${HOME}/Workspace/causal_disentanglement_miniproject"
 AT="@"
 
 # Test the job before actually submitting 
@@ -27,12 +27,12 @@ mkdir -p $RUNS_PATH
 echo "Sourcing conda.sh"
 source "${HOME}/anaconda3/etc/profile.d/conda.sh"
 echo "Activating conda environment"
-conda activate Jigsaw_Puzzle
+conda activate JigsawPuzzle_VAE
 nvidia-smi
 
 python train_VAE.py \
         --exp_vae=$config \
-        --num_workers=2 \
+        --num_workers=0 \
         --cuda=True 
 HERE
 done

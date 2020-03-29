@@ -49,7 +49,6 @@ class CausalDataset(data.Dataset):
         with open(name, 'rb') as f:
             self.data = pickle.load(f)
 
-
     def __getitem__(self, index):
         img = self.data[index]
         return img
