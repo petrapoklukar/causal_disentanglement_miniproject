@@ -43,6 +43,7 @@ class VAE_Algorithm():
         self.vae_optimiser = None
 
         # Beta scheduling
+        self.kl_anneal = opt['kl_anneal']
         self.beta = opt['beta_min']
         self.beta_range = opt['beta_max'] - opt['beta_min'] + 1
         self.beta_steps = opt['beta_steps'] - 1
@@ -282,12 +283,13 @@ class VAE_Algorithm():
 
     def update_beta(self):
         """Annealing schedule for the KL term."""
-        beta_current_step = (self.beta_idx + 1.0) / self.beta_steps
-        epoch_to_update = beta_current_step * self.epochs
-        if self.current_epoch > epoch_to_update and beta_current_step <= 1:
-            self.beta = beta_current_step * self.beta_range
-            self.beta_idx += 1
-            print (' *- Beta updated - new value:', self.beta)
+        if self.kl_anneal:        	
+	        beta_current_step = (self.beta_idx + 1.0) / self.beta_steps
+	        epoch_to_update = beta_current_step * self.epochs
+	        if self.current_epoch > epoch_to_update and beta_current_step <= 1:
+	            self.beta = beta_current_step * self.beta_range
+	            self.beta_idx += 1
+	            print (' *- Beta updated - new value:', self.beta)
 
 
     def train(self, train_dataset, test_dataset, num_workers=0, chpnt_path=''):
@@ -537,7 +539,7 @@ class VAE_Algorithm():
 # ---
 # ====================== Train the models ====================== #
 # ---
-if __name__ == '__main__':
+if __name__ == '__main___':
     import pickle
     class TripletTensorDataset(data.Dataset):
         def __init__(self, dataset_name, split):

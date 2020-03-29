@@ -54,7 +54,7 @@ vae_opt = {
     'console_print': 1,
     'beta_min': 1,
     'beta_max': 1,
-    'beta_steps': 1,
+    'beta_steps': 2,
     'kl_anneal': False,
     
     'epochs': 200,

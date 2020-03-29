@@ -22,7 +22,7 @@ mkdir -p $RUNS_PATH
 #SBATCH --constrain="khazadum|rivendell|belegost|shire|gondor"
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
-#SBATCH --mem=10GB
+#SBATCH --mem=40GB
 
 echo "Sourcing conda.sh"
 source "${HOME}/anaconda3/etc/profile.d/conda.sh"
