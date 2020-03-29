@@ -388,7 +388,7 @@ class VAE_Algorithm():
 
             # Check that the at least 350 epochs are done
             if (es.step(valid_loss[0]) and self.current_epoch > self.min_epochs) or \
-                self.current_epoch > self.max_epochs:
+                self.current_epoch > self.max_epochs or torch.isnan(the_loss):
                 break
 
             # Update the checkpoint only if no early stopping was done
