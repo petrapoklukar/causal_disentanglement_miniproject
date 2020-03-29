@@ -44,6 +44,7 @@ class VAE_Algorithm():
 
         # Beta scheduling
         self.kl_anneal = opt['kl_anneal']
+        self.beta_warmup = opt['beta_warmup']
         self.beta = opt['beta_min']
         self.beta_range = opt['beta_max'] - opt['beta_min'] + 1
         self.beta_steps = opt['beta_steps'] - 1
@@ -283,7 +284,7 @@ class VAE_Algorithm():
 
     def update_beta(self):
         """Annealing schedule for the KL term."""
-        if self.kl_anneal:        	
+        if self.kl_anneal and self.current_epoch >= self.beta_warmup:        	
 	        beta_current_step = (self.beta_idx + 1.0) / self.beta_steps
 	        epoch_to_update = beta_current_step * self.epochs
 	        if self.current_epoch > epoch_to_update and beta_current_step <= 1:
