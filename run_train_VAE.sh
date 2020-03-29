@@ -19,7 +19,7 @@ mkdir -p $RUNS_PATH
 #SBATCH --error="${RUNS_PATH}/%J_slurm.err"
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user="poklukar${AT}kth.se"
-#SBATCH --constrain="khazadum|rivendell|belegost|shire|gondor"
+#SBATCH --constrain="khazadum|rivendell|shire|gondor"
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=40GB
