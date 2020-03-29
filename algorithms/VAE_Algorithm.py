@@ -48,8 +48,8 @@ class VAE_Algorithm():
         self.beta_range = opt['beta_max'] - opt['beta_min'] + 1
         self.beta_steps = opt['beta_steps'] - 1
         self.beta_idx = 0
-        self.min_epochs = opt['min_epochs'] if 'min_epochs' in opt.keys() else 499
-        self.max_epochs = opt['max_epochs'] if 'max_epochs' in opt.keys() else 499
+        self.min_epochs = opt['min_epochs'] if 'min_epochs' in opt.keys() else 99
+        self.max_epochs = opt['max_epochs'] if 'max_epochs' in opt.keys() else 199
 
         # Other parameters
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

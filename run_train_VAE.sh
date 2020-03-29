@@ -7,7 +7,7 @@ AT="@"
 # SBATCH_OR_CAT=cat
 SBATCH_OR_CAT=sbatch
 
-for config in "VAE_CausalData_ld2" "VAE_CausalData_ld3" "VAE_CausalData_ld10"; do
+for config in "VAE_CausalData_ld2"; do
 
 RUNS_PATH="${SOURCE_PATH}/models/${config}"
 echo $RUNS_PATH
