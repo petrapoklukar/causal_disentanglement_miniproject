@@ -1,0 +1,162 @@
+04/01/2020, 16:14:06
+
+-----
+VAE_CausalData_ld2
+datasets/X_data.pkl
+input X :
+pearson corr for (x and ld 0): 0.17954196435442676
+pearson corr for (x and ld 1): -0.27243302892925847
+input Y :
+pearson corr for (y and ld 0): -0.10223336252894277
+pearson corr for (y and ld 1): -0.694059821595628
+-----------------
+----Corralation Girls -----
+VAE_CausalData_ld3
+datasets/X_data.pkl
+input X :
+pearson corr for (x and ld 0): -0.24276075318870757
+pearson corr for (x and ld 1): -0.2610139753861221
+pearson corr for (x and ld 2): -0.23277915774579466
+input Y :
+pearson corr for (y and ld 0): -0.5745959856897713
+pearson corr for (y and ld 1): -0.20092064510010088
+pearson corr for (y and ld 2): -0.5304892034123748
+-----------------
+----Corralation Girls -----
+VAE_CausalData_ld4
+datasets/X_data.pkl
+input X :
+pearson corr for (x and ld 0): -0.15087150562174353
+pearson corr for (x and ld 1): -0.006967424806750689
+pearson corr for (x and ld 2): 0.5432670075012649
+pearson corr for (x and ld 3): -0.4841771859673094
+input Y :
+pearson corr for (y and ld 0): -0.4763668912837319
+pearson corr for (y and ld 1): 0.47575437122571373
+pearson corr for (y and ld 2): -0.21870244487711757
+pearson corr for (y and ld 3): -0.5869124192591415
+-----------------
+----Corralation Girls -----
+VAE_CausalData_ld6
+datasets/X_data.pkl
+input X :
+pearson corr for (x and ld 0): 0.004567227168308544
+pearson corr for (x and ld 1): -0.195041347292084
+pearson corr for (x and ld 2): 0.06860826779815563
+pearson corr for (x and ld 3): 0.07074749815806054
+pearson corr for (x and ld 4): 0.5539689584782254
+pearson corr for (x and ld 5): 0.05522185810304932
+input Y :
+pearson corr for (y and ld 0): -0.021931864534344245
+pearson corr for (y and ld 1): -0.21490716611767302
+pearson corr for (y and ld 2): 0.7775233044160823
+pearson corr for (y and ld 3): -0.20360318092276836
+pearson corr for (y and ld 4): 0.09436350580957935
+pearson corr for (y and ld 5): -0.022989363462790645
+-----------------
+----Corralation Girls -----
+VAE_CausalData_ld10
+datasets/X_data.pkl
+input X :
+pearson corr for (x and ld 0): -0.1056704344509721
+pearson corr for (x and ld 1): 0.3417809684118571
+pearson corr for (x and ld 2): -0.20010449108358147
+pearson corr for (x and ld 3): 0.30488880314618805
+pearson corr for (x and ld 4): -0.2924768569575495
+pearson corr for (x and ld 5): 0.057671900385621394
+pearson corr for (x and ld 6): -0.20085658623099117
+pearson corr for (x and ld 7): 0.2794358681622452
+pearson corr for (x and ld 8): -0.31523499086763374
+pearson corr for (x and ld 9): 0.40706518445075857
+input Y :
+pearson corr for (y and ld 0): -0.4467149682240705
+pearson corr for (y and ld 1): -0.4005972118495691
+pearson corr for (y and ld 2): -0.38979801494302846
+pearson corr for (y and ld 3): 0.18428478782847835
+pearson corr for (y and ld 4): -0.5772282418620016
+pearson corr for (y and ld 5): -0.09975595926926564
+pearson corr for (y and ld 6): -0.014993756321428414
+pearson corr for (y and ld 7): 0.4408673471355946
+pearson corr for (y and ld 8): -0.08558489008472597
+pearson corr for (y and ld 9): -0.04158889956782312
+-----------------
+----Corralation Girls -----
+VAE_CausalData_ld2
+datasets/Y_data.pkl
+input X :
+pearson corr for (x and ld 0): 0.2346186138526447
+pearson corr for (x and ld 1): -0.20254028859950043
+input Y :
+pearson corr for (y and ld 0): -0.05648827078756113
+pearson corr for (y and ld 1): -0.6770033638670815
+-----------------
+----Corralation Girls -----
+VAE_CausalData_ld3
+datasets/Y_data.pkl
+input X :
+pearson corr for (x and ld 0): -0.1446412674951339
+pearson corr for (x and ld 1): -0.3673158121047386
+pearson corr for (x and ld 2): -0.15560035942606512
+input Y :
+pearson corr for (y and ld 0): -0.6167089780811678
+pearson corr for (y and ld 1): -0.19947284176568572
+pearson corr for (y and ld 2): -0.5166595318232228
+-----------------
+----Corralation Girls -----
+VAE_CausalData_ld4
+datasets/Y_data.pkl
+input X :
+pearson corr for (x and ld 0): -0.16485087337690182
+pearson corr for (x and ld 1): -0.08389029778739412
+pearson corr for (x and ld 2): 0.6016151738505784
+pearson corr for (x and ld 3): -0.3896659247677984
+input Y :
+pearson corr for (y and ld 0): -0.4847100371944528
+pearson corr for (y and ld 1): 0.4226357435998899
+pearson corr for (y and ld 2): -0.3220469182788059
+pearson corr for (y and ld 3): -0.5633987295463421
+-----------------
+----Corralation Girls -----
+VAE_CausalData_ld6
+datasets/Y_data.pkl
+input X :
+pearson corr for (x and ld 0): 0.014859825365897158
+pearson corr for (x and ld 1): -0.06747604123787257
+pearson corr for (x and ld 2): -0.010570099477752733
+pearson corr for (x and ld 3): -0.027070286285311884
+pearson corr for (x and ld 4): 0.6078880884610971
+pearson corr for (x and ld 5): 0.04031735184721314
+input Y :
+pearson corr for (y and ld 0): -0.07200162776440855
+pearson corr for (y and ld 1): -0.1428225500641329
+pearson corr for (y and ld 2): 0.7825525586571638
+pearson corr for (y and ld 3): -0.18783701552251283
+pearson corr for (y and ld 4): 0.04039650985974833
+pearson corr for (y and ld 5): 0.01973611202856457
+-----------------
+----Corralation Girls -----
+VAE_CausalData_ld10
+datasets/Y_data.pkl
+input X :
+pearson corr for (x and ld 0): 0.11697684902849262
+pearson corr for (x and ld 1): 0.3469355643322382
+pearson corr for (x and ld 2): -0.18175637702260428
+pearson corr for (x and ld 3): 0.273321633807348
+pearson corr for (x and ld 4): -0.2109538060597082
+pearson corr for (x and ld 5): 0.03521440216444528
+pearson corr for (x and ld 6): -0.1544391595869215
+pearson corr for (x and ld 7): 0.3036526036198612
+pearson corr for (x and ld 8): -0.34124410500089586
+pearson corr for (x and ld 9): 0.494102205808221
+input Y :
+pearson corr for (y and ld 0): -0.393798308359932
+pearson corr for (y and ld 1): -0.49032151574494337
+pearson corr for (y and ld 2): -0.32921034468299915
+pearson corr for (y and ld 3): 0.19533620085907652
+pearson corr for (y and ld 4): -0.5741286027203859
+pearson corr for (y and ld 5): -0.14034628237760616
+pearson corr for (y and ld 6): 0.034839646849030265
+pearson corr for (y and ld 7): 0.36336159341551705
+pearson corr for (y and ld 8): -0.0781800838127877
+pearson corr for (y and ld 9): -0.14441395279144026
+-----------------
