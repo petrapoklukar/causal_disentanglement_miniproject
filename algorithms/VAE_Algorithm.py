@@ -393,6 +393,9 @@ class VAE_Algorithm():
 
             # Update the checkpoint only if no early stopping was done
             self.save_checkpoint(epoch_loss[0])
+            
+            if self.current_epoch in (1, 3, 6):
+                 self.save_checkpoint(epoch_loss[0], keep=True)
 
             # Print current loss values every epoch
             if (self.current_epoch + 1) % self.console_print == 0:
@@ -405,8 +408,7 @@ class VAE_Algorithm():
                 print('   LR: {0:.6e}\n'.format(self.lr))
             
             # Print validation results when specified
-            if (self.current_epoch + 1) % self.snapshot == 0 or \
-                self.current_epoch in (1, 3, 6):
+            if (self.current_epoch + 1) % self.snapshot == 0:
 
                 # Plot reconstructions
                 self.plot_grid(dec_mean)
