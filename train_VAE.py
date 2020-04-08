@@ -96,7 +96,7 @@ if args_opt.compute_prd:
             latent_normal = torch.distributions.normal.Normal(enc_mean, enc_std)
             z_samples = latent_normal.sample((n_samples, ))
             dec_z_samples, _ = vae.decoder(z_samples)
-            dec_z_samples = dec_z_samples.detach().numpy().reshape(n_samples, -1)
+            dec_z_samples = dec_z_samples.detach().cpu().numpy().reshape(n_samples, -1)
             eval_np = transformer.transform(dec_z_samples)
         return eval_np
 
