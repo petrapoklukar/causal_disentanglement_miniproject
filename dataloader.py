@@ -10,9 +10,8 @@ from __future__ import print_function
 import torch
 import torch.utils.data as data
 import random
-import sys
 import pickle
-
+import numpy as np
 
 def preprocess_causal_data(filename):
     with open('datasets/' + filename, 'rb') as f:
@@ -52,6 +51,11 @@ class CausalDataset(data.Dataset):
     def __getitem__(self, index):
         img = self.data[index]
         return img
+    
+    def get_subset(self, max_ind, n_points):
+        self.prd_indices = np.random.choice(max_ind, n_points, replace=False)
+        subset_list = [self.data[i].numpy() for i in self.prd_indices]
+        return np.array(subset_list).reshape(n_points, -1)
 
     def __len__(self):
         return len(self.data)

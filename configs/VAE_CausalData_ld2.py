@@ -50,7 +50,7 @@ vae_opt = {
     'image_size': 256,
 
     'batch_size': batch_size,
-    'snapshot': 50,
+    'snapshot': 10,
     'console_print': 1,
     'beta_warmup': 20,
     'beta_min': 0,
@@ -58,7 +58,7 @@ vae_opt = {
     'beta_steps': 100,
     'kl_anneal': True,
     
-    'epochs': 200,
+    'epochs': 15,
     'lr_schedule': [(0, 1e-03), (10, 1e-04), (100, 1e-05)],
     'optim_type': 'Adam',
     'random_seed': 1201
