@@ -91,8 +91,8 @@ if args_opt.compute_prd:
     def sample_prior(vae):
         with torch.no_grad():
             ld = vae.latent_dim
-            enc_mean = torch.zeros(ld)
-            enc_std = torch.ones(ld)
+            enc_mean = torch.zeros(ld, device=vae.device)
+            enc_std = torch.ones(ld, device=vae.device)
             latent_normal = torch.distributions.normal.Normal(enc_mean, enc_std)
             z_samples = latent_normal.sample((n_samples, ))
             dec_z_samples, _ = vae.decoder(z_samples)
