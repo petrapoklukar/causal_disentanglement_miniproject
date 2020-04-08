@@ -30,12 +30,12 @@ parser.add_argument('--cuda' , type=bool, default=False, help='enables cuda')
 args_opt = parser.parse_args()
 
 # # # Laptop TESTING
-args_opt.exp_vae = 'VAE_CausalData_ld6'
-args_opt.train = 0
-args_opt.chpnt_path = ''#models/VAE_CausalData_ld2/vae_lastCheckpoint.pth'#'
-args_opt.num_workers = 0
-args_opt.cuda = None
-args_opt.compute_prd = 1
+# args_opt.exp_vae = 'VAE_CausalData_ld6'
+# args_opt.train = 0
+# args_opt.chpnt_path = ''#models/VAE_CausalData_ld2/vae_lastCheckpoint.pth'#'
+# args_opt.num_workers = 0
+# args_opt.cuda = None
+# args_opt.compute_prd = 1
 
 
 # Load VAE config file
