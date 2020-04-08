@@ -405,7 +405,8 @@ class VAE_Algorithm():
                 print('   LR: {0:.6e}\n'.format(self.lr))
             
             # Print validation results when specified
-            if (self.current_epoch + 1) % self.snapshot == 0:
+            if (self.current_epoch + 1) % self.snapshot == 0 or \
+                self.current_epoch in (1, 3, 6):
 
                 # Plot reconstructions
                 self.plot_grid(dec_mean)

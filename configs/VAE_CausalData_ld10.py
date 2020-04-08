@@ -50,7 +50,7 @@ vae_opt = {
     'image_size': 256,
 
     'batch_size': batch_size,
-    'snapshot': 50,
+    'snapshot': 10,
     'console_print': 1,
     'beta_warmup': 20,
     'beta_min': 0,
