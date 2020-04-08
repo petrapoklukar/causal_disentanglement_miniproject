@@ -102,7 +102,7 @@ if args_opt.compute_prd:
 
 
     n_samples = 500
-    chpnt1, chpnt2 = 9, 6
+    chpnt1, chpnt2 = 49, 6
     
     # Fit a random projection on a subset of training data
     rng = np.random.RandomState(42)
@@ -126,7 +126,7 @@ if args_opt.compute_prd:
     # Init a new model
     vae_garbage2 = getattr(alg, vae_config['algorithm_type'])(vae_config['vae_opt'])
     chp2_path = 'models/{0}/vae_checkpoint{1}.pth'.format(args_opt.exp_vae, chpnt2)
-    vae_garbage.load_checkpoint(chp2_path, eval=True)
+    vae_garbage2.load_checkpoint(chp2_path, eval=True)
     chpnt2_np = sample_prior(vae_garbage2.model)
         
     # Compute prd
