@@ -148,7 +148,7 @@ class VAE_Algorithm():
         counter = 0
         for i, yi in enumerate(grid_x):
             for j, xi in enumerate(grid_y):
-                digit = self.sq_else_perm(images[counter]).detach().cpu().numpy().transpose(1, 2, 0)
+                digit = self.sq_else_perm(images[counter]).detach().cpu().numpy()
                 figure[i * digit_size: (i + 1) * digit_size,
                        j * digit_size: (j + 1) * digit_size] = digit
                 counter += 1
