@@ -123,7 +123,10 @@ class VAE_Algorithm():
         plt.savefig(self.save_path + '_KLvsRecLoss')
         plt.close()
 
-
+    def sq_else_perm(self, img):
+        """"""
+        return img.squeeze() if self.grayscale else img.permute(1,2,0)        
+            
     def plot_grid(self, images, n=5, name="dec"):
         """
         Plots an nxn grid of images of size digit_size. Used to monitor the 
@@ -131,7 +134,11 @@ class VAE_Algorithm():
         """
         digit_size = int(np.sqrt(self.opt['input_dim']/self.opt['input_channels']))
         filename = self.save_path +name + '_checkpointRecon_{0}'.format(self.current_epoch)
-        figure = np.zeros((digit_size * n, digit_size * n, self.opt['input_channels']))
+        
+        if self.opt['input_channels'] == 1:
+            figure = np.zeros((digit_size * n, digit_size * n))
+        else: 
+            figure = np.zeros((digit_size * n, digit_size * n, self.opt['input_channels']))
 
         # Construct grid of latent variable values
         grid_x = norm.ppf(np.linspace(0.05, 0.95, n))
@@ -141,7 +148,7 @@ class VAE_Algorithm():
         counter = 0
         for i, yi in enumerate(grid_x):
             for j, xi in enumerate(grid_y):
-                digit = images[counter].detach().cpu().numpy().transpose(1, 2, 0)
+                digit = self.sq_else_perm(images[counter]).detach().cpu().numpy().transpose(1, 2, 0)
                 figure[i * digit_size: (i + 1) * digit_size,
                        j * digit_size: (j + 1) * digit_size] = digit
                 counter += 1
