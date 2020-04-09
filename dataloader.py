@@ -15,7 +15,7 @@ import numpy as np
 
 def preprocess_causal_data(filename):
     with open('datasets/' + filename, 'rb') as f:
-            data_list = pickle.load(f)
+        data_list = pickle.load(f)
 
     random.seed(2610)
     random.shuffle(data_list)
@@ -23,12 +23,17 @@ def preprocess_causal_data(filename):
     splitratio = int(len(data_list) * 0.15)
     train_data = data_list[splitratio:]
     test_data = data_list[:splitratio]
-
-    train_data1 = list(map(
-        lambda t: torch.tensor(t/255.).float().permute(2, 0, 1), train_data))
-    test_data1 = list(map(
-        lambda t: torch.tensor(t/255.).float().permute(2, 0, 1), test_data))
-    
+    if filename == 'causal_dsprite_shape2_scale5_imgs.pkl':
+        train_data1 = list(map(
+            lambda t: torch.tensor(t).float().unsqueeze(0), train_data))
+        test_data1 = list(map(
+            lambda t: torch.tensor(t).float().unsqueeze(0), test_data))
+    else:
+        train_data1 = list(map(
+            lambda t: torch.tensor(t/255.).float().permute(2, 0, 1), train_data))
+        test_data1 = list(map(
+            lambda t: torch.tensor(t/255.).float().permute(2, 0, 1), test_data))
+        
     with open('datasets/train_'+filename, 'wb') as f:
         pickle.dump(train_data1, f)
     with open('datasets/test_'+filename, 'wb') as f:

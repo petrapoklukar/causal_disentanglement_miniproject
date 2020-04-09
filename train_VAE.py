@@ -16,26 +16,26 @@ import prd_score as prd
 import numpy as np
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--exp_vae', type=str, required=True, default='', 
-                    help='config file with parameters of the vae model')
-parser.add_argument('--train', type=int, default=1, 
-                    help='trains the model with the given config')
-parser.add_argument('--chpnt_path', type=str, default='', 
-                    help='path to the checkpoint')
-parser.add_argument('--num_workers', type=int, default=0,      
-                    help='number of data loading workers')
-parser.add_argument('--compute_prd' , type=int, default=1, 
-                    help='computes PRD scores for the model')
-parser.add_argument('--cuda' , type=bool, default=False, help='enables cuda')
+# parser.add_argument('--exp_vae', type=str, required=True, default='', 
+#                     help='config file with parameters of the vae model')
+# parser.add_argument('--train', type=int, default=1, 
+#                     help='trains the model with the given config')
+# parser.add_argument('--chpnt_path', type=str, default='', 
+#                     help='path to the checkpoint')
+# parser.add_argument('--num_workers', type=int, default=0,      
+#                     help='number of data loading workers')
+# parser.add_argument('--compute_prd' , type=int, default=1, 
+#                     help='computes PRD scores for the model')
+# parser.add_argument('--cuda' , type=bool, default=False, help='enables cuda')
 args_opt = parser.parse_args()
 
 # # # Laptop TESTING
-# args_opt.exp_vae = 'VAE_CausalData_ld6'
-# args_opt.train = 0
-# args_opt.chpnt_path = ''#models/VAE_CausalData_ld2/vae_lastCheckpoint.pth'#'
-# args_opt.num_workers = 0
-# args_opt.cuda = None
-# args_opt.compute_prd = 1
+args_opt.exp_vae = 'VAE_CausalDsprite_shape2_scale5_ld2'
+args_opt.train = 1
+args_opt.chpnt_path = ''#models/VAE_CausalData_ld2/vae_lastCheckpoint.pth'#'
+args_opt.num_workers = 0
+args_opt.cuda = None
+args_opt.compute_prd = 1
 
 
 # Load VAE config file

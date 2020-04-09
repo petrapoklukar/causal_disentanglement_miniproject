@@ -41,6 +41,10 @@ class VAE_Algorithm():
         self.init_lr_schedule = opt['lr_schedule']
         self.model = None
         self.vae_optimiser = None
+        self.input_dim= opt['input_dim']
+        self.compute_loss = self.compute_gaussian_loss if \
+            opt['decoder_param'] == 'gaussian' else self.compute_bernoulli_loss
+        print(' *- Loss function set to ', self.compute_loss)
 
         # Beta scheduling
         self.kl_anneal = opt['kl_anneal']
@@ -191,9 +195,10 @@ class VAE_Algorithm():
         plt.close()
 
 
-    def compute_loss(self, x, dec_mu, dec_logvar, enc_mu, enc_logvar):
+    def compute_gaussian_loss(self, x, dec_mu, dec_logvar, enc_mu, enc_logvar):
         """
-        Computes the usual VAE loss on the training batch given the criterion.
+        Computes the VAE loss on the training batch given the criterion when the
+        likelihood is Gaussian.
         """
         # Reconstruction loss
         HALF_LOG_TWO_PI = 0.91893
@@ -209,6 +214,32 @@ class VAE_Algorithm():
                 dim=1) # batchsize
         batch_kl = torch.mean(kl_loss) # + KL term for minimization
         return batch_rec + self.beta * batch_kl, batch_rec, batch_kl
+    
+    
+    def compute_bernoulli_loss(self, x, dec_mu, dec_logvar, enc_mu, enc_logvar):
+        """
+        Computes the VAE loss on the training batch given the criterion when the
+        likelihood is Bernoulli.
+        """
+        criterion = torch.nn.BCELoss()
+        batch_rec = criterion(dec_mu.view(-1, self.input_dim), 
+                              x.view(-1, self.input_dim)) * float(self.input_dim)
+        
+        # KL loss
+        kl_loss = -0.5 * torch.sum(
+                (1 + enc_logvar - enc_mu**2 - torch.exp(enc_logvar)),
+                dim=1) # batchsize
+        batch_kl = torch.mean(kl_loss) # + KL term for minimization
+        return batch_rec + self.beta * batch_kl, batch_rec, batch_kl
+        
+        
+    def compute_loss(self, x, dec_mu, dec_logvar, enc_mu, enc_logvar):
+        """
+        Computes the usual VAE loss on the training batch depending on the 
+        parametrisation of the likelihood function.
+        """
+        return self.compute_gaussian_loss if self.opt['decoder_param'] == 'gaussian' \
+            else self.compute_bernoulli_loss
 
 
     def compute_test_loss(self, valid_dataset):

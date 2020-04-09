@@ -137,7 +137,7 @@ class TempPrintShape(nn.Module):
         self.message = message
 
     def forward(self, feat):
-#        print(self.message, feat.shape)
+        # print(self.message, feat.shape)
         return feat
 
 
@@ -374,8 +374,8 @@ if __name__ == '__main__':
     size = 256
     opt = {
             'device': 'cpu',
-            'input_channels': 3,
-            'latent_dim': 64,
+            'input_channels': 1,
+            'latent_dim': 2,
             'out_activation': 'sigmoid',
             'dropout': 0.2,
             'weight_init': 'normal_init',
