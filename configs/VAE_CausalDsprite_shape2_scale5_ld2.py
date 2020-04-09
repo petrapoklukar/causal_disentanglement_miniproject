@@ -51,7 +51,7 @@ vae_opt = {
     'decoder_param': 'gaussian',
 
     'batch_size': batch_size,
-    'snapshot': 4,
+    'snapshot': 1,
     'console_print': 1,
     'beta_warmup': 20,
     'beta_min': 0,
@@ -59,7 +59,7 @@ vae_opt = {
     'beta_steps': 100,
     'kl_anneal': True,
     
-    'epochs': 20,
+    'epochs': 50,
     'lr_schedule': [(0, 1e-03), (10, 1e-04), (100, 1e-05)],
     'optim_type': 'Adam',
     'random_seed': 1201
