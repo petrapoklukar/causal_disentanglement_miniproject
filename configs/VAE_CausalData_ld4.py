@@ -48,6 +48,7 @@ vae_opt = {
     'depth_per_block': 2,
     'fc_dim': 512,
     'image_size': 256,
+    'decoder_param': 'gaussian',
 
     'batch_size': batch_size,
     'snapshot': 10,
