@@ -32,7 +32,7 @@ nvidia-smi
 
 python train_VAE.py \
         --exp_vae=$config \
-        --train=1 \
+        --train=0 \
         --num_workers=0 \
         --compute_prd=1 \
         --cuda=True 
