@@ -125,7 +125,7 @@ class VAE_Algorithm():
 
     def sq_else_perm(self, img):
         """"""
-        return img.squeeze() if self.grayscale else img.permute(1,2,0)        
+        return img.squeeze() if self.opt['input_channels'] == 1 else img.permute(1,2,0)        
             
     def plot_grid(self, images, n=5, name="dec"):
         """

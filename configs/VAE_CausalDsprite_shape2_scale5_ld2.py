@@ -51,7 +51,7 @@ vae_opt = {
     'decoder_param': 'gaussian',
 
     'batch_size': batch_size,
-    'snapshot': 10,
+    'snapshot': 4,
     'console_print': 1,
     'beta_warmup': 20,
     'beta_min': 0,
