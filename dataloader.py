@@ -38,6 +38,42 @@ def preprocess_causal_data(filename):
         pickle.dump(train_data1, f)
     with open('datasets/test_'+filename, 'wb') as f:
         pickle.dump(test_data1, f)
+        
+        
+def preprocess_causal_classifier_data(filename):
+    with open('datasets/' + filename, 'rb') as f:
+        data = pickle.load(f)
+        data_list = data['data']
+        label_list = list(data['labels'].astype(int))
+        
+    zipped_list = list(zip(data_list, label_list))
+    random.seed(2610)
+    random.shuffle(zipped_list)
+
+    splitratio = int(len(zipped_list) * 0.15)
+    train_data = zipped_list[splitratio:]
+    test_data = zipped_list[:splitratio]
+    if 'dsprite' in filename:
+        train_data1 = list(map(
+            lambda t: (torch.tensor(t[0]).float().unsqueeze(0), 
+                       torch.tensor(t[1])), train_data))
+        test_data1 = list(map(
+            lambda t: (torch.tensor(t[0]).float().unsqueeze(0), 
+                       torch.tensor(t[1])), test_data))
+    else:
+        train_data1 = list(map(
+            lambda t: (torch.tensor(t[0]/255.).float().permute(2, 0, 1), 
+                       torch.tensor(t[1])), train_data))
+        test_data1 = list(map(
+            lambda t: (torch.tensor(t[0]/255.).float().permute(2, 0, 1), 
+                       torch.tensor(t[1])), test_data))
+    print('Train and test split lengths:', len(train_data1), len(test_data1))
+    print('An element is of type ', type(train_data1[0]))
+
+    with open('datasets/train_'+filename, 'wb') as f:
+        pickle.dump(train_data1, f)
+    with open('datasets/test_'+filename, 'wb') as f:
+        pickle.dump(test_data1, f)
 
 
 # ----------------------- #
