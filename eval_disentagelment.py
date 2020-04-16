@@ -102,10 +102,10 @@ def d_sprite_tests():
     #get the idxs
     data_sets=[]
     data_sets_true=[]
-    d_sprite_idx,X_true_data=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=12345,constant_factor=[1,0],causal=True,color=0,shape=0,scale=0)
+    d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=12345,constant_factor=[1,0],causal=True,color=0,shape=0,scale=0)
     fix_X_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
     
-    d_sprite_idx,Y_true_data=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=12345,constant_factor=[0,1],causal=True,color=0,shape=0,scale=0)
+    d_sprite_idx,Y_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=12345,constant_factor=[0,1],causal=True,color=0,shape=0,scale=0)
     fix_Y_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
    
 
@@ -224,7 +224,8 @@ def main():
     #causal_girls_test()
 
     #the desprite case
-    d_sprite_tests()
+    # d_sprite_tests()
+    pass
 
 
    
