@@ -30,7 +30,7 @@ echo "Activating conda environment"
 conda activate JigsawPuzzle_VAE
 nvidia-smi
 
-python train_VAE.py \
+python train_classifier.py \
         --config=$config \
         --train=0 \
         --num_workers=0 \
