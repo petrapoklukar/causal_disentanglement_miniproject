@@ -23,7 +23,7 @@ def preprocess_causal_data(filename):
     splitratio = int(len(data_list) * 0.15)
     train_data = data_list[splitratio:]
     test_data = data_list[:splitratio]
-    if filename == 'causal_dsprite_shape2_scale5_imgs.pkl':
+    if 'dsprite' in filename:
         train_data1 = list(map(
             lambda t: torch.tensor(t).float().unsqueeze(0), train_data))
         test_data1 = list(map(

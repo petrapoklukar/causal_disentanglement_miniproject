@@ -7,7 +7,7 @@ AT="@"
 # SBATCH_OR_CAT=cat
 SBATCH_OR_CAT=sbatch
 
-for config in "VAE_CausalDsprite_ber_shape2_scale5_ld2" "VAE_CausalDsprite_ber_shape2_scale5_ld3" "VAE_CausalDsprite_ber_shape2_scale5_ld4" "VAE_CausalDsprite_ber_shape2_scale5_ld6" "VAE_CausalDsprite_ber_shape2_scale5_ld10"; do
+for config in "VAE_NonCausalDsprite_ber_shape2_scale5_ld2" "VAE_NonCausalDsprite_ber_shape2_scale5_ld3" "VAE_NonCausalDsprite_ber_shape2_scale5_ld4" "VAE_NonCausalDsprite_ber_shape2_scale5_ld6" "VAE_NonCausalDsprite_ber_shape2_scale5_ld10"; do
 
 RUNS_PATH="${SOURCE_PATH}/models/${config}"
 echo $RUNS_PATH
@@ -32,7 +32,7 @@ nvidia-smi
 
 python train_VAE.py \
         --exp_vae=$config \
-        --train=1 \
+        --train=0 \
         --num_workers=0 \
         --compute_prd=1 \
         --cuda=True 
