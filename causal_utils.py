@@ -60,6 +60,17 @@ def make_img_c_girls(img,shape_id,color_id,size,cp,colors,r=20,a=40,b=40/4):
     return img
 
 
+def get_causal_labels(posX, posY, Xrange=32, Yrange=32, nclasses=8):
+    """
+    Generate image label from the given raw positions.
+    """
+    x_label = posX // (Xrange/nclasses)
+    y_label = posY // (Yrange/nclasses)
+    xy_class = nclasses * x_label + y_label
+    return xy_class
+    
+    
+
 def calc_dsprite_idxs(num_samples,seed,constant_factor,causal=True,color=0,shape=0,scale=0):
     #the generative factors are Possition X and Y rotation depends on X and Y for causal case
     #'color', 'shape', 'scale', 'orientation', 'posX', 'posY'
@@ -83,6 +94,7 @@ def calc_dsprite_idxs(num_samples,seed,constant_factor,causal=True,color=0,shape
             if constant_factor[2]==0:
                 orientations[i]= random.randint(0, 39)
 
+    img_clases = get_causal_labels(posXs, posYs)
     print(colors.shape)
     print(shapes.shape)
     latents=np.column_stack((colors,shapes,scales,orientations,posXs,posYs))
@@ -98,7 +110,7 @@ def calc_dsprite_idxs(num_samples,seed,constant_factor,causal=True,color=0,shape
             true_data.append([latents[i][4],latents[i][5],latents[i][3]])
         
 
-    return dsprite_idx,true_data
+    return dsprite_idx,true_data,img_clases
 
 
 def make_dataset_d_sprite(d_sprite_dataset,dsprite_idx,img_size=256):
