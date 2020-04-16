@@ -25,7 +25,7 @@ matplotlib.use('Qt5Agg')
 
 
 
-def obtain_representation(test_set,config_file,checkpoint_file):
+def obtain_representation(test_set,config_file,checkpoint_file,dsprite=True):
 
     #load Vae
     vae_config_file = os.path.join('.', 'configs', config_file + '.py')
@@ -47,9 +47,11 @@ def obtain_representation(test_set,config_file,checkpoint_file):
     for i in range(len(input_data)):
 
         img=input_data[i]
-        img_in=img/255.
+        img_in=img
+        if dsprite:
+            img=np.expand_dims(img,axis=-1)
         #toch the img and encode it
-        x=torch.tensor(img/255.).float().permute(2, 0, 1)
+        x=torch.tensor(img).float().permute(2, 0, 1)
         x=x.unsqueeze(0)
         x = Variable(x).to(device)
         dec_mean1, dec_logvar1, z, enc_logvar1=vae_algorithm.model.forward(x)
@@ -85,27 +87,84 @@ def compute_disentanglement(zs, ys, L=1000, M=20000):
 
 
 def d_sprite_tests():
+
+    config_files=["VAE_CausalDsprite_shape2_scale5_ld2","VAE_CausalDsprite_shape2_scale5_ld3","VAE_CausalDsprite_shape2_scale5_ld4"
+    ,"VAE_CausalDsprite_shape2_scale5_ld6","VAE_CausalDsprite_shape2_scale5_ld10"]
+
+    checkpoint_files=["vae_checkpoint"+ str(i) + ".pth" for i in range(50)]  
+
+
     dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
 
     print('Keys in the dataset:', dataset_zip.keys())
     imgs = dataset_zip['imgs']
 
     #get the idxs
+    data_sets=[]
+    data_sets_true=[]
     d_sprite_idx,X_true_data=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=12345,constant_factor=[1,0],causal=True,color=0,shape=0,scale=0)
-    print(d_sprite_idx[0])
-    print(X_true_data[0])
-    
     fix_X_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
-    print(fix_X_data[0])
-    print(fix_X_data[0].shape)
+    
+    d_sprite_idx,Y_true_data=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=12345,constant_factor=[0,1],causal=True,color=0,shape=0,scale=0)
+    fix_Y_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+   
+
+    data_sets.append(fix_X_data)
+    data_sets.append(fix_Y_data)
+    data_sets_true.append(X_true_data)
+    data_sets_true.append(Y_true_data)
+
+    #do it
+    for d in range(len(data_sets)):
+        plot_conf_list=[]
+        for config_file in config_files:
+            plot_check_list=[]
+            for checkpoint_file in checkpoint_files:
+                print("obtaining representations (zs)")
+                zs= obtain_representation(data_sets[d],config_file,checkpoint_file)
+
+                #compute disentagelment
+                print("calculatiung Kim and Mnih (2018) disentegelment")
+                zs_t=torch.tensor(zs)
+                true_data_t=torch.tensor(data_sets_true[d])
+                dis=compute_disentanglement(zs_t, true_data_t, L=1000, M=20000)
+                dis_np=dis.numpy()
+
+                print(config_file + " , " + checkpoint_file + " , " + str(dis_np))
+                plot_check_list.append(dis_np)
+            plot_conf_list.append(plot_check_list)
+
+        #ploting results
+        print("****************** plotting **************************")
+        plt.figure(d)
+        x=np.arange(1,len(checkpoint_files)+1,1)
+        for i in range(len(plot_conf_list)):
+            plt.plot(x,plot_conf_list[i],label=config_files[i])
+
+        plt.legend(loc="lower right")
+        plt.ylabel('disentagelment metric')
+        plt.xticks(x, checkpoint_files, size='small',rotation='vertical')
+        plt.xlabel('model checkpoints')
+        plt.ylim(0, 1.1)
+        plt.title("disentagelment evaluation")
+        plt.savefig(str(d) + "_disentagelment_dsprite.png",bbox_inches='tight')
+        #plt.show()
+
+    print("DONZO!")
 
 
 
 def causal_girls_test():
      #hyper:
     config_files=["VAE_CausalData_ld2","VAE_CausalData_ld3","VAE_CausalData_ld4","VAE_CausalData_ld6","VAE_CausalData_ld10"]
+   
+    checkpoint_files=["vae_checkpoint1.pth","vae_checkpoint3.pth","vae_checkpoint6.pth","vae_checkpoint9.pth","vae_checkpoint19.pth",
+                    "vae_checkpoint29.pth","vae_checkpoint39.pth","vae_checkpoint49.pth","vae_checkpoint59.pth","vae_checkpoint69.pth",
+                    "vae_checkpoint79.pth","vae_checkpoint89.pth","vae_checkpoint99.pth","vae_checkpoint109.pth","vae_checkpoint119.pth",
+                    "vae_checkpoint129.pth","vae_checkpoint139.pth","vae_checkpoint149.pth","vae_checkpoint159.pth","vae_checkpoint169.pth",
+                    "vae_checkpoint179.pth","vae_checkpoint189.pth","vae_checkpoint199.pth"]
 
-    checkpoint_files=["vae_checkpoint49.pth","vae_checkpoint99.pth","vae_checkpoint149.pth","vae_checkpoint199.pth"]
+    
 
     #gen dependend data:
     print("producing data")
@@ -125,7 +184,7 @@ def causal_girls_test():
             plot_check_list=[]
             for checkpoint_file in checkpoint_files:
                 print("obtaining representations (zs)")
-                zs= obtain_representation(data_sets[d],config_file,checkpoint_file)
+                zs= obtain_representation(data_sets[d]/255.,config_file,checkpoint_file)
 
                 #compute disentagelment
                 print("calculatiung Kim and Mnih (2018) disentegelment")
