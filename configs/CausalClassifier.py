@@ -35,6 +35,7 @@ model_opt = {
     'input_channels': 1,
     'weight_init': 'normal_init',
     'image_size': 256,
+    'n_classes': 64,
     
     'batch_size': batch_size,
     'snapshot': 50,
