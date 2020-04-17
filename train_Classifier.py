@@ -33,8 +33,6 @@ args_opt = parser.parse_args()
 # args_opt.num_workers = 0
 # args_opt.cuda = None
 
-
-
 # Load VAE config file
 config_file = os.path.join('.', 'configs', args_opt.config + '.py')
 directory = os.path.join('.', 'models', args_opt.config)
