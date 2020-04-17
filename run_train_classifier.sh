@@ -32,7 +32,7 @@ nvidia-smi
 
 python train_classifier.py \
         --config=$config \
-        --train=0 \
+        --train=1 \
         --num_workers=0 \
         --cuda=True 
 HERE

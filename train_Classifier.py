@@ -46,7 +46,7 @@ print('    - Classifier: {0}'.format(args_opt.config))
 
 model_config = SourceFileLoader(args_opt.config, config_file).load_module().config 
 model_config['exp_name'] = args_opt.config
-model_config['vae_opt']['exp_dir'] = directory # the place where logs, models, and other stuff will be stored
+model_config['model_opt']['exp_dir'] = directory # the place where logs, models, and other stuff will be stored
 print(' *- Loading experiment %s from file: %s' % (args_opt.config, config_file))
 print(' *- Files will be stored on %s' % (directory))
 
