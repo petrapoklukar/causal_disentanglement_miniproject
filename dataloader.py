@@ -80,7 +80,7 @@ def preprocess_causal_classifier_data(filename):
 # --- Custom Datasets --- #
 # ----------------------- #
 class CausalDataset(data.Dataset):
-    def __init__(self, dataset_name, split):
+    def __init__(self, dataset_name, split, subset_classes=[]):
         self.split = split.lower()
         self.dataset_name =  dataset_name.lower()
         self.name = self.dataset_name + '_' + self.split
@@ -88,10 +88,20 @@ class CausalDataset(data.Dataset):
         name = 'datasets/{0}_{1}.pkl'.format(self.split, self.dataset_name)
         with open(name, 'rb') as f:
             self.data = pickle.load(f)
+        
+        if subset_classes:
+            self.get_subset_classes(subset_classes)
 
     def __getitem__(self, index):
         img = self.data[index]
         return img
+    
+    def get_subset_classes(self, classes):
+        subset = []
+        for i in range(len(self.data)):
+            if self.data[i][1] in classes:
+                subset.append(self.data[i]) 
+        self.data = subset
     
     def get_subset(self, max_ind, n_points):
         self.prd_indices = np.random.choice(max_ind, n_points, replace=False)
