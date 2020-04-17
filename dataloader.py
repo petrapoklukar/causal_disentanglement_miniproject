@@ -18,7 +18,7 @@ def preprocess_causal_data(filename):
         data_list = pickle.load(f)
 
     random.seed(2610)
-    random.shuffle(data_list)
+    # random.shuffle(data_list)
 
     splitratio = int(len(data_list) * 0.15)
     train_data = data_list[splitratio:]
