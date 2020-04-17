@@ -27,12 +27,12 @@ parser.add_argument('--cuda' , type=bool, default=False, help='enables cuda')
 args_opt = parser.parse_args()
 
 # # # # Laptop TESTING
-# args_opt.exp_vae = 'VAE_CausalDsprite_shape2_scale5_ld2'
+# args_opt.config = 'CausalClassifier'
 # args_opt.train = 1
 # args_opt.chpnt_path = ''#models/VAE_CausalData_ld2/vae_lastCheckpoint.pth'#'
 # args_opt.num_workers = 0
 # args_opt.cuda = None
-# args_opt.compute_prd = 1
+
 
 
 # Load VAE config file
@@ -57,12 +57,14 @@ print(' *- Loaded {0}'.format(model_config['algorithm_type']))
 data_train_opt = model_config['data_train_opt']
 train_dataset = CausalDataset(
     dataset_name=data_train_opt['dataset_name'],
-    split=data_train_opt['split'])
+    split=data_train_opt['split'],
+    subset_classes=data_train_opt['subset_classes'])
 
 data_test_opt = model_config['data_test_opt']
 test_dataset = CausalDataset(
     dataset_name=data_test_opt['dataset_name'],
-    split=data_test_opt['split'])
+    split=data_test_opt['split'],
+    subset_classes=data_test_opt['subset_classes'])
 assert(test_dataset.dataset_name == train_dataset.dataset_name)
 assert(train_dataset.split == 'train')
 assert(test_dataset.split == 'test')
