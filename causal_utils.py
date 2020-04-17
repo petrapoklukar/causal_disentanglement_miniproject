@@ -71,7 +71,8 @@ def get_causal_labels(posX, posY, Xrange=32, Yrange=32, nclasses=8):
     
     
 
-def calc_dsprite_idxs(num_samples,seed,constant_factor,causal=True,color=0,shape=0,scale=0):
+def calc_dsprite_idxs(num_samples,seed,constant_factor,causal=True,color=0,shape=0,scale=0, 
+                      posXclass_min=0, posXclass_max=31,  posYclass_min=0, posYclass_max=31):
     #the generative factors are Possition X and Y rotation depends on X and Y for causal case
     #'color', 'shape', 'scale', 'orientation', 'posX', 'posY'
     
@@ -80,8 +81,8 @@ def calc_dsprite_idxs(num_samples,seed,constant_factor,causal=True,color=0,shape
     shapes=np.ones(num_samples)*shape
     scales=np.ones(num_samples)*scale
     orientations=np.ones(num_samples)*random.randint(0, 39)
-    posXs=np.ones(num_samples)*random.randint(0, 31)
-    posYs=np.ones(num_samples)*random.randint(0, 31)
+    posXs=np.ones(num_samples)*random.randint(posXclass_min, posXclass_max)
+    posYs=np.ones(num_samples)*random.randint(posYclass_min, posYclass_max)
     latents_list=[]
 
     for i in range(num_samples):
