@@ -309,10 +309,10 @@ class Classifier_Algorithm():
             # Print current loss values every epoch
             if (self.current_epoch + 1) % self.console_print == 0:
                 print('Epoch {0}:'.format(self.current_epoch))
-                print('   Train loss: {0:.3f}'.format(
-                        epoch_loss[0]))
-                print('   Valid loss: {0:.3f} '.format(
-                        valid_loss[0]))
+                print('   Train loss: {0:.3f} accuracy:  {1:.3f} '.format(
+                        epoch_loss[0], epoch_loss[1]))
+                print('   Valid loss: {0:.3f} accuracy: {1:.3f} '.format(
+                        valid_loss[0], valid_loss[1]))
                 print('   LR: {0:.6e}\n'.format(self.lr))
             
             # Print validation results when specified

@@ -42,7 +42,7 @@ model_opt = {
     'console_print': 1,
     
     'epochs': 200,
-    'lr_schedule': [(0, 1e-03), (10, 1e-04), (100, 1e-05)],
+    'lr_schedule': [(0, 1e-03), (50, 1e-04), (100, 1e-05)],
     'optim_type': 'Adam',
     'random_seed': 1201
 }
