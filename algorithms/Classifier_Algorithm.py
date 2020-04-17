@@ -185,7 +185,7 @@ class Classifier_Algorithm():
         print(self.model.parameters())
         if self.opt['optim_type'] == 'Adam':
             print(' *- Initialised Adam optimiser.')
-            model_optim = optim.Adam(self.model.parameters(), lr=self.lr).to(self.device)
+            model_optim = optim.Adam(self.model.parameters(), lr=self.lr)
             return model_optim
         else:
             raise NotImplementedError(
