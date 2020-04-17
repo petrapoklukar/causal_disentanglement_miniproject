@@ -130,10 +130,10 @@ class Classifier_Algorithm():
         predicted = self.model(imgs)
         loss = self.criterion(predicted, labels)
 
-        predicted_probs = torch.nn.Softmax(dim=1)(predicted)
+        predicted_probs = self.softmax(predicted)
         top_p, top_class = predicted_probs.topk(1, dim=1)
         equals = top_class == labels.view(*top_class.shape)
-        accuracy = torch.mean(equals.type(torch.FloatTensor))
+        accuracy = torch.mean(equals.type(torch.FloatTensor).to(self.device))
         return loss, accuracy
 
 
@@ -185,7 +185,7 @@ class Classifier_Algorithm():
         print(self.model.parameters())
         if self.opt['optim_type'] == 'Adam':
             print(' *- Initialised Adam optimiser.')
-            model_optim = optim.Adam(self.model.parameters(), lr=self.lr)
+            model_optim = optim.Adam(self.model.parameters(), lr=self.lr).to(self.device)
             return model_optim
         else:
             raise NotImplementedError(
@@ -252,7 +252,8 @@ class Classifier_Algorithm():
                    ).format(self.lr, self.lr_update_epoch, self.new_lr,
                    self.lr_schedule))
         
-        self.criterion = torch.nn.CrossEntropyLoss()
+        self.criterion = torch.nn.CrossEntropyLoss().to(self.device)
+        self.softmax = torch.nn.Softmax(dim=1).to(self.device)
         es = ES.EarlyStopping(patience=300)
         num_parameters = self.count_parameters()
         self.opt['num_parameters'] = num_parameters

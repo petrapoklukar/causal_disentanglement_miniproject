@@ -23,7 +23,24 @@ import matplotlib
 matplotlib.use('Qt5Agg')
 
 
+def generate_data_4_classifier(n_samples):
+    dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
 
+    print('Keys in the dataset:', dataset_zip.keys())
+    imgs = dataset_zip['imgs']
+
+    d_sprite_idx,X_true_data,labels=caus_utils.calc_dsprite_idxs(
+        num_samples=10000,seed=999,constant_factor=[0,0],causal=True,color=0,shape=2,scale=5)
+    D_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+    with open('datasets/causal_dsprite_shape2_scale5_imgs_for_classifier.pkl', 'wb') as f:
+        pickle.dump({'data': D_data, 'labels':labels}, f)
+    
+    d_sprite_idx,X_true_data,labels=caus_utils.calc_dsprite_idxs(
+        num_samples=10000,seed=999,constant_factor=[0,0,0],causal=False,color=0,shape=2,scale=5)
+    D_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+    with open('datasets/noncausal_dsprite_shape2_scale5_imgs_for_classifier.pkl', 'wb') as f:
+        pickle.dump({'data': D_data, 'labels':labels}, f)
+    
 
 def obtain_representation(test_set,config_file,checkpoint_file,dsprite=True):
 
@@ -286,7 +303,7 @@ def main():
     # d_sprite_tests()
 
     #make some example images
-    d_sprite_data_example()
+    # d_sprite_data_example()
     pass
 
 
