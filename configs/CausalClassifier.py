@@ -40,11 +40,11 @@ model_opt = {
     'n_classes': 64,
     
     'batch_size': batch_size,
-    'snapshot': 50,
+    'snapshot': 10,
     'console_print': 1,
     
-    'epochs': 200,
-    'lr_schedule': [(0, 1e-03), (50, 1e-04), (150, 1e-05)],
+    'epochs': 50,
+    'lr_schedule': [(0, 1e-03)],
     'optim_type': 'Adam',
     'random_seed': 1201
 }

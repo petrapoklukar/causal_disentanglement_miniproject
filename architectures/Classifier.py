@@ -52,15 +52,9 @@ class Classifier(nn.Module):
             nn.ReLU(),
             TempPrintShape('Output of conv1'),
             nn.MaxPool2d(5),
-            TempPrintShape('Output of maxpool'),
-            nn.Conv2d(64, 64, 5, stride=1, padding=2),
-            nn.ReLU(),
-            TempPrintShape('Output of conv2'),
-            ConvToLin(),
-            nn.Linear(6400, 1024),
-            nn.ReLU(),
             TempPrintShape('Output of lin'),
-            nn.Linear(1024, self.n_classes),
+            ConvToLin(),
+            nn.Linear(6400, self.n_classes),
             TempPrintShape('Output'))
         
         #--- Weight init
