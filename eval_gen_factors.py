@@ -239,24 +239,49 @@ def random_forest(z_encodes_train,z_encodes_test,gt_labels_train,gt_labels_test,
 
 
 def main():
-    # the custem girls dataset
-    config_files=["VAE_CausalDsprite_shape2_scale5_ld2","VAE_CausalDsprite_shape2_scale5_ld3","VAE_CausalDsprite_shape2_scale5_ld4","VAE_CausalDsprite_shape2_scale5_ld6","VAE_CausalDsprite_shape2_scale5_ld10"]
-    model_names=["C_ds_ld2","C_ds_ld3","C_ds_ld4","C_ds_ld6","C_ds_ld10",]
-    #checkpoint_files=["vae_checkpoint"+ str(i) + ".pth" for i in range(50)]  
-    checkpoint_files=["vae_checkpoint49.pth"]
+
+    causal = False
+
+    if causal:
+        # the custem girls dataset
+        config_files=["VAE_CausalDsprite_shape2_scale5_ld2","VAE_CausalDsprite_shape2_scale5_ld3","VAE_CausalDsprite_shape2_scale5_ld4","VAE_CausalDsprite_shape2_scale5_ld6","VAE_CausalDsprite_shape2_scale5_ld10"]
+        model_names=["C_ds_ld2","C_ds_ld3","C_ds_ld4","C_ds_ld6","C_ds_ld10",]
+        #checkpoint_files=["vae_checkpoint"+ str(i) + ".pth" for i in range(50)]  
+        checkpoint_files=["vae_checkpoint49.pth"]
 
 
-    dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
+        dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
 
-    print('Keys in the dataset:', dataset_zip.keys())
-    imgs = dataset_zip['imgs']
+        print('Keys in the dataset:', dataset_zip.keys())
+        imgs = dataset_zip['imgs']
 
-    #get the idxs
-    data_sets=[]
-    data_sets_true=[]
-    d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=10000,seed=12345,constant_factor=[0,0],causal=True,color=0,shape=2,scale=5)
-    X_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
-   
+        #get the idxs
+        data_sets=[]
+        data_sets_true=[]
+        d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=10000,seed=12345,constant_factor=[0,0],causal=causal,color=0,shape=2,scale=5)
+        X_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+    
+    if not causal:
+        # the custem girls dataset
+        config_files=["VAE_NonCausalDsprite_ber_shape2_scale5_ld2","VAE_NonCausalDsprite_ber_shape2_scale5_ld3","VAE_NonCausalDsprite_ber_shape2_scale5_ld4"
+        ,"VAE_NonCausalDsprite_ber_shape2_scale5_ld6","VAE_NonCausalDsprite_ber_shape2_scale5_ld10"]
+        model_names=["NC_ds_ld2","NC_ds_ld3","NC_ds_ld4","NC_ds_ld6","NC_ds_ld10",]
+        #checkpoint_files=["vae_checkpoint"+ str(i) + ".pth" for i in range(50)]  
+        checkpoint_files=["vae_checkpoint47.pth"]
+
+
+        dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
+
+        print('Keys in the dataset:', dataset_zip.keys())
+        imgs = dataset_zip['imgs']
+
+        #get the idxs
+        data_sets=[]
+        data_sets_true=[]
+        d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=10000,seed=12345,constant_factor=[0,0,0],causal=causal,color=0,shape=2,scale=5)
+        X_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+    
+
     #split in train and test
     X_data_train=np.array(X_data[0:8000])
     X_data_test=np.array(X_data[8000:])
@@ -278,8 +303,8 @@ def main():
             zs_test_all.append(zs_test)
     
     
-    #lasso(z_encodes_train=zs_train_all,z_encodes_test=zs_test_all,gt_labels_train=X_true_data_train,gt_labels_test=X_true_data_test,model_names=model_names)
-    random_forest(z_encodes_train=zs_train_all,z_encodes_test=zs_test_all,gt_labels_train=X_true_data_train,gt_labels_test=X_true_data_test,model_names=model_names)
+    lasso(z_encodes_train=zs_train_all,z_encodes_test=zs_test_all,gt_labels_train=X_true_data_train,gt_labels_test=X_true_data_test,model_names=model_names)
+    #random_forest(z_encodes_train=zs_train_all,z_encodes_test=zs_test_all,gt_labels_train=X_true_data_train,gt_labels_test=X_true_data_test,model_names=model_names)
     
     print("DONZO!")
 

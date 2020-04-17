@@ -84,6 +84,65 @@ def compute_disentanglement(zs, ys, L=1000, M=20000):
     return torch.max(V, dim=1)[0].sum() / M
 
 
+def d_sprite_data_example():
+    dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
+
+    print('Keys in the dataset:', dataset_zip.keys())
+    imgs = dataset_zip['imgs']
+
+    #get the idxs
+    data_sets=[]
+    data_sets_true=[]
+    d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=100,seed=12345,constant_factor=[0,0],causal=True,color=0,shape=2,scale=5)
+    D_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+    print(D_data[0].shape)
+    grid=10
+    grid_v=[]
+    for i in range(grid):
+        grid_h=[]
+        for j in range(grid):
+            t_img=D_data[i*grid+j]*255
+            bordersize=4
+            t_img = cv2.copyMakeBorder(
+            t_img,
+            top=bordersize,
+            bottom=bordersize,
+            left=bordersize,
+            right=bordersize,
+            borderType=cv2.BORDER_CONSTANT,
+            value=[100,100,100]
+)
+            grid_h.append(t_img)
+
+        grid_v.append(np.concatenate([grid_h[x] for x in range(len(grid_h))],axis=1))
+    c_dsprite=np.concatenate([grid_v[x] for x in range(len(grid_v))],axis=0)
+
+    d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=100,seed=12345,constant_factor=[0,0,0],causal=False,color=0,shape=2,scale=5)
+    D_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+
+    grid=10
+    grid_v=[]
+    for i in range(grid):
+        grid_h=[]
+        for j in range(grid):
+            t_img=D_data[i*grid+j]*255
+            bordersize=4
+            t_img = cv2.copyMakeBorder(
+            t_img,
+            top=bordersize,
+            bottom=bordersize,
+            left=bordersize,
+            right=bordersize,
+            borderType=cv2.BORDER_CONSTANT,
+            value=[100,100,100]
+)
+            grid_h.append(t_img)
+
+        grid_v.append(np.concatenate([grid_h[x] for x in range(len(grid_h))],axis=1))
+    nc_dsprite=np.concatenate([grid_v[x] for x in range(len(grid_v))],axis=0)
+    buffer_img=np.ones((nc_dsprite.shape[0],200), np.uint8)*100
+    cv2.imwrite("data_examples_dsprite.png",np.concatenate([c_dsprite,buffer_img,nc_dsprite],axis=1))
+
 
 
 def d_sprite_tests():
@@ -225,6 +284,9 @@ def main():
 
     #the desprite case
     # d_sprite_tests()
+
+    #make some example images
+    d_sprite_data_example()
     pass
 
 
