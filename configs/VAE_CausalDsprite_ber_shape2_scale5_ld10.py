@@ -51,7 +51,7 @@ vae_opt = {
     'decoder_param': 'bernouli',
 
     'batch_size': batch_size,
-    'snapshot': 1,
+    'snapshot': 3,
     'console_print': 1,
     'beta_warmup': 20,
     'beta_min': 0,

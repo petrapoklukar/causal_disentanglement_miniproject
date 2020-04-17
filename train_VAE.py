@@ -102,7 +102,7 @@ if args_opt.compute_prd:
 
 
     n_samples = 500
-    chpnt1, chpnt2 = 47, 6
+    chpnt1, chpnt2 = 47, 8
     
     # Fit a random projection on a subset of training data
     rng = np.random.RandomState(42)

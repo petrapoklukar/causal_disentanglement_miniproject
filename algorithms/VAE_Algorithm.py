@@ -432,7 +432,7 @@ class VAE_Algorithm():
             # Update the checkpoint only if no early stopping was done
             self.save_checkpoint(epoch_loss[0])
             
-            if self.current_epoch in (1, 3, 6):
+            if self.current_epoch in (0, 1, 2, 3):
                  self.save_checkpoint(epoch_loss[0], keep=True)
 
             # Print current loss values every epoch
