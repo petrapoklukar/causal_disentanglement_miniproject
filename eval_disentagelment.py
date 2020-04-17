@@ -84,7 +84,7 @@ def compute_disentanglement(zs, ys, L=1000, M=20000):
     return torch.max(V, dim=1)[0].sum() / M
 
 
-def d_sprite_data_example():
+def d_sprite_causal_data_all():
     dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
 
     print('Keys in the dataset:', dataset_zip.keys())
@@ -94,13 +94,33 @@ def d_sprite_data_example():
     data_sets=[]
     data_sets_true=[]
     d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=100,seed=12345,constant_factor=[0,0],causal=True,color=0,shape=2,scale=5)
+    
+
+    latents_bases=[ 737280, 245760,  40960,   1024,     32,      1]
+    latents_all=[]
+    for i in range(32):
+        for j in range(32):
+
+            posX= i
+            posY= j
+            orientations= int(((float(posX)*float(posY))/(31.*31.))*39.)
+            latents=[0,2,5,orientations,posX,posY]
+            latents_all.append(latents)        
+
+    
+    d_sprite_idx=np.dot(np.array(latents_all), latents_bases).astype(int)
+
     D_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
-    print(D_data[0].shape)
-    grid=10
+    print("----")
+    print(d_sprite_idx.shape)
+    print(len(latents_all))
+    print(len(D_data))
+    grid=32
     grid_v=[]
     for i in range(grid):
         grid_h=[]
         for j in range(grid):
+            #print(i*grid+j)
             t_img=D_data[i*grid+j]*255
             bordersize=4
             t_img = cv2.copyMakeBorder(
@@ -116,7 +136,44 @@ def d_sprite_data_example():
 
         grid_v.append(np.concatenate([grid_h[x] for x in range(len(grid_h))],axis=1))
     c_dsprite=np.concatenate([grid_v[x] for x in range(len(grid_v))],axis=0)
+    cv2.imwrite("cau_test.png",c_dsprite)
 
+
+def d_sprite_data_example():
+    dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
+
+    print('Keys in the dataset:', dataset_zip.keys())
+    imgs = dataset_zip['imgs']
+
+    #get the idxs
+    data_sets=[]
+    data_sets_true=[]
+    d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=100,seed=12345,constant_factor=[0,0],causal=True,color=0,shape=2,scale=5)
+    
+    D_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+   
+    grid=10
+    grid_v=[]
+    for i in range(grid):
+        grid_h=[]
+        for j in range(grid):
+            #print(i*grid+j)
+            t_img=D_data[i*grid+j]*255
+            bordersize=4
+            t_img = cv2.copyMakeBorder(
+            t_img,
+            top=bordersize,
+            bottom=bordersize,
+            left=bordersize,
+            right=bordersize,
+            borderType=cv2.BORDER_CONSTANT,
+            value=[100,100,100]
+)
+            grid_h.append(t_img)
+
+        grid_v.append(np.concatenate([grid_h[x] for x in range(len(grid_h))],axis=1))
+    c_dsprite=np.concatenate([grid_v[x] for x in range(len(grid_v))],axis=0)
+   
     d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=100,seed=12345,constant_factor=[0,0,0],causal=False,color=0,shape=2,scale=5)
     D_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
 
