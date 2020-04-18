@@ -6,7 +6,6 @@ Created on Thu Apr  9 20:38:22 2020
 @author: petrapoklukar
 """
 
-
 batch_size = 64
 
 config = {}

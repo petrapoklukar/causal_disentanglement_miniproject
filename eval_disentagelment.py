@@ -54,8 +54,28 @@ def generate_data_4_vae(n_samples, causal, constant_factor):
     D_data = caus_utils.make_dataset_d_sprite(
         d_sprite_dataset=imgs, dsprite_idx=d_sprite_idx, img_size=256)
     prefix = 'non' if not causal else ''
-    with open('datasets/{0}causal_dsprite_shape2_scale5_imgs.pkl'.format(prefix), 'wb') as f:
-        pickle.dump(D_data, f)
+    filename = '{0}causal_dsprite_shape2_scale5_imgs.pkl'.format(prefix)
+    random.seed(2610)   
+
+    splitratio = int(len(D_data) * 0.15)
+    train_data = D_data[splitratio:]
+    test_data = D_data[:splitratio]
+    if 'dsprite' in filename:
+        train_data1 = list(map(
+            lambda t: torch.tensor(t).float().unsqueeze(0), train_data))
+        test_data1 = list(map(
+            lambda t: torch.tensor(t).float().unsqueeze(0), test_data))
+    else:
+        train_data1 = list(map(
+            lambda t: torch.tensor(t/255.).float().permute(2, 0, 1), train_data))
+        test_data1 = list(map(
+            lambda t: torch.tensor(t/255.).float().permute(2, 0, 1), test_data))
+        
+    with open('datasets/train_'+filename, 'wb') as f:
+        pickle.dump(train_data1, f)
+    with open('datasets/test_'+filename, 'wb') as f:
+        pickle.dump(test_data1, f)
+
     
 
 
