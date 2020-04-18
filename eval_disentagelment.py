@@ -20,7 +20,8 @@ import causal_utils as caus_utils
 
 
 import matplotlib
-matplotlib.use('Qt5Agg')
+# matplotlib.use('Qt5Agg')
+matplotlib.use('Agg')
 
 
 def generate_data_4_classifier(n_samples):
