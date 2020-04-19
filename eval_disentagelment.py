@@ -24,23 +24,54 @@ import matplotlib
 matplotlib.use('Agg')
 
 
-def generate_data_4_classifier(n_samples):
+def generate_data_4_classifier(n_samples, causal=False):
     dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
 
     print('Keys in the dataset:', dataset_zip.keys())
     imgs = dataset_zip['imgs']
 
-    d_sprite_idx,X_true_data,labels=caus_utils.calc_dsprite_idxs(
-        num_samples=10000,seed=999,constant_factor=[0,0],causal=True,color=0,shape=2,scale=5)
-    D_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
-    with open('datasets/causal_dsprite_shape2_scale5_imgs_for_classifier.pkl', 'wb') as f:
-        pickle.dump({'data': D_data, 'labels':labels}, f)
+    # d_sprite_idx,X_true_data,labels=caus_utils.calc_dsprite_idxs(
+    #     num_samples=10000,seed=999,constant_factor=[0,0],causal=True,color=0,shape=2,scale=5)
+    # D_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+    # with open('datasets/causal_dsprite_shape2_scale5_imgs_for_classifier.pkl', 'wb') as f:
+    #     pickle.dump({'data': D_data, 'labels':labels}, f)
     
     d_sprite_idx,X_true_data,labels=caus_utils.calc_dsprite_idxs(
         num_samples=10000,seed=999,constant_factor=[0,0,0],causal=False,color=0,shape=2,scale=5)
     D_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
-    with open('datasets/noncausal_dsprite_shape2_scale5_imgs_for_classifier.pkl', 'wb') as f:
-        pickle.dump({'data': D_data, 'labels':labels}, f)
+    # with open('datasets/noncausal_dsprite_shape2_scale5_imgs_for_classifier.pkl', 'wb') as f:
+    #     pickle.dump({'data': D_data, 'labels':labels}, f)
+    
+    zipped_list = list(zip(D_data, labels))
+    random.seed(2610)
+    random.shuffle(zipped_list)
+
+    prefix = 'non' if not causal else ''
+    filename = '{0}causal_dsprite_shape2_scale5_imgs_for_classifier.pkl'.format(prefix)
+    splitratio = int(len(zipped_list) * 0.15)
+    train_data = zipped_list[splitratio:]
+    test_data = zipped_list[:splitratio]
+    if 'dsprite' in filename:
+        train_data1 = list(map(
+            lambda t: (torch.tensor(t[0]).float().unsqueeze(0), 
+                       torch.tensor(t[1])), train_data))
+        test_data1 = list(map(
+            lambda t: (torch.tensor(t[0]).float().unsqueeze(0), 
+                       torch.tensor(t[1])), test_data))
+    else:
+        train_data1 = list(map(
+            lambda t: (torch.tensor(t[0]/255.).float().permute(2, 0, 1), 
+                       torch.tensor(t[1])), train_data))
+        test_data1 = list(map(
+            lambda t: (torch.tensor(t[0]/255.).float().permute(2, 0, 1), 
+                       torch.tensor(t[1])), test_data))
+    print('Train and test split lengths:', len(train_data1), len(test_data1))
+    print('An element is of type ', type(train_data1[0]))
+
+    with open('datasets/train_'+filename, 'wb') as f:
+        pickle.dump(train_data1, f)
+    with open('datasets/test_'+filename, 'wb') as f:
+        pickle.dump(test_data1, f)
     
 
 def generate_data_4_vae(n_samples, causal, constant_factor):
