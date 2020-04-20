@@ -9,6 +9,7 @@ import cv2
 import pickle
 import random
 import math  
+import itertools
 
 
 def make_img_c_girls(img,shape_id,color_id,size,cp,colors,r=20,a=40,b=40/4):
@@ -68,11 +69,26 @@ def get_causal_labels(posX, posY, Xrange=32, Yrange=32, nclasses=8):
     y_label = posY // (Yrange/nclasses)
     xy_class = nclasses * x_label + y_label
     return xy_class
+
+def get_noncausal_labels(posX, posY, theta, Xrange=32, Yrange=32, thetarange=40,
+                         n_pos_classes=8, n_theta_classes=4):
+    """
+    Generate image label from the given raw positions.
+    """
+    classes = list(itertools.product(
+        range(n_pos_classes), range(n_pos_classes), range(n_theta_classes)))
+
+    x_label = posX // (Xrange/n_pos_classes)
+    y_label = posY // (Yrange/n_pos_classes)
+    theta_label = theta // (thetarange/n_theta_classes)
     
+    xyt_class = [int(classes.index(element)) for element in list(zip(x_label, y_label, theta_label))]
+    return xyt_class
     
 
 def calc_dsprite_idxs(num_samples,seed,constant_factor,causal=True,color=0,shape=0,scale=0, 
-                      posXclass_min=0, posXclass_max=31,  posYclass_min=0, posYclass_max=31):
+                      posXclass_min=0, posXclass_max=31,  posYclass_min=0, posYclass_max=31,
+                      orient_min=0, orient_max=39):
     #the generative factors are Possition X and Y rotation depends on X and Y for causal case
     #'color', 'shape', 'scale', 'orientation', 'posX', 'posY'
     
@@ -80,7 +96,7 @@ def calc_dsprite_idxs(num_samples,seed,constant_factor,causal=True,color=0,shape
     colors=np.ones(num_samples)*color
     shapes=np.ones(num_samples)*shape
     scales=np.ones(num_samples)*scale
-    orientations=np.ones(num_samples)*random.randint(0, 39)
+    orientations=np.ones(num_samples)*random.randint(orient_min, orient_max)
     posXs=np.ones(num_samples)*random.randint(posXclass_min, posXclass_max)
     posYs=np.ones(num_samples)*random.randint(posYclass_min, posYclass_max)
     latents_list=[]
@@ -96,7 +112,10 @@ def calc_dsprite_idxs(num_samples,seed,constant_factor,causal=True,color=0,shape
             if constant_factor[2]==0:
                 orientations[i]= random.randint(0, 39)
 
-    img_clases = get_causal_labels(posXs, posYs)
+    if causal:
+        img_clases = get_causal_labels(posXs, posYs)
+    else:
+        img_clases = get_noncausal_labels(posXs, posYs, orientations)
     latents=np.column_stack((colors,shapes,scales,orientations,posXs,posYs))
     #latents=np.concatenate([colors,shapes,scales,orientations,posXs,posYs],axis=1)
     print(latents[0])

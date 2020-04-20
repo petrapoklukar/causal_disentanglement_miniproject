@@ -41,8 +41,8 @@ def generate_data_4_classifier(n_samples=10000, causal=False):
     D_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
     # with open('datasets/noncausal_dsprite_shape2_scale5_imgs_for_classifier.pkl', 'wb') as f:
     #     pickle.dump({'data': D_data, 'labels':labels}, f)
-    
-    zipped_list = list(zip(D_data, labels.astype(int)))
+    print('Label min/max:', min(labels), max(labels))
+    zipped_list = list(zip(D_data, labels))
     random.seed(2610)
     random.shuffle(zipped_list)
 
@@ -54,19 +54,20 @@ def generate_data_4_classifier(n_samples=10000, causal=False):
     if 'dsprite' in filename:
         train_data1 = list(map(
             lambda t: (torch.tensor(t[0]).float().unsqueeze(0), 
-                       torch.tensor(t[1])), train_data))
+                       torch.tensor(t[1]).long()), train_data))
         test_data1 = list(map(
             lambda t: (torch.tensor(t[0]).float().unsqueeze(0), 
-                       torch.tensor(t[1])), test_data))
+                       torch.tensor(t[1]).long()), test_data))
     else:
         train_data1 = list(map(
             lambda t: (torch.tensor(t[0]/255.).float().permute(2, 0, 1), 
-                       torch.tensor(t[1])), train_data))
+                       torch.tensor(t[1]).long()), train_data))
         test_data1 = list(map(
             lambda t: (torch.tensor(t[0]/255.).float().permute(2, 0, 1), 
-                       torch.tensor(t[1])), test_data))
+                       torch.tensor(t[1]).long()), test_data))
     print('Train and test split lengths:', len(train_data1), len(test_data1))
     print('An element is of type ', type(train_data1[0]))
+    print(' Whereas image and label ', type(train_data1[0][0]), type(train_data1[0][1]))
 
     with open('datasets/train_'+filename, 'wb') as f:
         pickle.dump(train_data1, f)
@@ -83,6 +84,7 @@ def generate_data_4_vae(n_samples, causal, constant_factor):
     d_sprite_idx,X_true_data,labels = caus_utils.calc_dsprite_idxs(
         num_samples=n_samples, seed=12345, constant_factor=constant_factor, 
         causal=causal, color=0, shape=2, scale=5)
+    
     D_data = caus_utils.make_dataset_d_sprite(
         d_sprite_dataset=imgs, dsprite_idx=d_sprite_idx, img_size=256)
     prefix = 'non' if not causal else ''
