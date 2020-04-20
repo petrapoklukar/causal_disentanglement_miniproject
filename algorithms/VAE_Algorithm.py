@@ -232,7 +232,8 @@ class VAE_Algorithm():
         try:
             batch_rec = criterion(dec_mu.view(-1, self.input_dim), 
                                   x.view(-1, self.input_dim)) * float(self.input_dim)
-        except:
+        except Exception as e: 
+            print(e)
             print('\nInput x: ', x.shape, torch.min(x), torch.max(x),
                   '\nDec_mu; ', dec_mu.shape, torch.min(dec_mu), torch.max(dec_mu))
         
