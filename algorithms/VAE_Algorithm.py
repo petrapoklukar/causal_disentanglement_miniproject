@@ -229,8 +229,8 @@ class VAE_Algorithm():
         likelihood is Bernoulli.
         """
         criterion = torch.nn.BCELoss()
-        print(torch.min(dec_mu, dim=0)[0], torch.max(dec_mu, dim=0)[0])
-        print(torch.min(x, dim=0)[0], torch.max(x, dim=0)[0])
+        print('\ndecmu:', dec_mu.shape, torch.min(dec_mu), torch.max(dec_mu))
+        print('\ninput:', x.shape, torch.min(x), torch.max(x))
         batch_rec = criterion(dec_mu.view(-1, self.input_dim), 
                               x.view(-1, self.input_dim)) * float(self.input_dim)
         
