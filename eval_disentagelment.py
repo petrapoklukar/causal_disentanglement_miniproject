@@ -24,7 +24,7 @@ import matplotlib
 matplotlib.use('Agg')
 
 
-def generate_data_4_classifier(n_samples, causal=False):
+def generate_data_4_classifier(n_samples=10000, causal=False):
     dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
 
     print('Keys in the dataset:', dataset_zip.keys())
@@ -37,7 +37,7 @@ def generate_data_4_classifier(n_samples, causal=False):
     #     pickle.dump({'data': D_data, 'labels':labels}, f)
     
     d_sprite_idx,X_true_data,labels=caus_utils.calc_dsprite_idxs(
-        num_samples=10000,seed=999,constant_factor=[0,0,0],causal=False,color=0,shape=2,scale=5)
+        num_samples=n_samples,seed=999,constant_factor=[0,0,0],causal=False,color=0,shape=2,scale=5)
     D_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
     # with open('datasets/noncausal_dsprite_shape2_scale5_imgs_for_classifier.pkl', 'wb') as f:
     #     pickle.dump({'data': D_data, 'labels':labels}, f)
@@ -72,7 +72,7 @@ def generate_data_4_classifier(n_samples, causal=False):
         pickle.dump(train_data1, f)
     with open('datasets/test_'+filename, 'wb') as f:
         pickle.dump(test_data1, f)
-    
+
 
 def generate_data_4_vae(n_samples, causal, constant_factor):
     dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')

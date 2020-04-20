@@ -7,7 +7,8 @@ AT="@"
 # SBATCH_OR_CAT=cat
 SBATCH_OR_CAT=sbatch
 
-for config in "VAE_NonCausalDsprite_ber_shape2_scale5_ld2"; do
+for config in "VAE_NonCausalDsprite_ber_shape2_scale5_ld2" \
+    "VAE_NonCausalDsprite_ber_shape2_scale5_ld6"; do
 
 RUNS_PATH="${SOURCE_PATH}/models/${config}"
 echo $RUNS_PATH
@@ -22,7 +23,7 @@ mkdir -p $RUNS_PATH
 #SBATCH --constrain="khazadum|rivendell|shire|gondor"
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
-#SBATCH --mem=60GB
+#SBATCH --mem=100GB
 
 echo "Sourcing conda.sh"
 source "${HOME}/anaconda3/etc/profile.d/conda.sh"
