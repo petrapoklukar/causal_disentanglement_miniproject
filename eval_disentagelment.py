@@ -109,6 +109,7 @@ def generate_data_4_vae(n_samples, causal, constant_factor):
         pickle.dump(train_data1, f)
     with open('datasets/test_'+filename, 'wb') as f:
         pickle.dump(test_data1, f)
+    return train_data1, test_data1
 
     
 
