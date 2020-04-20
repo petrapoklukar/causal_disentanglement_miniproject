@@ -42,7 +42,7 @@ def generate_data_4_classifier(n_samples, causal=False):
     # with open('datasets/noncausal_dsprite_shape2_scale5_imgs_for_classifier.pkl', 'wb') as f:
     #     pickle.dump({'data': D_data, 'labels':labels}, f)
     
-    zipped_list = list(zip(D_data, labels))
+    zipped_list = list(zip(D_data, labels.astype(int)))
     random.seed(2610)
     random.shuffle(zipped_list)
 
