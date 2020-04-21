@@ -1,40 +1,24 @@
-Models VAE_CausalDsprite_ber_shape2_scale5_ld3, CausalClassifier
- ld 0 + X: mean nan std nan count 0
- ld 1 + X: mean nan std nan count 0
- ld 2 + X: mean 0.139 std 0.035 count 5
-Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
- ld 0 + X: mean nan std nan count 0
- ld 1 + X: mean nan std nan count 0
- ld 2 + X: mean nan std nan count 0
- ld 3 + X: mean nan std nan count 0
-Models VAE_CausalDsprite_ber_shape2_scale5_ld6, CausalClassifier
- ld 0 + X: mean nan std nan count 0
- ld 1 + X: mean nan std nan count 0
- ld 2 + X: mean nan std nan count 0
- ld 3 + X: mean 0.138 std 0.0 count 1
- ld 4 + X: mean nan std nan count 0
- ld 5 + X: mean nan std nan count 0
 Models VAE_CausalDsprite_ber_shape2_scale5_ld2, CausalClassifier
  ld 0 + X: mean nan std nan count 0
  ld 0 + Y: mean 0.122 std 0.02 count 19
  ld 1 + X: mean 0.15 std 0.041 count 19
  ld 1 + Y: mean nan std nan count 0
 Models VAE_CausalDsprite_ber_shape2_scale5_ld3, CausalClassifier
- ld 0 + X: mean nan std nan count 0 alpha 1/16
- ld 0 + Y: mean 0.081 std 0.033 count 19 alpha 1/16
- ld 1 + X: mean nan std nan count 0 alpha 1/16
- ld 1 + Y: mean 0.051 std 0.025 count 19 alpha 1/16
- ld 2 + X: mean 0.148 std 0.035 count 6 alpha 1/16
- ld 2 + Y: mean 0.096 std 0.047 count 13 alpha 1/16
+ ld 0 + X: mean nan std nan count 0 alpha 0.0625
+ ld 0 + Y: mean 0.081 std 0.033 count 19 alpha 0.0625
+ ld 1 + X: mean nan std nan count 0 alpha 0.0625
+ ld 1 + Y: mean 0.051 std 0.025 count 19 alpha 0.0625
+ ld 2 + X: mean 0.148 std 0.035 count 6 alpha 0.0625
+ ld 2 + Y: mean 0.096 std 0.047 count 13 alpha 0.0625
 Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
- ld 0 + X: mean nan std nan count 0 alpha 1/16
- ld 0 + Y: mean 0.055 std 0.013 count 20 alpha 1/16
- ld 1 + X: mean nan std nan count 0 alpha 1/16
- ld 1 + Y: mean 0.058 std 0.025 count 20 alpha 1/16
- ld 2 + X: mean nan std nan count 0 alpha 1/16
- ld 2 + Y: mean 0.066 std 0.021 count 20 alpha 1/16
- ld 3 + X: mean nan std nan count 0 alpha 1/16
- ld 3 + Y: mean 0.108 std 0.024 count 20 alpha 1/16
+ ld 0 + X: mean nan std nan count 0 alpha 0.0625
+ ld 0 + Y: mean 0.055 std 0.013 count 20 alpha 0.0625
+ ld 1 + X: mean nan std nan count 0 alpha 0.0625
+ ld 1 + Y: mean 0.058 std 0.025 count 20 alpha 0.0625
+ ld 2 + X: mean nan std nan count 0 alpha 0.0625
+ ld 2 + Y: mean 0.066 std 0.021 count 20 alpha 0.0625
+ ld 3 + X: mean nan std nan count 0 alpha 0.0625
+ ld 3 + Y: mean 0.108 std 0.024 count 20 alpha 0.0625
 Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
  ld 0 + X: mean nan std nan count 0 alpha 1
  ld 0 + Y: mean 0.108 std 0.015 count 20 alpha 1
@@ -44,3 +28,138 @@ Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
  ld 2 + Y: mean 0.116 std 0.013 count 19 alpha 1
  ld 3 + X: mean 0.12 std 0.01 count 6 alpha 1
  ld 3 + Y: mean 0.124 std 0.01 count 14 alpha 1
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
+ ld 0 + X: mean 0.113 std 0.013 count 6 alpha 10
+ ld 0 + Y: mean 0.118 std 0.001 count 4 alpha 10
+ ld 1 + X: mean nan std nan count 0 alpha 10
+ ld 1 + Y: mean 0.114 std 0.009 count 10 alpha 10
+ ld 2 + X: mean 0.113 std 0.012 count 9 alpha 10
+ ld 2 + Y: mean 0.146 std 0.0 count 1 alpha 10
+ ld 3 + X: mean 0.096 std 0.01 count 8 alpha 10
+ ld 3 + Y: mean 0.113 std 0.01 count 2 alpha 10
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
+ ld 0 + X: mean nan std nan count 0 alpha 1
+ ld 0 + Y: mean 0.113 std 0.009 count 10 alpha 1
+ ld 1 + X: mean nan std nan count 0 alpha 1
+ ld 1 + Y: mean 0.093 std 0.009 count 10 alpha 1
+ ld 2 + X: mean nan std nan count 0 alpha 1
+ ld 2 + Y: mean 0.119 std 0.01 count 10 alpha 1
+ ld 3 + X: mean 0.12 std 0.006 count 3 alpha 1
+ ld 3 + Y: mean 0.121 std 0.01 count 7 alpha 1
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
+ ld 0 + X: mean nan std nan count 0 alpha 0.1
+ ld 0 + Y: mean 0.063 std 0.01 count 10 alpha 0.1
+ ld 1 + X: mean nan std nan count 0 alpha 0.1
+ ld 1 + Y: mean 0.052 std 0.006 count 10 alpha 0.1
+ ld 2 + X: mean nan std nan count 0 alpha 0.1
+ ld 2 + Y: mean 0.068 std 0.011 count 10 alpha 0.1
+ ld 3 + X: mean nan std nan count 0 alpha 0.1
+ ld 3 + Y: mean 0.107 std 0.016 count 10 alpha 0.1
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
+ ld 0 + X: mean nan std nan count 0 alpha 0.01
+ ld 0 + Y: mean 0.031 std 0.004 count 10 alpha 0.01
+ ld 1 + X: mean nan std nan count 0 alpha 0.01
+ ld 1 + Y: mean 0.033 std 0.016 count 10 alpha 0.01
+ ld 2 + X: mean nan std nan count 0 alpha 0.01
+ ld 2 + Y: mean 0.044 std 0.026 count 10 alpha 0.01
+ ld 3 + X: mean nan std nan count 0 alpha 0.01
+ ld 3 + Y: mean 0.115 std 0.019 count 10 alpha 0.01
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
+ ld 0 + X: mean 0.113 std 0.008 count 3 alpha 10
+ ld 0 + Y: mean 0.118 std 0.01 count 7 alpha 10
+ ld 1 + X: mean 0.12 std 0.003 count 2 alpha 10
+ ld 1 + Y: mean 0.108 std 0.009 count 8 alpha 10
+ ld 2 + X: mean 0.132 std 0.0 count 1 alpha 10
+ ld 2 + Y: mean 0.125 std 0.01 count 9 alpha 10
+ ld 3 + X: mean 0.105 std 0.019 count 9 alpha 10
+ ld 3 + Y: mean 0.137 std 0.0 count 1 alpha 10
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
+ ld 0 + X: mean nan std nan count 0 alpha 0.1
+ ld 0 + Y: mean 0.068 std 0.005 count 10 alpha 0.1
+ ld 1 + X: mean nan std nan count 0 alpha 0.1
+ ld 1 + Y: mean 0.056 std 0.016 count 10 alpha 0.1
+ ld 2 + X: mean nan std nan count 0 alpha 0.1
+ ld 2 + Y: mean 0.078 std 0.015 count 10 alpha 0.1
+ ld 3 + X: mean nan std nan count 0 alpha 0.1
+ ld 3 + Y: mean 0.113 std 0.007 count 10 alpha 0.1
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
+ ld 0 + X: mean nan std nan count 0 alpha 0.01
+ ld 0 + Y: mean 0.038 std 0.008 count 10 alpha 0.01
+ ld 1 + X: mean nan std nan count 0 alpha 0.01
+ ld 1 + Y: mean 0.044 std 0.015 count 10 alpha 0.01
+ ld 2 + X: mean nan std nan count 0 alpha 0.01
+ ld 2 + Y: mean 0.062 std 0.033 count 10 alpha 0.01
+ ld 3 + X: mean nan std nan count 0 alpha 0.01
+ ld 3 + Y: mean 0.125 std 0.017 count 10 alpha 0.01
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier range = 1
+ ld 0 + X: mean nan std nan count 0 alpha 1
+ ld 0 + Y: mean 0.12 std 0.005 count 10 alpha 1
+ ld 1 + X: mean nan std nan count 0 alpha 1
+ ld 1 + Y: mean 0.106 std 0.009 count 10 alpha 1
+ ld 2 + X: mean nan std nan count 0 alpha 1
+ ld 2 + Y: mean 0.124 std 0.009 count 10 alpha 1
+ ld 3 + X: mean 0.124 std 0.0 count 1 alpha 1
+ ld 3 + Y: mean 0.127 std 0.008 count 9 alpha 1
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier range = 1
+ ld 0 + X: mean 0.118 std 0.01 count 6 alpha 10
+ ld 0 + Y: mean 0.112 std 0.005 count 4 alpha 10
+ ld 1 + X: mean 0.113 std 0.009 count 7 alpha 10
+ ld 1 + Y: mean 0.107 std 0.002 count 3 alpha 10
+ ld 2 + X: mean 0.118 std 0.008 count 8 alpha 10
+ ld 2 + Y: mean 0.12 std 0.005 count 2 alpha 10
+ ld 3 + X: mean 0.101 std 0.01 count 9 alpha 10
+ ld 3 + Y: mean 0.117 std 0.0 count 1 alpha 10
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier range = 10
+ ld 0 + X: mean 0.34 std 0.151 count 4 alpha 10
+ ld 0 + Y: mean 0.175 std 0.051 count 6 alpha 10
+ ld 1 + X: mean 0.245 std 0.108 count 5 alpha 10
+ ld 1 + Y: mean 0.222 std 0.07 count 5 alpha 10
+ ld 2 + X: mean 0.334 std 0.212 count 5 alpha 10
+ ld 2 + Y: mean 0.277 std 0.104 count 5 alpha 10
+ ld 3 + X: mean 0.335 std 0.149 count 7 alpha 10
+ ld 3 + Y: mean 0.183 std 0.034 count 3 alpha 10
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
+ ld 0 + X: mean 0.588 std 0.276 count 5 alpha 10
+ ld 0 + Y: mean 0.282 std 0.098 count 5 alpha 10
+ ld 1 + X: mean 0.321 std 0.11 count 5 alpha 10
+ ld 1 + Y: mean 0.298 std 0.089 count 5 alpha 10
+ ld 2 + X: mean 0.105 std 0.0 count 1 alpha 10
+ ld 2 + Y: mean 0.537 std 0.246 count 9 alpha 10
+ ld 3 + X: mean 0.361 std 0.146 count 7 alpha 10
+ ld 3 + Y: mean 0.587 std 0.31 count 3 alpha 10
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier range = 20, 10 samples
+ ld 0 + X: mean 0.143 std 0.032 count 17 alpha 10
+ ld 0 + Y: mean 0.157 std 0.028 count 3 alpha 10
+ ld 1 + X: mean 0.114 std 0.01 count 5 alpha 10
+ ld 1 + Y: mean 0.16 std 0.042 count 15 alpha 10
+ ld 2 + X: mean 0.116 std 0.005 count 7 alpha 10
+ ld 2 + Y: mean 0.164 std 0.036 count 13 alpha 10
+ ld 3 + X: mean 0.141 std 0.033 count 20 alpha 10
+ ld 3 + Y: mean nan std nan count 0 alpha 10
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier range = 1, 20 samples
+ ld 0 + X: mean 0.121 std 0.006 count 10 alpha 10
+ ld 0 + Y: mean 0.108 std 0.005 count 10 alpha 10
+ ld 1 + X: mean 0.116 std 0.0 count 1 alpha 10
+ ld 1 + Y: mean 0.114 std 0.009 count 19 alpha 10
+ ld 2 + X: mean 0.112 std 0.009 count 13 alpha 10
+ ld 2 + Y: mean 0.136 std 0.005 count 7 alpha 10
+ ld 3 + X: mean 0.101 std 0.01 count 19 alpha 10
+ ld 3 + Y: mean 0.121 std 0.0 count 1 alpha 10
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
+ ld 0 + X: mean 0.303 std 0.181 count 12 alpha 10
+ ld 0 + Y: mean 0.223 std 0.066 count 8 alpha 10
+ ld 1 + X: mean 0.226 std 0.051 count 9 alpha 10
+ ld 1 + Y: mean 0.258 std 0.135 count 11 alpha 10
+ ld 2 + X: mean 0.145 std 0.028 count 5 alpha 10
+ ld 2 + Y: mean 0.301 std 0.129 count 15 alpha 10
+ ld 3 + X: mean 0.252 std 0.119 count 17 alpha 10
+ ld 3 + Y: mean 0.139 std 0.021 count 3 alpha 10
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
+ ld 0 + X: mean 0.16 std 0.046 count 14 alpha 10 range 5 n_samples 19
+ ld 0 + Y: mean 0.144 std 0.025 count 6 alpha 10 range 5 n_samples 19
+ ld 1 + X: mean 0.163 std 0.04 count 10 alpha 10 range 5 n_samples 19
+ ld 1 + Y: mean 0.154 std 0.055 count 10 alpha 10 range 5 n_samples 19
+ ld 2 + X: mean 0.143 std 0.04 count 12 alpha 10 range 5 n_samples 19
+ ld 2 + Y: mean 0.145 std 0.023 count 8 alpha 10 range 5 n_samples 19
+ ld 3 + X: mean 0.144 std 0.032 count 20 alpha 10 range 5 n_samples 19
+ ld 3 + Y: mean nan std nan count 0 alpha 10 range 5 n_samples 19

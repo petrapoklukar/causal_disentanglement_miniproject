@@ -53,13 +53,14 @@ def get_config(exp_name, key='vae_opt'):
     return model_config
 
             
-def sample_latent_codes(ld, n_samples, vae, classifier, device='cpu', random_seed=1234):
+def sample_latent_codes(ld, n_samples, vae, classifier, device='cpu', 
+                        random_seed=1234, fixed_value=torch.empty(1).normal_()):
     torch.manual_seed(random_seed)
     np.random.seed(random_seed)
     latent_codes_dict = {}
     
     for dim in range(ld):
-        fixed_value = torch.empty(1).normal_()
+        # fixed_value = torch.empty(1).normal_()
         fixed_dim = fixed_value.expand((1, n_samples))
         
         random_noise = torch.empty((n_samples, ld)).normal_() 
@@ -178,19 +179,24 @@ def compute_mmd_dict(latent_dict, posX_gt_dict, posY_gt_dict, alpha):
 
 def compute_argmin_mmd(latent_dict, posX_gt_dict, posY_gt_dict, posT_gt_dict, alpha):
     scores_dict = {}
+    exact_dict = {}
     for latent_dim in latent_dict.keys():
         samples_latent = latent_dict[latent_dim].unsqueeze(1).float()
         X_min = []
+        X_classes = []
         for Xgt_dim in posX_gt_dict.keys():
             samples_gt = posX_gt_dict[Xgt_dim].unsqueeze(1).float()
             mmd_score = compute_mmd(samples_latent, samples_gt, alpha)
             X_min.append(round(mmd_score.item(), 3))
+            X_classes.append(Xgt_dim)
         
         Y_min = []
+        Y_classes = []
         for Ygt_dim in posY_gt_dict.keys():
             samples_gt = posY_gt_dict[Ygt_dim].unsqueeze(1).float()
             mmd_score = compute_mmd(samples_latent, samples_gt, alpha)
             Y_min.append(round(mmd_score.item(), 3))
+            Y_classes.append(Ygt_dim)
         
         if posT_gt_dict:
             T_min = []
@@ -203,7 +209,8 @@ def compute_argmin_mmd(latent_dict, posX_gt_dict, posY_gt_dict, posT_gt_dict, al
             results = [('X', min(X_min)), ('Y', min(Y_min))]
         factor = min(results, key = lambda t: t[1])
         scores_dict[latent_dim] = factor
-    return scores_dict
+        exact_dict[latent_dim] = factor[0] + X_classes[X_min.index(min(X_min))]
+    return scores_dict, exact_dict
 
 
 def log_mmd_score(ld, exp_file, causal, alpha):
@@ -228,12 +235,17 @@ def log_mmd_score(ld, exp_file, causal, alpha):
         posT_bins = [(0, 31, 0, 31, i, i+10) for i in range(0,39,10)]    
         mm_res_dict = {str(k): {'X': [], 'Y': [], 'Z': []} for k in range(ld)}
     
-    for random_seed in range(1, 21):
-        fixed_codes_dict = sample_latent_codes(ld, 100, vae, classifier, 
-                                               random_seed=random_seed)
-        mmd_res = compute_argmin_mmd(fixed_codes_dict, posX_gt_dict, 
+    n_samples = 19
+    var_range = 5
+    equidistant_points = (np.arange(n_samples + 1) / n_samples) * 2*var_range - var_range
+    noise = torch.from_numpy(equidistant_points).unsqueeze(1)
+    for i in range(len(noise)):
+        fixed_codes_dict = sample_latent_codes(
+            ld, 100, vae, classifier, random_seed=2104, fixed_value=noise[i])
+        mmd_res, exact_dict = compute_argmin_mmd(fixed_codes_dict, posX_gt_dict, 
                                      posY_gt_dict, posT_bins, 
                                      alpha=alpha)
+        print(exact_dict)
         for k, v in mmd_res.items():    
             mm_res_dict[k][v[0]].append(v[1])
                 
@@ -246,14 +258,16 @@ def log_mmd_score(ld, exp_file, causal, alpha):
                 ldim_mean = round(np.mean(mm_res_dict[ldim][factor]), 3)
                 ldim_std = round(np.std(mm_res_dict[ldim][factor]), 3)
     
-                f.writelines(' ld {0} + {4}: mean {1} std {2} count {3} alpha {5}\n'.format(
-                    ldim, ldim_mean, ldim_std, ldim_len, factor, alpha))
+                f.writelines(' ld {0} + {4}: mean {1} std {2} count {3} alpha {5} range {6} n_samples {7}\n'.format(
+                    ldim, ldim_mean, ldim_std, ldim_len, factor, alpha, 
+                    var_range, n_samples))
                 
         
 
 exp_file = 'corr_experiment/mmd_scores.txt'
 for ld in [4]:
-    log_mmd_score(ld, exp_file, causal=True, alpha=1)
+    for alpha in [10]:
+        log_mmd_score(ld, exp_file, causal=True, alpha=alpha)
 
 
     
