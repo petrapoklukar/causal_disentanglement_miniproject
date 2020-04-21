@@ -110,7 +110,60 @@ def generate_data_4_vae(n_samples, causal, constant_factor, pos_bins, classifier
         out_argmax = torch.max(out, dim=1)
         final_dict[str(i)] = out_argmax[1]
     return final_dict
+
+def compute_mmd(sample1, sample2, alpha):
+    """
+    Computes MMD for samples of the same size bs x n_features using Gaussian
+    kernel.
     
+    See Equation (3) in http://www.jmlr.org/papers/volume13/gretton12a/gretton12a.pdf
+    for the exact formula.
+    """
+    # Get number of samples (assuming m == n)
+    m = sample1.shape[0]
+    
+    # Calculate pairwise products for each sample (each row). This yields
+    # 2-norms |xi|^2 on the diagonal and <xi, xj> on non diagonal
+    xx = torch.mm(sample1, sample1.t())
+    yy = torch.mm(sample2, sample2.t())
+    zz = torch.mm(sample1, sample2.t())
+    
+    # Expand the norms of samples into the original size
+    rx = (xx.diag().unsqueeze(0).expand_as(xx))
+    ry = (yy.diag().unsqueeze(0).expand_as(yy))
+    
+    # Remove the diagonal elements, the non diagonal are exactly |xi - xj|^2
+    # = <xi, xi> + <xj, xj> - 2<xi, xj> = |xi|^2 + |xj|^2 - 2<xi, xj>
+    kernel_samples1 = torch.exp(- alpha * (rx.t() + rx - 2*xx))
+    kernel_samples2 = torch.exp(- alpha * (ry.t() + ry - 2*yy))
+    kernel_samples12 = torch.exp(- alpha * (rx.t() + ry - 2*zz))
+    
+    # Normalisations
+    n_same = (1./(m * (m-1)))
+    n_mixed = (2./(m * m)) 
+    
+    term1 = n_same * torch.sum(kernel_samples1)
+    term2 = n_same * torch.sum(kernel_samples2)
+    term3 = n_mixed * torch.sum(kernel_samples12)
+    return term1 + term2 - term3
+
+def compute_mmds(latent_dict, posX_gt_dict, posy_gt_dict, alpha):
+    scores_dict = {}
+    for latent_dim in latent_dict.keys():
+        samples_latent = latent_dict[latent_dim].unsqueeze(1).float()
+        # scores_dict[latent_dim] = {}
+        scores = {}
+        for Xgt_dim in posX_gt_dict.keys():
+            samples_gt = posX_gt_dict[Xgt_dim].unsqueeze(1).float()
+            mmd_score = compute_mmd(samples_latent, samples_gt, alpha)
+            scores['X' + Xgt_dim] = round(mmd_score.item(), 2)
+    
+        for Ygt_dim in posY_gt_dict.keys():
+            samples_gt = posY_gt_dict[Ygt_dim].unsqueeze(1).float()
+            mmd_score = compute_mmd(samples_latent, samples_gt, alpha)
+            scores['Y' + Ygt_dim] = round(mmd_score.item(), 2)
+        scores_dict[latent_dim] = scores
+    return scores_dict
 
 exp_vae = 'VAE_CausalDsprite_ber_shape2_scale5_ld2'
 exp_classifier = 'CausalClassifier'
@@ -122,50 +175,77 @@ posY_gt_dict = generate_data_4_vae(100, True, [0,1], posY_bins, classifier)
 
 fixed_codes_dict = sample_latent_codes(2, 100, vae, classifier)
 
-plt.figure(1, figsize=(30, 100))
-plt.clf()
-plt.suptitle(exp_vae)
-# Latent intevention
-for i in range(len(fixed_codes_dict.keys())):
-    plt.subplot(len(fixed_codes_dict.keys()), len(posX_gt_dict.keys()) + 1, 
-                i*(len(posX_gt_dict.keys())+1) + 1)
-    plt.hist(fixed_codes_dict[str(i)], bins=64)
-    plt.title('vae fixed z' + str(i))
-    plt.xlabel('class')
-
-for i in range(len(posX_gt_dict.keys())):
-    plt.subplot(len(fixed_codes_dict.keys()), len(posX_gt_dict.keys()) + 1, i + 2)
-    plt.hist(posX_gt_dict[str(i)], bins=64)
-    plt.title('gt fixed z' + str(i))
-    plt.xlabel('class')
-
-for i in range(len(posX_gt_dict.keys())):
-    plt.subplot(len(fixed_codes_dict.keys()), len(posX_gt_dict.keys()) + 1, i + len(posX_gt_dict.keys()) + 3)
-    plt.hist(posY_gt_dict[str(i)], bins=64)
-    plt.title('gt fixed z' + str(i))
-    plt.xlabel('class')
-    
-plt.subplots_adjust(hspace=0.5)
-plt.show()
+compute_mmds(fixed_codes_dict, posX_gt_dict, posY_gt_dict, alpha=10)
 
 
 
-for latent_dim in range(len(fixed_codes_dict)):
-    plt.figure(latent_dim, figsize=(30, 100))
+
+
+def plot_distributions(exp_vae, fixed_codes_dict, posX_gt_dict, posY_gt_dict):
+
+    plt.figure(1, figsize=(30, 100))
     plt.clf()
-    plt.suptitle(exp_vae + ' with fixed latent {0} and fixed gt X'.format(str(latent_dim)))
+    plt.suptitle(exp_vae)
     # Latent intevention
-    n_distr = len(posX_gt_dict.keys())
-    for i in range(n_distr):
-        plt.subplot(2, n_distr/2, 1 + i)
-        plt.hist(fixed_codes_dict[str(latent_dim)], bins=64, label='latent', alpha=0.5)
-        plt.hist(posX_gt_dict[str(i)], bins=64, label='gt', alpha=0.5)
-        plt.legend()
-        plt.xlim(0, 64)
-        plt.title('fixed gt class' + str(i))
+    for i in range(len(fixed_codes_dict.keys())):
+        plt.subplot(len(fixed_codes_dict.keys()), len(posX_gt_dict.keys()) + 1, 
+                    i*(len(posX_gt_dict.keys())+1) + 1)
+        plt.hist(fixed_codes_dict[str(i)], bins=64)
+        plt.title('vae fixed z' + str(i))
         plt.xlabel('class')
     
+    for i in range(len(posX_gt_dict.keys())):
+        plt.subplot(len(fixed_codes_dict.keys()), len(posX_gt_dict.keys()) + 1, i + 2)
+        plt.hist(posX_gt_dict[str(i)], bins=64)
+        plt.title('gt fixed z' + str(i))
+        plt.xlabel('class')
+    
+    for i in range(len(posX_gt_dict.keys())):
+        plt.subplot(len(fixed_codes_dict.keys()), len(posX_gt_dict.keys()) + 1, i + len(posX_gt_dict.keys()) + 3)
+        plt.hist(posY_gt_dict[str(i)], bins=64)
+        plt.title('gt fixed z' + str(i))
+        plt.xlabel('class')
+        
     plt.subplots_adjust(hspace=0.5)
     plt.show()
-
-
+    
+    
+    
+    for latent_dim in range(len(fixed_codes_dict)):
+        plt.figure(latent_dim, figsize=(30, 100))
+        plt.clf()
+        plt.suptitle(exp_vae + ' with fixed latent {0} and fixed gt X'.format(str(latent_dim)))
+        # Latent intevention
+        n_distr = len(posX_gt_dict.keys())
+        for i in range(n_distr):
+            plt.subplot(2, n_distr/2, 1 + i)
+            plt.hist(fixed_codes_dict[str(latent_dim)], bins=64, label='latent', alpha=0.5)
+            plt.hist(posX_gt_dict[str(i)], bins=64, label='gt', alpha=0.5)
+            plt.legend()
+            plt.xlim(0, 64)
+            plt.title('fixed gt class' + str(i))
+            plt.xlabel('class')
+        
+        plt.subplots_adjust(hspace=0.5)
+        plt.show()
+        
+        
+    for latent_dim in range(len(fixed_codes_dict)):
+        plt.figure(5 + latent_dim, figsize=(30, 100))
+        plt.clf()
+        plt.suptitle(exp_vae + ' with fixed latent {0} and fixed gt Y'.format(str(latent_dim)))
+        # Latent intevention
+        n_distr = len(posX_gt_dict.keys())
+        for i in range(n_distr):
+            plt.subplot(2, n_distr/2, 1 + i)
+            plt.hist(fixed_codes_dict[str(latent_dim)], bins=64, label='latent', alpha=0.5)
+            plt.hist(posY_gt_dict[str(i)], bins=64, label='gt', alpha=0.5)
+            plt.legend()
+            plt.xlim(0, 64)
+            plt.title('fixed gt class' + str(i))
+            plt.xlabel('class')
+        
+        plt.subplots_adjust(hspace=0.5)
+        plt.show()
+    
+    
