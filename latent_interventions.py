@@ -44,7 +44,7 @@ def init_classifier(opt):
 def get_config(exp_name, key='vae_opt'):
     config_file = os.path.join('.', 'configs', exp_name + '.py')
     directory = os.path.join('.', 'models', exp_name)
-    model_config = SourceFileLoader(exp_vae, config_file).load_module().config 
+    model_config = SourceFileLoader(exp_name, config_file).load_module().config 
     model_config['exp_name'] = exp_name
     model_config[key]['exp_dir'] = directory 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -91,8 +91,17 @@ def generate_data_4_vae(n_samples, causal, constant_factor, pos_bins, classifier
     
     dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
     imgs = dataset_zip['imgs']
-    assert((pos_bins[5][-1] == 31 and constant_factor == [1, 0]) or 
-           (pos_bins[5][1] == 31 and constant_factor == [0, 1]))
+    
+    if causal:
+        assert((pos_bins[5][-3] == 31 and constant_factor == [1, 0] and causal) or 
+               (pos_bins[5][1] == 31 and constant_factor == [0, 1] and causal))
+    else:
+        assert((pos_bins[5][-1] == 39 and pos_bins[5][-3] == 31 and not causal and 
+                constant_factor == [1, 0, 0]) or 
+               (pos_bins[5][-1] == 39 and pos_bins[5][1] == 31 and not causal and 
+                constant_factor == [0, 1, 0]) or
+               (pos_bins[5][1] == 31 and pos_bins[5][3] == 31 and not causal and 
+                constant_factor == [0, 0, 1]))
 
     final_dict = {}
     for i in range(len(pos_bins)):
@@ -100,7 +109,8 @@ def generate_data_4_vae(n_samples, causal, constant_factor, pos_bins, classifier
             num_samples=n_samples, seed=random_seed, constant_factor=constant_factor, 
             causal=causal, color=0, shape=2, scale=5, posXclass_min=pos_bins[i][0], 
             posXclass_max=pos_bins[i][1], posYclass_min=pos_bins[i][2], 
-            posYclass_max=pos_bins[i][3])
+            posYclass_max=pos_bins[i][3], orient_min=pos_bins[i][4], 
+            orient_max=pos_bins[i][5])
         D_data = caus_utils.make_dataset_d_sprite(
             d_sprite_dataset=imgs, dsprite_idx=d_sprite_idx, img_size=256)
         D_data_tensor_list = list(map(lambda t: torch.tensor(t).float().unsqueeze(0), D_data))
@@ -147,7 +157,7 @@ def compute_mmd(sample1, sample2, alpha):
     term3 = n_mixed * torch.sum(kernel_samples12)
     return term1 + term2 - term3
 
-def compute_mmd_dict(latent_dict, posX_gt_dict, posy_gt_dict, alpha):
+def compute_mmd_dict(latent_dict, posX_gt_dict, posY_gt_dict, alpha):
     scores_dict = {}
     for latent_dim in latent_dict.keys():
         samples_latent = latent_dict[latent_dim].unsqueeze(1).float()
@@ -166,7 +176,7 @@ def compute_mmd_dict(latent_dict, posX_gt_dict, posy_gt_dict, alpha):
     return scores_dict
 
 
-def compute_argmin_mmd(latent_dict, posX_gt_dict, posy_gt_dict, alpha):
+def compute_argmin_mmd(latent_dict, posX_gt_dict, posY_gt_dict, posT_gt_dict, alpha):
     scores_dict = {}
     for latent_dim in latent_dict.keys():
         samples_latent = latent_dict[latent_dim].unsqueeze(1).float()
@@ -174,35 +184,78 @@ def compute_argmin_mmd(latent_dict, posX_gt_dict, posy_gt_dict, alpha):
         for Xgt_dim in posX_gt_dict.keys():
             samples_gt = posX_gt_dict[Xgt_dim].unsqueeze(1).float()
             mmd_score = compute_mmd(samples_latent, samples_gt, alpha)
-            X_min.append(round(mmd_score.item(), 2))
+            X_min.append(round(mmd_score.item(), 3))
         
         Y_min = []
         for Ygt_dim in posY_gt_dict.keys():
             samples_gt = posY_gt_dict[Ygt_dim].unsqueeze(1).float()
             mmd_score = compute_mmd(samples_latent, samples_gt, alpha)
-            Y_min.append(round(mmd_score.item(), 2))
+            Y_min.append(round(mmd_score.item(), 3))
         
-        latent_argmin = min(X_min) < min(Y_min)
-        scores_dict[latent_dim] = ('X', min(X_min)) if latent_argmin else ('Y', min(Y_min))
+        if posT_gt_dict:
+            T_min = []
+            for Tgt_dim in posT_gt_dict.keys():
+                samples_gt = posT_gt_dict[Tgt_dim].unsqueeze(1).float()
+                mmd_score = compute_mmd(samples_latent, samples_gt, alpha)
+                T_min.append(round(mmd_score.item(), 3))
+            results = [('X', min(X_min)), ('Y', min(Y_min)), ('T', min(T_min))]
+        else: 
+            results = [('X', min(X_min)), ('Y', min(Y_min))]
+        factor = min(results, key = lambda t: t[1])
+        scores_dict[latent_dim] = factor
     return scores_dict
 
-ld = 2
-exp_vae = 'VAE_CausalDsprite_ber_shape2_scale5_ld2'
-exp_classifier = 'CausalClassifier'
-vae, classifier = load_models(exp_vae, exp_classifier)
-posX_bins = [(i, i+3, 0, 31) for i in range(0,31,4)]
-posY_bins = [(0, 31, i, i+3) for i in range(0,31,4)]
-posX_gt_dict = generate_data_4_vae(100, True, [1,0], posX_bins, classifier)
-posY_gt_dict = generate_data_4_vae(100, True, [0,1], posY_bins, classifier)
 
-mm_res_dict = {str(k): {'X': [], 'Y': []} for k in range(ld)}
-for random_seed in range(1, 21):
-    fixed_codes_dict = sample_latent_codes(2, 100, vae, classifier, 
-                                           random_seed=random_seed)
-    mmd_res = compute_argmin_mmd(fixed_codes_dict, posX_gt_dict, posY_gt_dict, 
-                                 alpha=1/16)
-    for k, v in mmd_res.items():    
-        mm_res_dict[k][v[0]].append(v[1])
+def log_mmd_score(ld, exp_file, causal, alpha):
+    prefix = 'Non' if not causal else ''
+    exp_vae = 'VAE_{0}CausalDsprite_ber_shape2_scale5_ld{1}'.format(prefix, str(ld))
+    exp_classifier = prefix + 'CausalClassifier'
+    print(exp_vae, exp_classifier)
+    vae, classifier = load_models(exp_vae, exp_classifier)
+    # here step 4 == number of values in each bin when generatng data
+    posX_bins = [(i, i+3, 0, 31, 0, 39) for i in range(0,31,4)]
+    posY_bins = [(0, 31, i, i+3, 0, 39) for i in range(0,31,4)]
+    if causal:
+        print('Calculating causal factors')
+        posX_gt_dict = generate_data_4_vae(100, True, [1,0], posX_bins, classifier)
+        posY_gt_dict = generate_data_4_vae(100, True, [0,1], posY_bins, classifier)
+        mm_res_dict = {str(k): {'X': [], 'Y': []} for k in range(ld)}
+        posT_bins = None
+        
+    else:
+        print('Calculating noncausal factors')
+        # here step 10 == number of values in each bin when generatng data
+        posT_bins = [(0, 31, 0, 31, i, i+10) for i in range(0,39,10)]    
+        mm_res_dict = {str(k): {'X': [], 'Y': [], 'Z': []} for k in range(ld)}
+    
+    for random_seed in range(1, 21):
+        fixed_codes_dict = sample_latent_codes(ld, 100, vae, classifier, 
+                                               random_seed=random_seed)
+        mmd_res = compute_argmin_mmd(fixed_codes_dict, posX_gt_dict, 
+                                     posY_gt_dict, posT_bins, 
+                                     alpha=alpha)
+        for k, v in mmd_res.items():    
+            mm_res_dict[k][v[0]].append(v[1])
+                
+    factor_names = ['X', 'Y'] if causal else ['X', 'Y', 'Z']
+    with open(exp_file, 'a+') as f:
+        f.writelines('Models {0}, {1}\n'.format(exp_vae, exp_classifier))
+        for ldim in  mm_res_dict.keys():
+            for factor in factor_names:
+                ldim_len = len(mm_res_dict[ldim][factor])
+                ldim_mean = round(np.mean(mm_res_dict[ldim][factor]), 3)
+                ldim_std = round(np.std(mm_res_dict[ldim][factor]), 3)
+    
+                f.writelines(' ld {0} + {4}: mean {1} std {2} count {3} alpha {5}\n'.format(
+                    ldim, ldim_mean, ldim_std, ldim_len, factor, alpha))
+                
+        
+
+exp_file = 'corr_experiment/mmd_scores.txt'
+for ld in [4]:
+    log_mmd_score(ld, exp_file, causal=True, alpha=1)
+
+
     
 # compute_mmds(fixed_codes_dict, posX_gt_dict, posY_gt_dict, alpha=1/16)
 

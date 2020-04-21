@@ -1,0 +1,46 @@
+Models VAE_CausalDsprite_ber_shape2_scale5_ld3, CausalClassifier
+ ld 0 + X: mean nan std nan count 0
+ ld 1 + X: mean nan std nan count 0
+ ld 2 + X: mean 0.139 std 0.035 count 5
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
+ ld 0 + X: mean nan std nan count 0
+ ld 1 + X: mean nan std nan count 0
+ ld 2 + X: mean nan std nan count 0
+ ld 3 + X: mean nan std nan count 0
+Models VAE_CausalDsprite_ber_shape2_scale5_ld6, CausalClassifier
+ ld 0 + X: mean nan std nan count 0
+ ld 1 + X: mean nan std nan count 0
+ ld 2 + X: mean nan std nan count 0
+ ld 3 + X: mean 0.138 std 0.0 count 1
+ ld 4 + X: mean nan std nan count 0
+ ld 5 + X: mean nan std nan count 0
+Models VAE_CausalDsprite_ber_shape2_scale5_ld2, CausalClassifier
+ ld 0 + X: mean nan std nan count 0
+ ld 0 + Y: mean 0.122 std 0.02 count 19
+ ld 1 + X: mean 0.15 std 0.041 count 19
+ ld 1 + Y: mean nan std nan count 0
+Models VAE_CausalDsprite_ber_shape2_scale5_ld3, CausalClassifier
+ ld 0 + X: mean nan std nan count 0 alpha 1/16
+ ld 0 + Y: mean 0.081 std 0.033 count 19 alpha 1/16
+ ld 1 + X: mean nan std nan count 0 alpha 1/16
+ ld 1 + Y: mean 0.051 std 0.025 count 19 alpha 1/16
+ ld 2 + X: mean 0.148 std 0.035 count 6 alpha 1/16
+ ld 2 + Y: mean 0.096 std 0.047 count 13 alpha 1/16
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
+ ld 0 + X: mean nan std nan count 0 alpha 1/16
+ ld 0 + Y: mean 0.055 std 0.013 count 20 alpha 1/16
+ ld 1 + X: mean nan std nan count 0 alpha 1/16
+ ld 1 + Y: mean 0.058 std 0.025 count 20 alpha 1/16
+ ld 2 + X: mean nan std nan count 0 alpha 1/16
+ ld 2 + Y: mean 0.066 std 0.021 count 20 alpha 1/16
+ ld 3 + X: mean nan std nan count 0 alpha 1/16
+ ld 3 + Y: mean 0.108 std 0.024 count 20 alpha 1/16
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
+ ld 0 + X: mean nan std nan count 0 alpha 1
+ ld 0 + Y: mean 0.108 std 0.015 count 20 alpha 1
+ ld 1 + X: mean nan std nan count 0 alpha 1
+ ld 1 + Y: mean 0.096 std 0.011 count 20 alpha 1
+ ld 2 + X: mean 0.118 std 0.0 count 1 alpha 1
+ ld 2 + Y: mean 0.116 std 0.013 count 19 alpha 1
+ ld 3 + X: mean 0.12 std 0.01 count 6 alpha 1
+ ld 3 + Y: mean 0.124 std 0.01 count 14 alpha 1
