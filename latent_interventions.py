@@ -147,7 +147,7 @@ def compute_mmd(sample1, sample2, alpha):
     term3 = n_mixed * torch.sum(kernel_samples12)
     return term1 + term2 - term3
 
-def compute_mmds(latent_dict, posX_gt_dict, posy_gt_dict, alpha):
+def compute_mmd_dict(latent_dict, posX_gt_dict, posy_gt_dict, alpha):
     scores_dict = {}
     for latent_dim in latent_dict.keys():
         samples_latent = latent_dict[latent_dim].unsqueeze(1).float()
@@ -165,6 +165,28 @@ def compute_mmds(latent_dict, posX_gt_dict, posy_gt_dict, alpha):
         scores_dict[latent_dim] = scores
     return scores_dict
 
+
+def compute_argmin_mmd(latent_dict, posX_gt_dict, posy_gt_dict, alpha):
+    scores_dict = {}
+    for latent_dim in latent_dict.keys():
+        samples_latent = latent_dict[latent_dim].unsqueeze(1).float()
+        X_min = []
+        for Xgt_dim in posX_gt_dict.keys():
+            samples_gt = posX_gt_dict[Xgt_dim].unsqueeze(1).float()
+            mmd_score = compute_mmd(samples_latent, samples_gt, alpha)
+            X_min.append(round(mmd_score.item(), 2))
+        
+        Y_min = []
+        for Ygt_dim in posY_gt_dict.keys():
+            samples_gt = posY_gt_dict[Ygt_dim].unsqueeze(1).float()
+            mmd_score = compute_mmd(samples_latent, samples_gt, alpha)
+            Y_min.append(round(mmd_score.item(), 2))
+        
+        latent_argmin = min(X_min) < min(Y_min)
+        scores_dict[latent_dim] = ('X', min(X_min)) if latent_argmin else ('Y', min(Y_min))
+    return scores_dict
+
+ld = 2
 exp_vae = 'VAE_CausalDsprite_ber_shape2_scale5_ld2'
 exp_classifier = 'CausalClassifier'
 vae, classifier = load_models(exp_vae, exp_classifier)
@@ -173,9 +195,16 @@ posY_bins = [(0, 31, i, i+3) for i in range(0,31,4)]
 posX_gt_dict = generate_data_4_vae(100, True, [1,0], posX_bins, classifier)
 posY_gt_dict = generate_data_4_vae(100, True, [0,1], posY_bins, classifier)
 
-fixed_codes_dict = sample_latent_codes(2, 100, vae, classifier)
-
-compute_mmds(fixed_codes_dict, posX_gt_dict, posY_gt_dict, alpha=10)
+mm_res_dict = {str(k): {'X': [], 'Y': []} for k in range(ld)}
+for random_seed in range(1, 21):
+    fixed_codes_dict = sample_latent_codes(2, 100, vae, classifier, 
+                                           random_seed=random_seed)
+    mmd_res = compute_argmin_mmd(fixed_codes_dict, posX_gt_dict, posY_gt_dict, 
+                                 alpha=1/16)
+    for k, v in mmd_res.items():    
+        mm_res_dict[k][v[0]].append(v[1])
+    
+# compute_mmds(fixed_codes_dict, posX_gt_dict, posY_gt_dict, alpha=1/16)
 
 
 
