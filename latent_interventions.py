@@ -178,8 +178,7 @@ def compute_mmd_dict(latent_dict, posX_gt_dict, posY_gt_dict, alpha):
         scores_dict[latent_dim] = scores
     return scores_dict
 
-
-def compute_argmin_mmd(latent_dict, posX_gt_dict, posY_gt_dict, posT_gt_dict, 
+def compute_argmin_mmd_archived(latent_dict, posX_gt_dict, posY_gt_dict, posT_gt_dict, 
                        result_dict, alpha):
     scores_dict = {}
     exact_dict = {}
@@ -214,6 +213,54 @@ def compute_argmin_mmd(latent_dict, posX_gt_dict, posY_gt_dict, posT_gt_dict,
         scores_dict[latent_dim] = factor
         exact_dict[latent_dim] = factor[0] + X_classes[X_min.index(min(X_min))]
     return scores_dict, exact_dict
+
+
+def compute_argmin_mmd(latent_dict, posX_gt_dict, posY_gt_dict, posT_gt_dict, 
+                       result_dict, alpha):
+    scores_dict = {}
+    exact_dict = {}
+    for latent_dim in latent_dict.keys():
+        samples_latent = latent_dict[latent_dim].unsqueeze(1).float()
+        X_min = []
+        X_classes = []
+        for Xgt_dim in posX_gt_dict.keys():
+            samples_gt = posX_gt_dict[Xgt_dim].unsqueeze(1).float()
+            mmd_score = compute_mmd(samples_latent, samples_gt, alpha)
+            X_min.append(round(mmd_score.item(), 3))
+            X_classes.append(Xgt_dim)
+        
+        
+        
+        Y_min = []
+        Y_classes = []
+        for Ygt_dim in posY_gt_dict.keys():
+            samples_gt = posY_gt_dict[Ygt_dim].unsqueeze(1).float()
+            mmd_score = compute_mmd(samples_latent, samples_gt, alpha)
+            Y_min.append(round(mmd_score.item(), 3))
+            Y_classes.append(Ygt_dim)
+        
+        # Log the minimum MMD score and the corresponding gt bin index 
+        # (which corresponds to A class in the training data)
+        results = [('X', min(X_min), X_classes[X_min.index(min(X_min))]),
+                   ('Y', min(Y_min), Y_classes[Y_min.index(min(Y_min))])]
+        
+        # Add rotation if non causal
+        if posT_gt_dict:
+            T_min = []
+            T_classes = []
+            for Tgt_dim in posT_gt_dict.keys():
+                samples_gt = posT_gt_dict[Tgt_dim].unsqueeze(1).float()
+                mmd_score = compute_mmd(samples_latent, samples_gt, alpha)
+                T_min.append(round(mmd_score.item(), 3))
+                T_classes.append(Tgt_dim)
+            results.append(('T', min(T_min), T_classes[T_min.index(min(T_min))]))
+                
+        # Get the minimum score of all factors and log it to the final result dict
+        factor = min(results, key = lambda t: t[1])
+        result_key = '{0}+{1}'.format(str(latent_dim), factor[0])
+        result_dict[result_key][alpha]['MMD_score'].append(factor[1])
+        result_dict[result_key][alpha]['unique_samples'].append(factor[0]+factor[2])
+    return result_dict
 
 
 def log_mmd_score(ld, exp_file, causal, alpha_list):
@@ -261,15 +308,14 @@ def log_mmd_score(ld, exp_file, causal, alpha_list):
         # Rotation is depended on the X and Y positions in this case.
         posT_gt_dict = None
         
-        # TODO
-        mm_res_dict = {str(k): {'X': [], 'Y': []} for k in range(ld)}
-        
+
     else:
         print(' *- Generating causal ground truth data...')
         
         # Generate the bin boundaries for the rotation variable which is in
         # this case independent. Here step 10 equals number of values in each 
         # bin when generatng data.
+        factor_list.append('T')
         posT_bins = [(0, 31, 0, 31, i, i+10) for i in range(0,39,10)]    
         
         # Limit one factor to one class and vary the rest of the variables 
@@ -278,16 +324,12 @@ def log_mmd_score(ld, exp_file, causal, alpha_list):
         posY_gt_dict = generate_data_4_vae(100, False, [0, 1, 0], posY_bins, classifier)
         posT_gt_dict = generate_data_4_vae(100, False, [0, 0, 1], posT_bins, classifier)
         
-        # TODO
-        factor_list.append('T')
-        mm_res_dict = {str(k): {'X': [], 'Y': [], 'Z': []} for k in range(ld)}
-    
     
     ldim_factor_cartesian = itertools.product([str(dim) for dim in range(ld)],
                                          factor_list)
     ldim_factor_list = list(map(lambda t: t[0] + '+' + t[1], ldim_factor_cartesian))
-    result_dict = {key: {alpha: None for alpha in alpha_list} 
-                   for key in ldim_factor_list}
+    result_dict = {key: {alpha: {'MMD_score': [], 'unique_samples': []} \
+                         for alpha in alpha_list} for key in ldim_factor_list}
     
     
     # class_rage_dict = {str(k): [] for k in range(ld)}
@@ -313,24 +355,11 @@ def log_mmd_score(ld, exp_file, causal, alpha_list):
         
         # Compute MMD score for each alpha
         for alpha in alpha_list:      
-            # TODO Rewrite the result dict in this function directly!
             result_dict = compute_argmin_mmd(
                 fixed_codes_dict, posX_gt_dict, posY_gt_dict, posT_gt_dict, 
                 result_dict, alpha=alpha)
             
-            # alpha_mmd_dict, exact_dict = compute_argmin_mmd(
-            #     fixed_codes_dict, posX_gt_dict, posY_gt_dict, posT_gt_dict, 
-            #     alpha=alpha)
-            
-            # for dim_factor_key, stat_list in alpha_mmd_dict.items():
-            #     result_dict[dim_factor_key][alpha] = stat_list
-        
-        
-        # for k, v in mmd_res.items():    
-        #     mm_res_dict[k][v[0]].append(v[1])
-        
-        # for k, v in exact_dict.items():
-        #     class_rage_dict[k].append(v)
+
                 
     factor_names = ['X', 'Y'] if causal else ['X', 'Y', 'Z']
     with open(exp_file, 'a+') as f:
@@ -349,10 +378,10 @@ def log_mmd_score(ld, exp_file, causal, alpha_list):
         
 
 exp_file = 'corr_experiment/mmd_scores.txt'
-for ld in [4]:
-    for alpha in [0.005, 0.01, 0.1, 1, 10]:
-        print('\n\n\n New alpha ' + str(alpha))
-        log_mmd_score(ld, exp_file, causal=True, alpha=alpha)
+# for ld in [4]:
+#     for alpha in [0.005, 0.01, 0.1, 1, 10]:
+#         print('\n\n\n New alpha ' + str(alpha))
+#         log_mmd_score(ld, exp_file, causal=True, alpha=alpha)
 
 
     
