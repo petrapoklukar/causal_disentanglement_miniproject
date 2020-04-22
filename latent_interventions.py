@@ -335,7 +335,7 @@ def log_mmd_score(ld, exp_file, causal, alpha_list):
     # class_rage_dict = {str(k): [] for k in range(ld)}
     # TODO: as parameter
     n_samples = 29
-    var_range = 5
+    var_range = 20
     
     # Generate equidistant points on one dimension in the latent space. This 
     # corresponds to (n_samples) + 1 interventions.
