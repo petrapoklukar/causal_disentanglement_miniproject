@@ -1,0 +1,85 @@
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
+ ld 0 + X: samples_covered ['X1', 'X1', 'X1', 'X1', 'Y1', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y5', 'Y6', 'Y6', 'Y6', 'Y6', 'X6', 'X6', 'X6', 'X6', 'X6', 'X6', 'X6', 'X6'] 
+           count 12 alpha 0.005 range 5 mean 0.125 std 0.018 n_samples 29
+ ld 0 + Y: samples_covered ['X1', 'X1', 'X1', 'X1', 'Y1', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y5', 'Y6', 'Y6', 'Y6', 'Y6', 'X6', 'X6', 'X6', 'X6', 'X6', 'X6', 'X6', 'X6'] 
+           count 18 alpha 0.005 range 5 mean 0.071 std 0.051 n_samples 29
+ ld 1 + X: samples_covered ['X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'Y5', 'Y4', 'Y4', 'Y4', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y3', 'Y3', 'X3', 'X3', 'X3', 'X3', 'X3', 'X3', 'X3', 'X3', 'X3'] 
+           count 19 alpha 0.005 range 5 mean 0.099 std 0.024 n_samples 29
+ ld 1 + Y: samples_covered ['X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'Y5', 'Y4', 'Y4', 'Y4', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y3', 'Y3', 'X3', 'X3', 'X3', 'X3', 'X3', 'X3', 'X3', 'X3', 'X3'] 
+           count 11 alpha 0.005 range 5 mean 0.071 std 0.046 n_samples 29
+ ld 2 + X: samples_covered ['X0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y1', 'Y1', 'Y1', 'Y1', 'Y2', 'Y3', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'X4', 'X4', 'X4', 'X4', 'X4', 'X4', 'X4', 'X4', 'X4', 'X4'] 
+           count 11 alpha 0.005 range 5 mean 0.146 std 0.03 n_samples 29
+ ld 2 + Y: samples_covered ['X0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y1', 'Y1', 'Y1', 'Y1', 'Y2', 'Y3', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'X4', 'X4', 'X4', 'X4', 'X4', 'X4', 'X4', 'X4', 'X4', 'X4'] 
+           count 19 alpha 0.005 range 5 mean 0.086 std 0.061 n_samples 29
+ ld 3 + X: samples_covered ['X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X6', 'X6', 'X6', 'X6', 'Y6', 'Y5', 'Y5', 'Y5', 'Y4', 'Y3', 'Y2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X1', 'X1', 'X1'] 
+           count 23 alpha 0.005 range 5 mean 0.09 std 0.027 n_samples 29
+ ld 3 + Y: samples_covered ['X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X6', 'X6', 'X6', 'X6', 'Y6', 'Y5', 'Y5', 'Y5', 'Y4', 'Y3', 'Y2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X1', 'X1', 'X1'] 
+           count 7 alpha 0.005 range 5 mean 0.119 std 0.032 n_samples 29
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
+ ld 0 + X: samples_covered ['X1', 'X1', 'X1', 'Y1', 'Y1', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y4', 'Y4', 'Y5', 'Y4', 'Y5', 'Y5', 'Y6', 'Y6', 'Y6', 'Y6', 'Y6', 'Y6', 'X6', 'X6', 'X6', 'X6', 'X6', 'X7'] 
+           count 9 alpha 0.01 range 5 mean 0.203 std 0.026 n_samples 29
+ ld 0 + Y: samples_covered ['X1', 'X1', 'X1', 'Y1', 'Y1', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y4', 'Y4', 'Y5', 'Y4', 'Y5', 'Y5', 'Y6', 'Y6', 'Y6', 'Y6', 'Y6', 'Y6', 'X6', 'X6', 'X6', 'X6', 'X6', 'X7'] 
+           count 21 alpha 0.01 range 5 mean 0.094 std 0.063 n_samples 29
+ ld 1 + X: samples_covered ['X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'Y5', 'Y4', 'Y4', 'Y5', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y3', 'Y3', 'Y3', 'Y3', 'Y3', 'X3', 'X3', 'X3', 'X3', 'X3', 'X3'] 
+           count 16 alpha 0.01 range 5 mean 0.145 std 0.05 n_samples 29
+ ld 1 + Y: samples_covered ['X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'Y5', 'Y4', 'Y4', 'Y5', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y3', 'Y3', 'Y3', 'Y3', 'Y3', 'X3', 'X3', 'X3', 'X3', 'X3', 'X3'] 
+           count 14 alpha 0.01 range 5 mean 0.1 std 0.059 n_samples 29
+ ld 2 + X: samples_covered ['X0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y1', 'Y1', 'Y1', 'Y2', 'Y3', 'Y4', 'Y4', 'Y5', 'Y5', 'Y4', 'Y4', 'Y5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5'] 
+           count 9 alpha 0.01 range 5 mean 0.203 std 0.029 n_samples 29
+ ld 2 + Y: samples_covered ['X0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y1', 'Y1', 'Y1', 'Y2', 'Y3', 'Y4', 'Y4', 'Y5', 'Y5', 'Y4', 'Y4', 'Y5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5', 'X5'] 
+           count 21 alpha 0.01 range 5 mean 0.122 std 0.077 n_samples 29
+ ld 3 + X: samples_covered ['X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X6', 'X6', 'X6', 'Y6', 'Y6', 'Y5', 'Y5', 'Y4', 'Y3', 'Y2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X1', 'X1', 'X1'] 
+           count 23 alpha 0.01 range 5 mean 0.131 std 0.049 n_samples 29
+ ld 3 + Y: samples_covered ['X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X6', 'X6', 'X6', 'Y6', 'Y6', 'Y5', 'Y5', 'Y4', 'Y3', 'Y2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X1', 'X1', 'X1'] 
+           count 7 alpha 0.01 range 5 mean 0.127 std 0.026 n_samples 29
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
+ ld 0 + X: samples_covered ['Y1', 'Y1', 'Y1', 'Y1', 'Y1', 'Y1', 'Y1', 'Y1', 'Y1', 'Y1', 'Y2', 'Y2', 'Y3', 'Y4', 'Y5', 'Y4', 'Y5', 'Y5', 'Y7', 'Y7', 'Y7', 'Y7', 'Y7', 'Y7', 'Y7', 'Y7', 'Y7', 'Y7', 'Y7', 'Y7'] 
+           count 0 alpha 0.1 range 5 mean nan std nan n_samples 29
+ ld 0 + Y: samples_covered ['Y1', 'Y1', 'Y1', 'Y1', 'Y1', 'Y1', 'Y1', 'Y1', 'Y1', 'Y1', 'Y2', 'Y2', 'Y3', 'Y4', 'Y5', 'Y4', 'Y5', 'Y5', 'Y7', 'Y7', 'Y7', 'Y7', 'Y7', 'Y7', 'Y7', 'Y7', 'Y7', 'Y7', 'Y7', 'Y7'] 
+           count 30 alpha 0.1 range 5 mean 0.146 std 0.087 n_samples 29
+ ld 1 + X: samples_covered ['Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y4', 'Y4', 'Y4', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y3', 'Y3', 'Y3', 'Y3', 'Y4', 'Y4', 'Y4', 'Y3', 'Y4', 'X4', 'X4'] 
+           count 2 alpha 0.1 range 5 mean 0.385 std 0.008 n_samples 29
+ ld 1 + Y: samples_covered ['Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y4', 'Y4', 'Y4', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y3', 'Y3', 'Y3', 'Y3', 'Y4', 'Y4', 'Y4', 'Y3', 'Y4', 'X4', 'X4'] 
+           count 28 alpha 0.1 range 5 mean 0.19 std 0.112 n_samples 29
+ ld 2 + X: samples_covered ['Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y1', 'Y1', 'Y2', 'Y2', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'X5'] 
+           count 1 alpha 0.1 range 5 mean 0.282 std 0.0 n_samples 29
+ ld 2 + Y: samples_covered ['Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y1', 'Y1', 'Y2', 'Y2', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'X5'] 
+           count 29 alpha 0.1 range 5 mean 0.15 std 0.076 n_samples 29
+ ld 3 + X: samples_covered ['X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'Y7', 'Y6', 'X6', 'X6', 'Y6', 'Y6', 'Y5', 'Y5', 'Y4', 'Y4', 'Y3', 'Y3', 'Y2', 'Y2', 'Y2', 'X2', 'X2', 'Y2', 'Y2', 'Y2', 'Y1', 'X1', 'X1', 'X1'] 
+           count 13 alpha 0.1 range 5 mean 0.22 std 0.073 n_samples 29
+ ld 3 + Y: samples_covered ['X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'Y7', 'Y6', 'X6', 'X6', 'Y6', 'Y6', 'Y5', 'Y5', 'Y4', 'Y4', 'Y3', 'Y3', 'Y2', 'Y2', 'Y2', 'X2', 'X2', 'Y2', 'Y2', 'Y2', 'Y1', 'X1', 'X1', 'X1'] 
+           count 17 alpha 0.1 range 5 mean 0.183 std 0.083 n_samples 29
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
+ ld 0 + X: samples_covered ['Y1', 'Y1', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y1', 'Y2', 'Y2', 'Y5', 'Y4', 'Y5', 'Y5', 'Y5', 'Y5', 'Y7', 'Y7', 'Y7', 'Y7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X7'] 
+           count 8 alpha 1 range 5 mean 0.226 std 0.028 n_samples 29
+ ld 0 + Y: samples_covered ['Y1', 'Y1', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y1', 'Y2', 'Y2', 'Y5', 'Y4', 'Y5', 'Y5', 'Y5', 'Y5', 'Y7', 'Y7', 'Y7', 'Y7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X7'] 
+           count 22 alpha 1 range 5 mean 0.14 std 0.028 n_samples 29
+ ld 1 + X: samples_covered ['Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y4', 'Y4', 'Y4', 'Y5', 'Y5', 'Y4', 'Y3', 'Y5', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'X4', 'X4', 'X4', 'X4', 'X4', 'X4'] 
+           count 6 alpha 1 range 5 mean 0.234 std 0.025 n_samples 29
+ ld 1 + Y: samples_covered ['Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y4', 'Y4', 'Y4', 'Y5', 'Y5', 'Y4', 'Y3', 'Y5', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'X4', 'X4', 'X4', 'X4', 'X4', 'X4'] 
+           count 24 alpha 1 range 5 mean 0.133 std 0.043 n_samples 29
+ ld 2 + X: samples_covered ['Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y6', 'Y1', 'Y2', 'Y2', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5'] 
+           count 0 alpha 1 range 5 mean nan std nan n_samples 29
+ ld 2 + Y: samples_covered ['Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y6', 'Y1', 'Y2', 'Y2', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5'] 
+           count 30 alpha 1 range 5 mean 0.162 std 0.057 n_samples 29
+ ld 3 + X: samples_covered ['X7', 'X7', 'X7', 'X7', 'X7', 'Y7', 'Y7', 'Y6', 'X6', 'X6', 'X6', 'Y6', 'Y5', 'Y5', 'Y4', 'Y4', 'X3', 'Y3', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y1', 'Y1', 'Y1', 'Y1', 'Y1', 'Y1'] 
+           count 9 alpha 1 range 5 mean 0.19 std 0.054 n_samples 29
+ ld 3 + Y: samples_covered ['X7', 'X7', 'X7', 'X7', 'X7', 'Y7', 'Y7', 'Y6', 'X6', 'X6', 'X6', 'Y6', 'Y5', 'Y5', 'Y4', 'Y4', 'X3', 'Y3', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y2', 'Y1', 'Y1', 'Y1', 'Y1', 'Y1', 'Y1'] 
+           count 21 alpha 1 range 5 mean 0.172 std 0.05 n_samples 29
+Models VAE_CausalDsprite_ber_shape2_scale5_ld4, CausalClassifier
+ ld 0 + X: samples_covered ['Y1', 'X1', 'Y1', 'Y1', 'Y1', 'X2', 'X1', 'X1', 'Y1', 'X1', 'Y2', 'Y4', 'Y3', 'Y4', 'X4', 'X4', 'X5', 'X5', 'Y6', 'Y7', 'Y6', 'Y6', 'Y6', 'X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X7'] 
+           count 16 alpha 10 range 5 mean 0.166 std 0.037 n_samples 29
+ ld 0 + Y: samples_covered ['Y1', 'X1', 'Y1', 'Y1', 'Y1', 'X2', 'X1', 'X1', 'Y1', 'X1', 'Y2', 'Y4', 'Y3', 'Y4', 'X4', 'X4', 'X5', 'X5', 'Y6', 'Y7', 'Y6', 'Y6', 'Y6', 'X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X7'] 
+           count 14 alpha 10 range 5 mean 0.147 std 0.027 n_samples 29
+ ld 1 + X: samples_covered ['Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y2', 'Y2', 'X2', 'Y2', 'Y2', 'Y4', 'Y4', 'Y3', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4'] 
+           count 1 alpha 10 range 5 mean 0.115 std 0.0 n_samples 29
+ ld 1 + Y: samples_covered ['Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y2', 'Y2', 'X2', 'Y2', 'Y2', 'Y4', 'Y4', 'Y3', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4', 'Y4'] 
+           count 29 alpha 10 range 5 mean 0.143 std 0.039 n_samples 29
+ ld 2 + X: samples_covered ['Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'X0', 'X0', 'X0', 'Y0', 'X1', 'Y1', 'X4', 'X5', 'X5', 'X5', 'X5', 'X5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5'] 
+           count 10 alpha 10 range 5 mean 0.119 std 0.008 n_samples 29
+ ld 2 + Y: samples_covered ['Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'Y0', 'X0', 'X0', 'X0', 'Y0', 'X1', 'Y1', 'X4', 'X5', 'X5', 'X5', 'X5', 'X5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5', 'Y5'] 
+           count 20 alpha 10 range 5 mean 0.157 std 0.028 n_samples 29
+ ld 3 + X: samples_covered ['X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X6', 'X6', 'X6', 'X6', 'X6', 'X5', 'X5', 'X4', 'X4', 'X3', 'X3', 'X2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X2', 'Y2', 'Y2', 'Y1', 'Y1', 'Y1'] 
+           count 25 alpha 10 range 5 mean 0.131 std 0.036 n_samples 29
+ ld 3 + Y: samples_covered ['X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X7', 'X6', 'X6', 'X6', 'X6', 'X6', 'X5', 'X5', 'X4', 'X4', 'X3', 'X3', 'X2', 'X2', 'X2', 'X2', 'X2', 'X2', 'X2', 'Y2', 'Y2', 'Y1', 'Y1', 'Y1'] 
+           count 5 alpha 10 range 5 mean 0.201 std 0.012 n_samples 29
