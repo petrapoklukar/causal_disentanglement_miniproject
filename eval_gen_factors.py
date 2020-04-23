@@ -21,6 +21,7 @@ from lib.eval.regression import *
 from sklearn.linear_model import Lasso
 from sklearn.ensemble.forest import RandomForestRegressor
 from matplotlib.transforms import offset_copy
+from lib.eval.regression import normalize
 #from pygraphviz import *
 
 
@@ -82,10 +83,12 @@ def fit_visualise_quantify(regressor, params, err_fn, importances_attr,z_encodes
     m_complete_scores = [] * n_models
     
     # arrays to store errors (+1 for avg)
-    n_z_max=10
-    train_errs = np.zeros((n_models, n_z_max + 1))
+    n_g=gt_labels_train.shape[1]
+    print("----")
+    print(n_g)
+    train_errs = np.zeros((n_models, n_g + 1))
     #dev_errs   = np.zeros((n_models, n_z + 1))
-    test_errs  = np.zeros((n_models, n_z_max + 1)) 
+    test_errs  = np.zeros((n_models, n_g + 1)) 
     #zshot_errs = np.zeros((n_models, n_z + 1))
     
     # init plot (Hinton diag)
@@ -95,11 +98,12 @@ def fit_visualise_quantify(regressor, params, err_fn, importances_attr,z_encodes
     
     
     for i in range(n_models):
+
         # init inputs
         #X_train, X_dev, X_test, X_zshot = m_codes[i][0], m_codes[i][1], m_codes[i][2], m_codes[i][3]
-        X_test=gt_labels_test#z_encodes_test[i]
-        X_train=gt_labels_train#z_encodes_train[i]
-        n_c=np.array(X_test).shape[1]
+        X_test=z_encodes_test[i]
+        X_train=z_encodes_train[i]
+        
         
 
 
@@ -108,17 +112,19 @@ def fit_visualise_quantify(regressor, params, err_fn, importances_attr,z_encodes
         R = [] 
 
         latentens_train=np.array(z_encodes_train[i])
-        n_z=latentens_train.shape[1]
+        #n#_c=latentens_train.shape[1]
         latentens_test=np.array(z_encodes_test[i])
         
-        for j in range(n_z):
+        for j in range(n_g):
+            print(j)
             # init targets [shape=(n_samples, 1)]
             #y_train = gts[0][:, j]
             #y_dev   = gts[1][:, j]
             #y_test  = gts[2][:, j] if test_time else None
             #y_zshot = gts[3][:, j] if zshot else None
-            y_train=latentens_train[:, j]
-            y_test = latentens_test[:, j]
+            print(gt_labels_train.shape)
+            y_train=gt_labels_train[:, j]
+            y_test = gt_labels_test[:, j]
             # fit model
             model = regressor(**params[i][j])
             model.fit(X_train, y_train)
@@ -161,13 +167,13 @@ def fit_visualise_quantify(regressor, params, err_fn, importances_attr,z_encodes
         #zshot_errs[i, -1] = np.mean(zshot_errs[i, :-1]) if zshot else None
 
         # visualise
-        hinton(R, '$\mathbf{z}$', '$\mathbf{c}$', ax=axs[i], fontsize=18)
+        hinton(R, '$\mathbf{g}$', '$\mathbf{z}$', ax=axs[i], fontsize=18)
         axs[i].set_title('{0}'.format(model_names[i]), fontsize=20)
     
     plt.rc('text', usetex=True)
     if save_plot:
         fig.tight_layout()
-        plt.savefig("hint_{0}_{1}.png".format(regressor.__name__, n_c))
+        plt.savefig("hint_{0}_{1}.png".format(regressor.__name__, n_g))
         print("saved")
     else:
         plt.show()
@@ -240,32 +246,12 @@ def random_forest(z_encodes_train,z_encodes_test,gt_labels_train,gt_labels_test,
 
 def main():
 
-    causal = False
+    causal = True
 
-    if causal:
-        # the custem girls dataset
-        config_files=["VAE_CausalDsprite_shape2_scale5_ld2","VAE_CausalDsprite_shape2_scale5_ld3","VAE_CausalDsprite_shape2_scale5_ld4","VAE_CausalDsprite_shape2_scale5_ld6","VAE_CausalDsprite_shape2_scale5_ld10"]
-        model_names=["C_ds_ld2","C_ds_ld3","C_ds_ld4","C_ds_ld6","C_ds_ld10",]
-        #checkpoint_files=["vae_checkpoint"+ str(i) + ".pth" for i in range(50)]  
-        checkpoint_files=["vae_checkpoint49.pth"]
+    if causal:      
 
-
-        dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
-
-        print('Keys in the dataset:', dataset_zip.keys())
-        imgs = dataset_zip['imgs']
-
-        #get the idxs
-        data_sets=[]
-        data_sets_true=[]
-        d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=10000,seed=12345,constant_factor=[0,0],causal=causal,color=0,shape=2,scale=5)
-        X_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
-    
-    if not causal:
-        # the custem girls dataset
-        config_files=["VAE_NonCausalDsprite_ber_shape2_scale5_ld2","VAE_NonCausalDsprite_ber_shape2_scale5_ld3","VAE_NonCausalDsprite_ber_shape2_scale5_ld4"
-        ,"VAE_NonCausalDsprite_ber_shape2_scale5_ld6","VAE_NonCausalDsprite_ber_shape2_scale5_ld10"]
-        model_names=["NC_ds_ld2","NC_ds_ld3","NC_ds_ld4","NC_ds_ld6","NC_ds_ld10",]
+        config_files=["VAE_CausalDsprite_ber_shape2_scale5_ld2","VAE_CausalDsprite_ber_shape2_scale5_ld3","VAE_CausalDsprite_ber_shape2_scale5_ld4","VAE_CausalDsprite_ber_shape2_scale5_ld6","VAE_CausalDsprite_ber_shape2_scale5_ld10"]
+        model_names=["C-ld-2","C-ld-3","C-ld-4","C-ld-6","C-ld-10"]
         #checkpoint_files=["vae_checkpoint"+ str(i) + ".pth" for i in range(50)]  
         checkpoint_files=["vae_checkpoint47.pth"]
 
@@ -278,15 +264,57 @@ def main():
         #get the idxs
         data_sets=[]
         data_sets_true=[]
-        d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=10000,seed=12345,constant_factor=[0,0,0],causal=causal,color=0,shape=2,scale=5)
+        d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=10000,seed=12345,constant_factor=[0,0],causal=causal,color=0,shape=2,scale=5)
         X_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+        print(len(X_data))
+        X_data_t=X_data[8500:]
+        X_data=X_data[:8500]        
+        X_true_data_t=X_true_data[8500:]
+        X_true_data=X_true_data[:8500]
+        
+    
+    if not causal:
+        # the custem girls dataset
+        config_files=["VAE_NonCausalDsprite_ber_shape2_scale5_ld2","VAE_NonCausalDsprite_ber_shape2_scale5_ld3","VAE_NonCausalDsprite_ber_shape2_scale5_ld4"
+        ,"VAE_NonCausalDsprite_ber_shape2_scale5_ld6","VAE_NonCausalDsprite_ber_shape2_scale5_ld10"]
+        model_names=["NC_ds_ld2","NC_ds_ld3","NC_ds_ld4","NC_ds_ld6","NC_ds_ld10",]
+
+        config_files=["VAE_NonCausalDsprite_ber_shape2_scale5_ld2","VAE_NonCausalDsprite_ber_shape2_scale5_ld3","VAE_NonCausalDsprite_ber_shape2_scale5_ld4"
+        ,"VAE_NonCausalDsprite_ber_shape2_scale5_ld6","VAE_NonCausalDsprite_ber_shape2_scale5_ld10"]
+        model_names=["NC-ld-2","NC-ld-3","NC-ld-4","NC-ld-6","NC-ld-10"]
+
+        
+
+        #checkpoint_files=["vae_checkpoint"+ str(i) + ".pth" for i in range(50)]  
+        checkpoint_files=["vae_checkpoint47.pth"]
+
+
+        dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
+
+        print('Keys in the dataset:', dataset_zip.keys())
+        imgs = dataset_zip['imgs']
+
+        #get the idxs
+        data_sets=[]
+        data_sets_true=[]
+        d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=20000,seed=12345,constant_factor=[0,0,0],causal=causal,color=0,shape=2,scale=5)
+        d_sprite_idx_t,X_true_data_t,_=caus_utils.calc_dsprite_idxs(num_samples=1500,seed=54321,constant_factor=[0,0,0],causal=causal,color=0,shape=2,scale=5)
+
+        X_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+        X_data_t=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx_t,img_size=256)
     
 
     #split in train and test
-    X_data_train=np.array(X_data[0:8000])
-    X_data_test=np.array(X_data[8000:])
-    X_true_data_train=np.array(X_true_data[0:8000])
-    X_true_data_test=np.array(X_true_data[8000:])
+    X_data_train=np.array(X_data)
+    X_data_test=np.array(X_data_t)
+    X_true_data_train,_,_,_=normalize(np.array(X_true_data),remove_constant=False)
+    X_true_data_test,_,_,_=normalize(np.array(X_true_data_t),remove_constant=False)
+    #swap to see
+
+    #X_data_train[:,[0, 2]] = X_data_train[:,[2, 0]]
+    #X_data_test[:,[0, 2]] = X_data_test[:,[2, 0]]
+    #X_true_data_train[:,[0, 1]] = X_true_data_train[:,[1, 0]]
+    #X_true_data_test[:,[0, 1]] = X_true_data_test[:,[1, 0]]
 
 
 
@@ -298,9 +326,18 @@ def main():
             print(config_file)
             print(checkpoint_file)
             zs_train= obtain_representation(X_data_train,config_file,checkpoint_file)
+            #plt.hist(zs_train, bins='auto')
+            #plt.show()
+            print(config_file)
+            print("mean: " + str(np.mean(zs_train, axis=0)))
+            print("std: " + str(np.std(zs_train, axis=0)))
+            print("min: " + str(np.min(zs_train, axis=0)))
+            print("max: " + str(np.max(zs_train, axis=0)))
             zs_test= obtain_representation(X_data_test,config_file,checkpoint_file)
-            zs_train_all.append(zs_train)
-            zs_test_all.append(zs_test)
+            zs_train_n,_,_,_=normalize(zs_train,remove_constant=False)
+            zs_test_n,_,_,_=normalize(zs_test,remove_constant=False)
+            zs_train_all.append(zs_train_n)
+            zs_test_all.append(zs_test_n)
     
     
     lasso(z_encodes_train=zs_train_all,z_encodes_test=zs_test_all,gt_labels_train=X_true_data_train,gt_labels_test=X_true_data_test,model_names=model_names)
