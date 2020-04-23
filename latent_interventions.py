@@ -21,11 +21,16 @@ import itertools
 import csv
 import collections
 
-def init_vae(opt):
+def init_vae(opt, load_c=False):
     """Initialises the VAE model."""
     try:
+        if load_c:
+            checkpoint = torch.load(opt['exp_dir'] + '/vae_checkpoint47.pth', map_location=opt['device'])
+            trained_dict = checkpoint['model_state_dict']
+        else:
+            print('CAUSALLLLLLLLLLAHFIUEGFUASDGFJAHSDGF(/FHkjsf')
+            trained_dict = torch.load(opt['exp_dir'] + '/vae_model.pt', map_location=opt['device'])
         instance = vae_m(opt).to(opt['device'])
-        trained_dict = torch.load(opt['exp_dir'] + '/vae_model.pt', map_location=opt['device'])
         instance.load_state_dict(trained_dict)
         return instance
     except:
@@ -55,7 +60,26 @@ def get_config(exp_name, key='vae_opt'):
     model_config[key]['device'] = device
     return model_config
 
+
             
+def sample_prior(ld, n_samples, vae, classifier, device='cpu', 
+                        random_seed=1234, fixed_value=torch.empty(1).normal_()):
+    torch.manual_seed(random_seed)
+    np.random.seed(random_seed)
+        
+    random_noise = torch.empty((n_samples, ld)).normal_()
+
+        
+    with torch.no_grad():
+        decoded = vae.decoder(random_noise)[0].detach()
+        classes = classifier(decoded).detach()
+        out = torch.nn.Softmax(dim=1)(classes)
+        out_argmax = torch.max(out, dim=1)
+        
+
+    return decoded, out_argmax[1]
+
+           
 def sample_latent_codes(ld, n_samples, vae, classifier, device='cpu', 
                         random_seed=1234, fixed_value=torch.empty(1).normal_()):
     torch.manual_seed(random_seed)
@@ -66,7 +90,7 @@ def sample_latent_codes(ld, n_samples, vae, classifier, device='cpu',
         # fixed_value = torch.empty(1).normal_()
         fixed_dim = fixed_value.expand((1, n_samples))
         
-        random_noise = torch.empty((n_samples, ld)).normal_() 
+        random_noise = torch.empty((n_samples, ld)).uniform_(-3, 3) 
         random_noise[:, dim] = fixed_dim
         
         with torch.no_grad():
@@ -80,10 +104,10 @@ def sample_latent_codes(ld, n_samples, vae, classifier, device='cpu',
     return latent_codes_dict
 
 
-def load_models(exp_vae, exp_classifier):
+def load_models(exp_vae, exp_classifier, load_c=False):
     vae_config = get_config(exp_vae)
     classifier_config = get_config(exp_classifier, key='model_opt')
-    vae = init_vae(vae_config['vae_opt'])
+    vae = init_vae(vae_config['vae_opt'], load_c=load_c)
     classifier = init_classifier(classifier_config['model_opt'])
     return vae, classifier
 
@@ -96,16 +120,16 @@ def generate_data_4_vae(n_samples, causal, constant_factor, pos_bins, classifier
     dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
     imgs = dataset_zip['imgs']
     
-    if causal:
-        assert((pos_bins[5][-3] == 31 and constant_factor == [1, 0] and causal) or 
-               (pos_bins[5][1] == 31 and constant_factor == [0, 1] and causal))
-    else:
-        assert((pos_bins[5][-1] == 39 and pos_bins[5][-3] == 31 and not causal and 
-                constant_factor == [1, 0, 0]) or 
-               (pos_bins[5][-1] == 39 and pos_bins[5][1] == 31 and not causal and 
-                constant_factor == [0, 1, 0]) or
-               (pos_bins[5][1] == 31 and pos_bins[5][3] == 31 and not causal and 
-                constant_factor == [0, 0, 1]))
+    # if causal:
+    #     assert((pos_bins[5][-3] == 31 and constant_factor == [1, 0] and causal) or 
+    #            (pos_bins[5][1] == 31 and constant_factor == [0, 1] and causal))
+    # else:
+    #     assert((pos_bins[5][-1] == 39 and pos_bins[5][-3] == 31 and not causal and 
+    #             constant_factor == [1, 0, 0]) or 
+    #            (pos_bins[5][-1] == 39 and pos_bins[5][1] == 31 and not causal and 
+    #             constant_factor == [0, 1, 0]) or
+    #            (pos_bins[5][1] == 31 and pos_bins[5][3] == 31 and not causal and 
+    #             constant_factor == [0, 0, 1]))
 
     final_dict = {}
     for i in range(len(pos_bins)):
@@ -219,8 +243,7 @@ def compute_argmin_mmd_archived(latent_dict, posX_gt_dict, posY_gt_dict, posT_gt
 
 def compute_argmin_mmd(latent_dict, posX_gt_dict, posY_gt_dict, posT_gt_dict, 
                        result_dict, alpha):
-    scores_dict = {}
-    exact_dict = {}
+
     for latent_dim in latent_dict.keys():
         samples_latent = latent_dict[latent_dim].unsqueeze(1).float()
         X_min = []
@@ -291,13 +314,13 @@ def log_mmd_score(ld, causal, alpha_list, n_samples, var_range):
     prefix = 'Non' if not causal else ''
     exp_vae = 'VAE_{0}CausalDsprite_ber_shape2_scale5_ld{1}'.format(prefix, str(ld))
     exp_classifier = prefix + 'CausalClassifier'
-    vae, classifier = load_models(exp_vae, exp_classifier)
+    vae, classifier = load_models(exp_vae, exp_classifier, load_c=True)
     print(' *- Loaded models:',  exp_vae, exp_classifier)
     
     # Generate the bin boundaries that correspond to each class.
     # Here step 4 equals the number of values in each bin when generatng data.
-    posX_bins = [(i, i+3, 0, 31, 0, 39) for i in range(0,31,4)]
-    posY_bins = [(0, 31, i, i+3, 0, 39) for i in range(0,31,4)]
+    posX_bins = [(0, 31, 0, 31, 0, 39)]#[(i, i+3, 0, 31, 0, 39) for i in range(0,31,4)]
+    posY_bins = [(0, 31, 0, 31, 0, 39)] #[(0, 31, i, i+3, 0, 39) for i in range(0,31,4)]
     factor_list = ['X', 'Y']
     
     if causal:
@@ -362,7 +385,7 @@ def log_mmd_score(ld, causal, alpha_list, n_samples, var_range):
 
     # Order the result dictionary
     results = collections.OrderedDict(sorted(result_dict.items()))
-    filename = 'corr_experiment/{0}C{1}r{2}s{3}_{4}_mmds.csv'.format(
+    filename = 'corr_experiment/{0}C{1}r{2}s{3}U_{4}_mmds.csv'.format(
         prefix, ld, var_range, n_samples, exp_vae)
     header = ['latent_dim + gt_factor', 'unique_classes', 'ratio', 'alpha',
               'mmds_mean', 'std_mmds', 'latent_dim_range', 'count', 'n_samples']
@@ -386,7 +409,13 @@ def log_mmd_score(ld, causal, alpha_list, n_samples, var_range):
                     mmd_std, var_range, count, n_samples])
             ratio_summary[fac] = round(np.mean(ratio_summary[fac]), 3)
         
+        writer.writerow([])
+        writer.writerow(['Per dimension per factor winner'])
+        for k, v in ratio_summary.items():
+            writer.writerow([k, v])
         
+        writer.writerow([])
+        writer.writerow(['Per dimension winner'])
         for dim in range(ld):
             writer.writerow(list(max(get_res_key(dim, ratio_summary), key=lambda x:x[1])))
         
@@ -395,9 +424,9 @@ def log_mmd_score(ld, causal, alpha_list, n_samples, var_range):
 alpha_list = [0.05, 0.1, 0.5, 1]
 var_range = 3
 n_samples = 49
-causal = True
-for ld in [2, 3, 4, 6, 10]:
-    log_mmd_score(ld, causal, alpha_list, n_samples, var_range)
+causal = False
+# for ld in [4]:
+#     log_mmd_score(ld, causal, alpha_list, n_samples, var_range)
 
 
 
@@ -469,4 +498,17 @@ def plot_distributions(exp_vae, fixed_codes_dict, posX_gt_dict, posY_gt_dict):
         plt.subplots_adjust(hspace=0.5)
         plt.show()
     
-    
+
+i = 68
+d = vae(test_data[i].unsqueeze(0))[0].detach().numpy().squeeze()
+plt.figure(1)
+plt.imshow(test_data[i].squeeze())
+plt.show()
+plt.figure(2)
+plt.imshow(d)
+plt.show()
+decoded, classes = sample_prior(ld, 20, vae, classifier)
+for i in range(3, 15):
+    plt.figure(i)
+    plt.imshow(decoded[i].squeeze().detach())
+    plt.show()
