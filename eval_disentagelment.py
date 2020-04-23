@@ -175,7 +175,7 @@ def compute_disentanglement(zs, ys, L=1000, M=20000):
     return torch.max(V, dim=1)[0].sum() / M
 
 
-def d_sprite_data_example():
+def d_sprite_causal_data_all():
     dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
 
     print('Keys in the dataset:', dataset_zip.keys())
@@ -185,13 +185,33 @@ def d_sprite_data_example():
     data_sets=[]
     data_sets_true=[]
     d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=100,seed=12345,constant_factor=[0,0],causal=True,color=0,shape=2,scale=5)
+    
+
+    latents_bases=[ 737280, 245760,  40960,   1024,     32,      1]
+    latents_all=[]
+    for i in range(32):
+        for j in range(32):
+
+            posX= i
+            posY= j
+            orientations= int(((float(posX)*float(posY))/(31.*31.))*39.)
+            latents=[0,2,5,orientations,posX,posY]
+            latents_all.append(latents)        
+
+    
+    d_sprite_idx=np.dot(np.array(latents_all), latents_bases).astype(int)
+
     D_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
-    print(D_data[0].shape)
-    grid=10
+    print("----")
+    print(d_sprite_idx.shape)
+    print(len(latents_all))
+    print(len(D_data))
+    grid=32
     grid_v=[]
     for i in range(grid):
         grid_h=[]
         for j in range(grid):
+            #print(i*grid+j)
             t_img=D_data[i*grid+j]*255
             bordersize=4
             t_img = cv2.copyMakeBorder(
@@ -207,7 +227,44 @@ def d_sprite_data_example():
 
         grid_v.append(np.concatenate([grid_h[x] for x in range(len(grid_h))],axis=1))
     c_dsprite=np.concatenate([grid_v[x] for x in range(len(grid_v))],axis=0)
+    cv2.imwrite("cau_test.png",c_dsprite)
 
+
+def d_sprite_data_example():
+    dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
+
+    print('Keys in the dataset:', dataset_zip.keys())
+    imgs = dataset_zip['imgs']
+
+    #get the idxs
+    data_sets=[]
+    data_sets_true=[]
+    d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=100,seed=12345,constant_factor=[0,0],causal=True,color=0,shape=2,scale=5)
+    
+    D_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+   
+    grid=10
+    grid_v=[]
+    for i in range(grid):
+        grid_h=[]
+        for j in range(grid):
+            #print(i*grid+j)
+            t_img=D_data[i*grid+j]*255
+            bordersize=4
+            t_img = cv2.copyMakeBorder(
+            t_img,
+            top=bordersize,
+            bottom=bordersize,
+            left=bordersize,
+            right=bordersize,
+            borderType=cv2.BORDER_CONSTANT,
+            value=[100,100,100]
+)
+            grid_h.append(t_img)
+
+        grid_v.append(np.concatenate([grid_h[x] for x in range(len(grid_h))],axis=1))
+    c_dsprite=np.concatenate([grid_v[x] for x in range(len(grid_v))],axis=0)
+   
     d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=100,seed=12345,constant_factor=[0,0,0],causal=False,color=0,shape=2,scale=5)
     D_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
 
@@ -236,12 +293,12 @@ def d_sprite_data_example():
 
 
 
-def d_sprite_tests():
+def d_sprite_tests(causal):
 
-    config_files=["VAE_CausalDsprite_shape2_scale5_ld2","VAE_CausalDsprite_shape2_scale5_ld3","VAE_CausalDsprite_shape2_scale5_ld4"
-    ,"VAE_CausalDsprite_shape2_scale5_ld6","VAE_CausalDsprite_shape2_scale5_ld10"]
-
-    checkpoint_files=["vae_checkpoint"+ str(i) + ".pth" for i in range(50)]  
+        
+    checkpoint_files_t=["vae_checkpoint"+ str(i) + ".pth" for i in range(5,50,3)]
+    checkpoint_files=["vae_checkpoint0.pth","vae_checkpoint1.pth","vae_checkpoint2.pth","vae_checkpoint3.pth"]  
+    checkpoint_files.extend(checkpoint_files_t)
 
 
     dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
@@ -252,17 +309,50 @@ def d_sprite_tests():
     #get the idxs
     data_sets=[]
     data_sets_true=[]
-    d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=12345,constant_factor=[1,0],causal=True,color=0,shape=0,scale=0)
-    fix_X_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
-    
-    d_sprite_idx,Y_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=12345,constant_factor=[0,1],causal=True,color=0,shape=0,scale=0)
-    fix_Y_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
-   
 
-    data_sets.append(fix_X_data)
-    data_sets.append(fix_Y_data)
-    data_sets_true.append(X_true_data)
-    data_sets_true.append(Y_true_data)
+    if causal:
+
+        config_files=["VAE_CausalDsprite_ber_shape2_scale5_ld2","VAE_CausalDsprite_ber_shape2_scale5_ld3","VAE_CausalDsprite_ber_shape2_scale5_ld4","VAE_CausalDsprite_ber_shape2_scale5_ld6","VAE_CausalDsprite_ber_shape2_scale5_ld10"]
+        m_names=["C-ld-2","C-ld-3","C-ld-4","C-ld-6","C-ld-10"]
+
+
+        d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=54321,constant_factor=[1,0],causal=causal,color=0,shape=2,scale=5)
+        fix_X_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+        
+        d_sprite_idx,Y_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=54321,constant_factor=[0,1],causal=causal,color=0,shape=2,scale=5)
+        fix_Y_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+
+        data_sets.append(fix_X_data)
+        data_sets.append(fix_Y_data)
+
+        data_sets_true.append(X_true_data)
+        data_sets_true.append(Y_true_data)
+
+    
+    if not causal:
+
+        config_files=["VAE_NonCausalDsprite_ber_shape2_scale5_ld2","VAE_NonCausalDsprite_ber_shape2_scale5_ld3","VAE_NonCausalDsprite_ber_shape2_scale5_ld4"
+        ,"VAE_NonCausalDsprite_ber_shape2_scale5_ld6","VAE_NonCausalDsprite_ber_shape2_scale5_ld10"]
+        m_names=["NC-ld-2","NC-ld-3","NC-ld-4","NC-ld-6","NC-ld-10"]
+    
+
+        d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=54321,constant_factor=[1,0,0],causal=causal,color=0,shape=2,scale=5)
+        fix_X_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+        
+        d_sprite_idx,Y_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=54321,constant_factor=[0,1,0],causal=causal,color=0,shape=2,scale=5)
+        fix_Y_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+
+        d_sprite_idx,O_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=54321,constant_factor=[0,0,1],causal=causal,color=0,shape=2,scale=5)
+        fix_O_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+    
+        data_sets.append(fix_X_data)
+        data_sets.append(fix_Y_data)
+        data_sets.append(fix_O_data)
+
+        data_sets_true.append(X_true_data)
+        data_sets_true.append(Y_true_data)
+        data_sets_true.append(O_true_data)
+
 
     #do it
     for d in range(len(data_sets)):
@@ -289,81 +379,94 @@ def d_sprite_tests():
         plt.figure(d)
         x=np.arange(1,len(checkpoint_files)+1,1)
         for i in range(len(plot_conf_list)):
-            plt.plot(x,plot_conf_list[i],label=config_files[i])
+            plt.plot(x,plot_conf_list[i],label=m_names[i])
 
         plt.legend(loc="lower right")
         plt.ylabel('disentagelment metric')
         plt.xticks(x, checkpoint_files, size='small',rotation='vertical')
         plt.xlabel('model checkpoints')
         plt.ylim(0, 1.1)
-        plt.title("disentagelment evaluation")
-        plt.savefig(str(d) + "_disentagelment_dsprite.png",bbox_inches='tight')
+        if d==0 and not causal:
+            plt.title("Non-Causal data - X fixed")
+        if d==1 and not causal:
+            plt.title("Non-Causal data - Y fixed")
+        if d==2 and not causal:
+            plt.title("Non-Causal data - O fixed")
+        if d==0 and  causal:
+            plt.title("Causal data - X fixed")
+        if d==1 and  causal:
+            plt.title("Causal data - Y fixed")
+
+        if causal:
+            plt.savefig("causal_" + str(d) + "_disentagelment_dsprite.png",bbox_inches='tight')
+        if not causal:
+            plt.savefig("non-causal_" + str(d) + "_disentagelment_dsprite.png",bbox_inches='tight')
         #plt.show()
 
     print("DONZO!")
 
 
 
-def causal_girls_test():
-     #hyper:
-    config_files=["VAE_CausalData_ld2","VAE_CausalData_ld3","VAE_CausalData_ld4","VAE_CausalData_ld6","VAE_CausalData_ld10"]
+# def causal_girls_test():
+#      #hyper:
+#     config_files=["VAE_CausalData_ld2","VAE_CausalData_ld3","VAE_CausalData_ld4","VAE_CausalData_ld6","VAE_CausalData_ld10"]
    
-    checkpoint_files=["vae_checkpoint1.pth","vae_checkpoint3.pth","vae_checkpoint6.pth","vae_checkpoint9.pth","vae_checkpoint19.pth",
-                    "vae_checkpoint29.pth","vae_checkpoint39.pth","vae_checkpoint49.pth","vae_checkpoint59.pth","vae_checkpoint69.pth",
-                    "vae_checkpoint79.pth","vae_checkpoint89.pth","vae_checkpoint99.pth","vae_checkpoint109.pth","vae_checkpoint119.pth",
-                    "vae_checkpoint129.pth","vae_checkpoint139.pth","vae_checkpoint149.pth","vae_checkpoint159.pth","vae_checkpoint169.pth",
-                    "vae_checkpoint179.pth","vae_checkpoint189.pth","vae_checkpoint199.pth"]
+#     checkpoint_files=["vae_checkpoint1.pth","vae_checkpoint3.pth","vae_checkpoint6.pth","vae_checkpoint9.pth","vae_checkpoint19.pth",
+#                     "vae_checkpoint29.pth","vae_checkpoint39.pth","vae_checkpoint49.pth","vae_checkpoint59.pth","vae_checkpoint69.pth",
+#                     "vae_checkpoint79.pth","vae_checkpoint89.pth","vae_checkpoint99.pth","vae_checkpoint109.pth","vae_checkpoint119.pth",
+#                     "vae_checkpoint129.pth","vae_checkpoint139.pth","vae_checkpoint149.pth","vae_checkpoint159.pth","vae_checkpoint169.pth",
+#                     "vae_checkpoint179.pth","vae_checkpoint189.pth","vae_checkpoint199.pth"]
 
     
 
-    #gen dependend data:
-    print("producing data")
-    data_sets=[]
-    data_sets_true=[]
-    fix_X_data,X_true_data=caus_utils.make_dataset_c_girls(num_samples=1000,seed=12345,constant_factor=[1,0],causal=True,img_size=255,k=5,mu=0,sigma=10)
-    fix_Y_data,Y_true_data=caus_utils.make_dataset_c_girls(num_samples=1000,seed=12345,constant_factor=[0,1],causal=True,img_size=255,k=5,mu=0,sigma=10)
-    data_sets.append(fix_X_data)
-    data_sets.append(fix_Y_data)
-    data_sets_true.append(X_true_data)
-    data_sets_true.append(Y_true_data)
+#     #gen dependend data:
+#     print("producing data")
+#     data_sets=[]
+#     data_sets_true=[]
+#     fix_X_data,X_true_data=caus_utils.make_dataset_c_girls(num_samples=1000,seed=12345,constant_factor=[1,0],causal=causal,img_size=255,k=5,mu=0,sigma=10)
+#     fix_Y_data,Y_true_data=caus_utils.make_dataset_c_girls(num_samples=1000,seed=12345,constant_factor=[0,1],causal=causal,img_size=255,k=5,mu=0,sigma=10)
+#     data_sets.append(fix_X_data)
+#     data_sets.append(fix_Y_data)
+#     data_sets_true.append(X_true_data)
+#     data_sets_true.append(Y_true_data)
 
-    #do it
-    for d in range(len(data_sets)):
-        plot_conf_list=[]
-        for config_file in config_files:
-            plot_check_list=[]
-            for checkpoint_file in checkpoint_files:
-                print("obtaining representations (zs)")
-                zs= obtain_representation(data_sets[d]/255.,config_file,checkpoint_file)
+#     #do it
+#     for d in range(len(data_sets)):
+#         plot_conf_list=[]
+#         for config_file in config_files:
+#             plot_check_list=[]
+#             for checkpoint_file in checkpoint_files:
+#                 print("obtaining representations (zs)")
+#                 zs= obtain_representation(data_sets[d]/255.,config_file,checkpoint_file)
 
-                #compute disentagelment
-                print("calculatiung Kim and Mnih (2018) disentegelment")
-                zs_t=torch.tensor(zs)
-                true_data_t=torch.tensor(data_sets_true[d])
-                dis=compute_disentanglement(zs_t, true_data_t, L=1000, M=20000)
-                dis_np=dis.numpy()
+#                 #compute disentagelment
+#                 print("calculatiung Kim and Mnih (2018) disentegelment")
+#                 zs_t=torch.tensor(zs)
+#                 true_data_t=torch.tensor(data_sets_true[d])
+#                 dis=compute_disentanglement(zs_t, true_data_t, L=1000, M=20000)
+#                 dis_np=dis.numpy()
 
-                print(config_file + " , " + checkpoint_file + " , " + str(dis_np))
-                plot_check_list.append(dis_np)
-            plot_conf_list.append(plot_check_list)
+#                 print(config_file + " , " + checkpoint_file + " , " + str(dis_np))
+#                 plot_check_list.append(dis_np)
+#             plot_conf_list.append(plot_check_list)
 
-        #ploting results
-        print("****************** plotting **************************")
-        plt.figure(d)
-        x=np.arange(1,len(checkpoint_files)+1,1)
-        for i in range(len(plot_conf_list)):
-            plt.plot(x,plot_conf_list[i],label=config_files[i])
+#         #ploting results
+#         print("****************** plotting **************************")
+#         plt.figure(d)
+#         x=np.arange(1,len(checkpoint_files)+1,1)
+#         for i in range(len(plot_conf_list)):
+#             plt.plot(x,plot_conf_list[i],label=config_files[i])
 
-        plt.legend(loc="lower right")
-        plt.ylabel('disentagelment metric')
-        plt.xticks(x, checkpoint_files, size='small',rotation='vertical')
-        plt.xlabel('model checkpoints')
-        plt.ylim(0, 1.1)
-        plt.title("disentagelment evaluation")
-        plt.savefig(str(d) + "_disentagelment.png",bbox_inches='tight')
-        #plt.show()
+#         plt.legend(loc="lower right")
+#         plt.ylabel('disentagelment metric')
+#         plt.xticks(x, checkpoint_files, size='small',rotation='vertical')
+#         plt.xlabel('model checkpoints')
+#         plt.ylim(0, 1.1)
+#         plt.title("disentagelment evaluation")
+#         plt.savefig(str(d) + "_disentagelment.png",bbox_inches='tight')
+#         #plt.show()
 
-    print("DONZO!")
+#     print("DONZO!")
 
 
 
@@ -374,13 +477,12 @@ def main():
     #causal_girls_test()
 
     #the desprite case
-    # d_sprite_tests()
+    causal=False
+    d_sprite_tests(causal)
 
     #make some example images
+
     # d_sprite_data_example()
-    pass
-
-
    
 
 
