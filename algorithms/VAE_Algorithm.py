@@ -42,7 +42,7 @@ class VAE_Algorithm():
         self.model = None
         self.vae_optimiser = None
         self.input_dim= opt['input_dim']
-        self.compute_loss = self.compute_gaussian_loss if \
+        self.compute_loss_fn = self.compute_gaussian_loss if \
             opt['decoder_param'] == 'gaussian' else self.compute_bernoulli_loss
         print(' *- Loss function set to ', self.compute_loss)
 
@@ -229,8 +229,13 @@ class VAE_Algorithm():
         likelihood is Bernoulli.
         """
         criterion = torch.nn.BCELoss()
-        batch_rec = criterion(dec_mu.view(-1, self.input_dim), 
-                              x.view(-1, self.input_dim)) * float(self.input_dim)
+        try:
+            batch_rec = criterion(dec_mu.view(-1, self.input_dim), 
+                                  x.view(-1, self.input_dim)) * float(self.input_dim)
+        except Exception as e: 
+            print(e)
+            print('\nInput x: ', x.shape, torch.min(x), torch.max(x),
+                  '\nDec_mu; ', dec_mu.shape, torch.min(dec_mu), torch.max(dec_mu))
         
         # KL loss
         kl_loss = -0.5 * torch.sum(
@@ -265,7 +270,7 @@ class VAE_Algorithm():
             
             # VAE loss on img1
             dec_mean, dec_logvar, enc_mean, enc_logvar = self.model(img)
-            the_loss, rec_loss, kl_loss = self.compute_loss(
+            the_loss, rec_loss, kl_loss = self.compute_loss_fn(
                     img, dec_mean, dec_logvar, enc_mean, enc_logvar)
 
             losses += self.format_loss([the_loss, rec_loss, kl_loss])
@@ -403,7 +408,7 @@ class VAE_Algorithm():
                 
                 # VAE loss on img
                 dec_mean, dec_logvar, enc_mean, enc_logvar = self.model(img)
-                the_loss, rec_loss, kl_loss = self.compute_loss(
+                the_loss, rec_loss, kl_loss = self.compute_loss_fn(
                         img, dec_mean, dec_logvar, enc_mean, enc_logvar)
 
                 # Optimise the VAE for the complete loss
@@ -432,7 +437,7 @@ class VAE_Algorithm():
             # Update the checkpoint only if no early stopping was done
             self.save_checkpoint(epoch_loss[0])
             
-            if self.current_epoch in (1, 3, 6):
+            if self.current_epoch in (0, 1, 2, 3):
                  self.save_checkpoint(epoch_loss[0], keep=True)
 
             # Print current loss values every epoch

@@ -13,16 +13,16 @@ config = {}
 # set the parameters related to the training and testing set
 data_train_opt = {}
 data_train_opt['batch_size'] = batch_size
-data_train_opt['dataset_name'] = 'causal_dsprite_shape2_scale5_imgs_for_classifier'
+data_train_opt['dataset_name'] = 'noncausal_dsprite_shape2_scale5_imgs_for_classifier'
 data_train_opt['split'] = 'train'
-data_train_opt['subset_classes'] = [ 4,  5, 46, 39, 18, 26, 37, 20, 29, 38]
+data_train_opt['subset_classes'] = []
 data_train_opt['img_size'] = 256
 
 data_test_opt = {}
 data_test_opt['batch_size'] = batch_size
-data_test_opt['dataset_name'] = 'causal_dsprite_shape2_scale5_imgs_for_classifier'
+data_test_opt['dataset_name'] = 'noncausal_dsprite_shape2_scale5_imgs_for_classifier'
 data_test_opt['split'] = 'test'
-data_test_opt['subset_classes'] = [ 4,  5, 46, 39, 18, 26, 37, 20, 29, 38]
+data_test_opt['subset_classes'] = []
 data_test_opt['img_size'] = 256
 
 config['data_train_opt'] = data_train_opt
@@ -37,14 +37,14 @@ model_opt = {
     'input_channels': 1,
     'weight_init': 'normal_init',
     'image_size': 256,
-    'n_classes': 64,
+    'n_classes': 8*8*4,
     
     'batch_size': batch_size,
-    'snapshot': 50,
+    'snapshot': 10,
     'console_print': 1,
     
-    'epochs': 200,
-    'lr_schedule': [(0, 1e-03), (50, 1e-04), (150, 1e-05)],
+    'epochs': 50,
+    'lr_schedule': [(0, 1e-03)],
     'optim_type': 'Adam',
     'random_seed': 1201
 }
