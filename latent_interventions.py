@@ -18,6 +18,8 @@ matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
 import causal_utils as caus_utils
 import itertools
+import csv
+import collections
 
 def init_vae(opt):
     """Initialises the VAE model."""
@@ -263,7 +265,7 @@ def compute_argmin_mmd(latent_dict, posX_gt_dict, posY_gt_dict, posT_gt_dict,
     return result_dict
 
 
-def log_mmd_score(ld, exp_file, causal, alpha_list):
+def log_mmd_score(ld, causal, alpha_list, n_samples, var_range):
     """
     Computes MMD between the samples generated from a trained VAE where we 
     intervened on one dimension and ground truth samples where we kept one 
@@ -330,13 +332,7 @@ def log_mmd_score(ld, exp_file, causal, alpha_list):
     ldim_factor_list = list(map(lambda t: t[0] + '+' + t[1], ldim_factor_cartesian))
     result_dict = {key: {alpha: {'MMD_score': [], 'unique_samples': []} \
                          for alpha in alpha_list} for key in ldim_factor_list}
-    
-    
-    # class_rage_dict = {str(k): [] for k in range(ld)}
-    # TODO: as parameter
-    n_samples = 29
-    var_range = 20
-    
+        
     # Generate equidistant points on one dimension in the latent space. This 
     # corresponds to (n_samples) + 1 interventions.
     equidistant_points = (np.arange(n_samples + 1) / n_samples) \
@@ -355,38 +351,53 @@ def log_mmd_score(ld, exp_file, causal, alpha_list):
         
         # Compute MMD score for each alpha
         for alpha in alpha_list:      
+            print(' *- Noise index {0}/{1}, alpha {2}'.format(value, len(equal_noise), alpha))
             result_dict = compute_argmin_mmd(
                 fixed_codes_dict, posX_gt_dict, posY_gt_dict, posT_gt_dict, 
                 result_dict, alpha=alpha)
             
+    def get_res_key(latent_dim, d):
+        factor_keys = list(map(lambda f: str(latent_dim)+'+'+f, factor_list))
+        return [(f, d[f]) for f in factor_keys]
 
-                
-    factor_names = ['X', 'Y'] if causal else ['X', 'Y', 'Z']
-    with open(exp_file, 'a+') as f:
-        f.writelines('Models {0}, {1}\n'.format(exp_vae, exp_classifier))
-        for ldim in  mm_res_dict.keys():
-            for factor in factor_names:
-                ldim_len = len(mm_res_dict[ldim][factor])
-                ldim_mean = round(np.mean(mm_res_dict[ldim][factor]), 3)
-                ldim_std = round(np.std(mm_res_dict[ldim][factor]), 3)
-    
-                f.writelines(' ld {0} + {1}: samples_covered {2} \n'.format(
-                    ldim, factor, class_rage_dict[ldim]))
-                f.writelines('           count {0} alpha {1} range {2} mean {3} std {4} n_samples {5}\n'.format(
-                    ldim_len, alpha, var_range, ldim_mean, ldim_std, n_samples))
-                
+    # Order the result dictionary
+    results = collections.OrderedDict(sorted(result_dict.items()))
+    filename = 'corr_experiment/{0}C{1}r{2}s{3}_{4}_mmds.csv'.format(
+        prefix, ld, var_range, n_samples, exp_vae)
+    header = ['latent_dim + gt_factor', 'unique_classes', 'ratio', 'alpha',
+              'mmds_mean', 'std_mmds', 'latent_dim_range', 'count', 'n_samples']
+    with open(filename, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',')
+        writer.writerow([exp_vae])
+        writer.writerow(header)
+        # Compute the average MMD ratio across all alphas
+        ratio_summary = {fac: [] for fac in results.keys()}
+        for fac, alpha_dict in results.items():            
+            for alpha, mmd_dict in alpha_dict.items(): 
+                count = len(mmd_dict['unique_samples'])
+                ratio = round(count/(n_samples +1), 3)
+                assert(count == len(mmd_dict['MMD_score']))
+                unique_classes = sorted(list(set(mmd_dict['unique_samples'])))
+                mmd_mean = round(np.mean(mmd_dict['MMD_score']), 3)
+                mmd_std = round(np.std(mmd_dict['MMD_score']), 3)
+                ratio_summary[fac].append(ratio)
+                writer.writerow([
+                    fac, unique_classes, ratio, alpha, mmd_mean, 
+                    mmd_std, var_range, count, n_samples])
+            ratio_summary[fac] = round(np.mean(ratio_summary[fac]), 3)
         
-
-exp_file = 'corr_experiment/mmd_scores.txt'
-# for ld in [4]:
-#     for alpha in [0.005, 0.01, 0.1, 1, 10]:
-#         print('\n\n\n New alpha ' + str(alpha))
-#         log_mmd_score(ld, exp_file, causal=True, alpha=alpha)
-
-
+        
+        for dim in range(ld):
+            writer.writerow(list(max(get_res_key(dim, ratio_summary), key=lambda x:x[1])))
+        
+                
     
-# compute_mmds(fixed_codes_dict, posX_gt_dict, posY_gt_dict, alpha=1/16)
-
+alpha_list = [0.05, 0.1, 0.5, 1]
+var_range = 3
+n_samples = 49
+causal = True
+for ld in [2, 3, 4, 6, 10]:
+    log_mmd_score(ld, causal, alpha_list, n_samples, var_range)
 
 
 
