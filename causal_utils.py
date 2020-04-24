@@ -132,12 +132,12 @@ def calc_dsprite_idxs(num_samples,seed,constant_factor,causal=True,color=0,shape
     return dsprite_idx,true_data,img_clases
 
 
-def make_dataset_d_sprite(d_sprite_dataset,dsprite_idx,img_size=256):
+def make_dataset_d_sprite(d_sprite_dataset,dsprite_idx,img_size=64):
     ds_dataset=d_sprite_dataset[dsprite_idx]
     img_size_data=[]
     for i in range(ds_dataset.shape[0]):
         img=ds_dataset[i]
-        img=cv2.resize(img, (img_size,img_size), interpolation = cv2.INTER_AREA)
+        # img=cv2.resize(img, (img_size,img_size), interpolation = cv2.INTER_AREA)
         img_size_data.append(img)
 
     return img_size_data
@@ -145,7 +145,7 @@ def make_dataset_d_sprite(d_sprite_dataset,dsprite_idx,img_size=256):
 
 
 
-def make_dataset_c_girls(num_samples,seed,constant_factor,causal=True,img_size=256,k=5,mu=0,sigma=10):
+def make_dataset_c_girls(num_samples,seed,constant_factor,causal=True,img_size=64,k=5,mu=0,sigma=10):
     
     #set seed
     random.seed(seed)

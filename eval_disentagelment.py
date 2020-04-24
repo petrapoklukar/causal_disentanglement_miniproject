@@ -86,7 +86,7 @@ def generate_data_4_vae(n_samples, causal, constant_factor):
         causal=causal, color=0, shape=2, scale=5)
     
     D_data = caus_utils.make_dataset_d_sprite(
-        d_sprite_dataset=imgs, dsprite_idx=d_sprite_idx, img_size=256)
+        d_sprite_dataset=imgs, dsprite_idx=d_sprite_idx, img_size=64)
     prefix = 'non' if not causal else ''
     filename = '{0}causal_dsprite_shape2_scale5_imgs.pkl'.format(prefix)
     random.seed(2610)   
