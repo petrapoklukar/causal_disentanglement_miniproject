@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+Created on Fri Apr 24 16:41:31 2020
+
+@author: petrapoklukar
+"""
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
 Created on Thu Nov 21 18:07:53 2019
 
 @author: petrapoklukar
@@ -25,7 +33,7 @@ import torch.utils.data as data
 # ---
 # ====================== Training functions ====================== #
 # ---
-class VAE_Algorithm():
+class VAE_Algorithm_v2():
     def __init__(self, opt):
         # Save the whole config
         self.opt = opt
@@ -34,7 +42,6 @@ class VAE_Algorithm():
         self.batch_size = opt['batch_size']
         self.epochs = opt['epochs']
         self.current_epoch = None
-        self.loss_fn = opt['loss_fn']
         self.snapshot = opt['snapshot']
         self.console_print = opt['console_print']
         self.lr_schedule = opt['lr_schedule']
@@ -42,17 +49,8 @@ class VAE_Algorithm():
         self.model = None
         self.vae_optimiser = None
         self.input_dim= opt['input_dim']
-        self.compute_loss_fn = self.compute_gaussian_loss if \
-            opt['decoder_param'] == 'gaussian' else self.compute_bernoulli_loss
-        print(' *- Loss function set to ', opt['decoder_param'])
 
-        # Beta scheduling
-        self.kl_anneal = opt['kl_anneal']
-        self.beta_warmup = opt['beta_warmup']
-        self.beta = opt['beta_min']
-        self.beta_range = opt['beta_max'] - opt['beta_min'] + 1
-        self.beta_steps = opt['beta_steps'] - 1
-        self.beta_idx = 0
+        assert(not opt['kl_anneal'])
         self.min_epochs = opt['min_epochs'] if 'min_epochs' in opt.keys() else 99
         self.max_epochs = opt['max_epochs'] if 'max_epochs' in opt.keys() else 199
 
@@ -193,42 +191,21 @@ class VAE_Algorithm():
 
         # Weighted KL loss
         fig2, ax2 = plt.subplots()
-        plt.plot(train_losses_np[:, 3], 'go-', linewidth=3, label='Train')
-        plt.plot(valid_losses_np[:, 3], 'bo--', linewidth=2, label='Valid')
+        plt.plot(train_losses_np[:, 2], 'go-', linewidth=3, label='Train')
+        plt.plot(valid_losses_np[:, 2], 'bo--', linewidth=2, label='Valid')
         ax2.plot()
         ax2.set_xlim(0, self.epochs)
         ax2.set(xlabel='# epochs', ylabel='loss', title='KL loss')
         plt.savefig(self.save_path + '_chpntValidTrainKLLoss')
         plt.close()
-
-
-    def compute_gaussian_loss(self, x, dec_mu, dec_logvar, enc_mu, enc_logvar):
-        """
-        Computes the VAE loss on the training batch given the criterion when the
-        likelihood is Gaussian.
-        """
-        # Reconstruction loss
-        HALF_LOG_TWO_PI = 0.91893
-        dec_var = torch.exp(dec_logvar)
-        batch_rec = torch.sum(
-                HALF_LOG_TWO_PI + 0.5 * dec_logvar + 0.5 * ((x - dec_mu) / dec_var) ** 2,
-                dim=(1, 2, 3)) # batch_size
-        batch_rec = torch.mean(batch_rec)
-
-        # KL loss
-        kl_loss = -0.5 * torch.sum(
-                (1 + enc_logvar - enc_mu**2 - torch.exp(enc_logvar)),
-                dim=1) # batchsize
-        batch_kl = torch.mean(kl_loss) # + KL term for minimization
-        return batch_rec + self.beta * batch_kl, batch_rec, batch_kl
     
     
-    def compute_bernoulli_loss(self, x, dec_mu, dec_logvar, enc_mu, enc_logvar):
+    def compute_loss(self, x, dec_mu, dec_logvar, enc_mu, enc_logvar):
         """
         Computes the VAE loss on the training batch given the criterion when the
         likelihood is Bernoulli.
         """
-        criterion = torch.nn.BCELoss()
+        criterion = torch.nn.BCEWithLogitsLoss()
         try:
             batch_rec = criterion(dec_mu.view(-1, self.input_dim), 
                                   x.view(-1, self.input_dim)) * float(self.input_dim)
@@ -242,16 +219,7 @@ class VAE_Algorithm():
                 (1 + enc_logvar - enc_mu**2 - torch.exp(enc_logvar)),
                 dim=1) # batchsize
         batch_kl = torch.mean(kl_loss) # + KL term for minimization
-        return batch_rec + self.beta * batch_kl, batch_rec, batch_kl
-        
-        
-    def compute_loss(self, x, dec_mu, dec_logvar, enc_mu, enc_logvar):
-        """
-        Computes the usual VAE loss on the training batch depending on the 
-        parametrisation of the likelihood function.
-        """
-        return self.compute_gaussian_loss if self.opt['decoder_param'] == 'gaussian' \
-            else self.compute_bernoulli_loss
+        return batch_rec + batch_kl, batch_rec, batch_kl
 
 
     def compute_test_loss(self, valid_dataset):
@@ -270,7 +238,7 @@ class VAE_Algorithm():
             
             # VAE loss on img1
             dec_mean, dec_logvar, enc_mean, enc_logvar = self.model(img)
-            the_loss, rec_loss, kl_loss = self.compute_loss_fn(
+            the_loss, rec_loss, kl_loss = self.compute_loss(
                     img, dec_mean, dec_logvar, enc_mean, enc_logvar)
 
             losses += self.format_loss([the_loss, rec_loss, kl_loss])
@@ -325,17 +293,6 @@ class VAE_Algorithm():
                 print(' *- Remaning lr schedule:', self.lr_schedule)
 
 
-    def update_beta(self):
-        """Annealing schedule for the KL term."""
-        if self.kl_anneal and self.current_epoch >= self.beta_warmup:        	
-	        beta_current_step = (self.beta_idx + 1.0) / self.beta_steps
-	        epoch_to_update = beta_current_step * self.epochs
-	        if self.current_epoch > epoch_to_update and beta_current_step <= 1:
-	            self.beta = beta_current_step * self.beta_range
-	            self.beta_idx += 1
-	            print (' *- Beta updated - new value:', self.beta)
-
-
     def train(self, train_dataset, test_dataset, num_workers=0, chpnt_path=''):
         """Trains a model with given hyperparameters."""
         # # Debugging & Testing
@@ -356,10 +313,9 @@ class VAE_Algorithm():
                ' *- Training dataset: {1}\n' +
                ' *- Number of training samples: {2}\n' +
                ' *- Number of epochs: {3}\n' +
-               ' *- Loss criterion: {4}\n' +
-               ' *- Batch size: {5}\n'
+               ' *- Batch size: {4}\n'
                ).format(self.model_path, train_dataset.dataset_name, n_data,
-                   self.epochs, self.loss_fn, self.batch_size))
+                   self.epochs, self.batch_size))
 
         if chpnt_path:
             # Pick up the last epochs specs
@@ -400,7 +356,6 @@ class VAE_Algorithm():
         for self.current_epoch in range(self.start_epoch, self.epochs):         
             # Update hyperparameters
             self.model.train()
-            self.update_beta()
             self.update_learning_rate(self.vae_optimiser)
             epoch_loss = np.zeros(4)
             for batch_idx, img in enumerate(dataloader):
@@ -408,7 +363,7 @@ class VAE_Algorithm():
                 
                 # VAE loss on img
                 dec_mean, dec_logvar, enc_mean, enc_logvar = self.model(img)
-                the_loss, rec_loss, kl_loss = self.compute_loss_fn(
+                the_loss, rec_loss, kl_loss = self.compute_loss(
                         img, dec_mean, dec_logvar, enc_mean, enc_logvar)
 
                 # Optimise the VAE for the complete loss
@@ -447,7 +402,6 @@ class VAE_Algorithm():
                         epoch_loss[0], epoch_loss[1], epoch_loss[2]))
                 print('   Valid loss: {0:.3f} recon loss: {1:.3f} KL loss: {2:.3f}'.format(
                         valid_loss[0], valid_loss[1], valid_loss[2]))
-                print('   Beta: {0:.6e}'.format(self.beta))
                 print('   LR: {0:.6e}\n'.format(self.lr))
             
             # Print validation results when specified
@@ -525,10 +479,6 @@ class VAE_Algorithm():
                 'last_epoch_loss': epoch_ml,
                 'valid_losses': self.valid_losses,
                 'epoch_losses': self.epoch_losses,
-                'beta': self.beta,
-                'beta_range': self.beta_range,
-                'beta_steps': self.beta_steps,
-                'beta_idx': self.beta_idx,
                 'snapshot': self.snapshot,
                 'console_print': self.console_print,
                 'current_lr': self.lr,
@@ -558,11 +508,6 @@ class VAE_Algorithm():
         self.snapshot = checkpoint['snapshot']
         self.valid_losses = checkpoint['valid_losses']
         self.epoch_losses = checkpoint['epoch_losses']
-
-        self.beta = checkpoint['beta']
-        self.beta_range = checkpoint['beta_range']
-        self.beta_steps = checkpoint['beta_steps']
-        self.beta_idx = checkpoint['beta_idx']
         self.current_epoch = checkpoint['last_epoch']
 
         self.snapshot = checkpoint['snapshot']
@@ -597,10 +542,10 @@ if __name__ == '__main___':
             # Test on causal_data
             if self.dataset_name == 'causal_shapes':
                 if split == 'test':
-                    with open('../datasets/test_causal_shapes.pkl', 'rb') as f:
+                    with open('../datasets/test_causal_dsprite_shape2_scale5_imgs.pkl', 'rb') as f:
                         self.data = pickle.load(f)
                 else:
-                    with open('../datasets/train_causal_shapes.pkl', 'rb') as f:
+                    with open('../datasets/test_causal_dsprite_shape2_scale5_imgs.pkl', 'rb') as f:
                         self.data = pickle.load(f)
             else:
                 raise ValueError('Not recognized dataset {0}'.format(self.dataset_name))
@@ -617,27 +562,20 @@ if __name__ == '__main___':
     test_dataset = TripletTensorDataset('causal_shapes', 'test')
 
     vae_opt = {
-        'model': 'VAE_ResNet', # class name
+        'model': 'VAE_Conv2d_v2', # class name
         'filename': 'vae',
         'exp_dir': 'DUMMY',
 
-        'loss_fn': 'learnable full gaussian',
         'num_workers': 2,
         'device': 'cpu',
-        'input_channels': 3,
-        'latent_dim': 64,
+        'input_channels': 1,
+        'latent_dim': 10,
         'out_activation': 'sigmoid',
         'dropout': 0.1,
         'weight_init': 'normal_init',
-        'input_dim': 32*32*3,
+        'input_dim': 64*64*1,
 
-        'conv1_out_channels': 32,
-        'kernel_size': 3,
-        'num_scale_blocks': 3,
-        'block_per_scale': 1,
-        'depth_per_block': 2,
-        'fc_dim': 512,
-        'image_size': 32,
+        'image_size': 64,
         'learn_dec_logvar': True,
 
         'epochs': 30,
@@ -645,14 +583,11 @@ if __name__ == '__main___':
         'lr_schedule': [(0, 1e-5), (7, 5e-3)], 
         'snapshot': 5,
         'console_print': 1,
-        'beta_min': 0,
-        'beta_max': 1,
-        'beta_steps': 1,
-        'kl_anneal': True,
+        'kl_anneal': False,
 
         'optim_type': 'Adam',
         'random_seed': 1201
     }
 
-    algorithm = VAE_Algorithm(vae_opt)
-
+    algorithm = VAE_Algorithm_v2(vae_opt)
+    algorithm.train(train_dataset, test_dataset)

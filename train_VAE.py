@@ -10,7 +10,7 @@ from __future__ import print_function
 import argparse
 import os
 from importlib.machinery import SourceFileLoader
-from algorithms import VAE_Algorithm as alg
+from algorithms import VAE_Algorithm_v2 as alg
 from dataloader import CausalDataset
 import prd_score as prd
 import numpy as np
@@ -30,8 +30,8 @@ parser.add_argument('--cuda' , type=bool, default=False, help='enables cuda')
 args_opt = parser.parse_args()
 
 # # # # Laptop TESTING
-# args_opt.exp_vae = 'VAE_CausalDsprite_shape2_scale5_ld2'
-# args_opt.train = 1
+# args_opt.exp_vae = 'VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld10'
+# args_opt.train = 0
 # args_opt.chpnt_path = ''#models/VAE_CausalData_ld2/vae_lastCheckpoint.pth'#'
 # args_opt.num_workers = 0
 # args_opt.cuda = None
@@ -67,7 +67,7 @@ test_dataset = CausalDataset(
     dataset_name=data_test_opt['dataset_name'],
     split=data_test_opt['split'])
 assert(test_dataset.dataset_name == train_dataset.dataset_name)
-assert(train_dataset.split == 'train')
+# assert(train_dataset.split == 'train')
 assert(test_dataset.split == 'test')
 
 if args_opt.num_workers is not None:
@@ -89,10 +89,12 @@ if args_opt.compute_prd:
         
     # Compute prd scores
     def sample_prior(vae):
+        x = torch.FloatTensor(5, 1, 64, 64).uniform_(-1,1)
+        latent_mean, latent_var = vae.encoder(x)
+        
         with torch.no_grad():
-            ld = vae.latent_dim
-            enc_mean = torch.zeros(ld, device=vae.device)
-            enc_std = torch.ones(ld, device=vae.device)
+            enc_mean = torch.zeros(latent_mean.shape[1:], device=vae.device)
+            enc_std = torch.ones(latent_var.shape[1:], device=vae.device)
             latent_normal = torch.distributions.normal.Normal(enc_mean, enc_std)
             z_samples = latent_normal.sample((n_samples, ))
             dec_z_samples, _ = vae.decoder(z_samples)

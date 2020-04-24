@@ -10,7 +10,8 @@ from __future__ import print_function
 import os
 from importlib.machinery import SourceFileLoader
 import numpy as np
-from architectures.VAE_TinyResNet import VAE_TinyResNet as vae_m
+# from architectures.VAE_TinyResNet import VAE_TinyResNet as vae_m
+from architectures.VAE_Conv2D import VAE_Conv2D as vae_m
 from architectures.Classifier import Classifier as classifier_m
 import torch
 import matplotlib
@@ -25,7 +26,7 @@ def init_vae(opt, load_c=False):
     """Initialises the VAE model."""
     try:
         if load_c:
-            checkpoint = torch.load(opt['exp_dir'] + '/vae_checkpoint47.pth', map_location=opt['device'])
+            checkpoint = torch.load(opt['exp_dir'] + '/vae_checkpoint173.pth', map_location=opt['device'])
             trained_dict = checkpoint['model_state_dict']
         else:
             print('CAUSALLLLLLLLLLAHFIUEGFUASDGFJAHSDGF(/FHkjsf')
@@ -67,17 +68,17 @@ def sample_prior(ld, n_samples, vae, classifier, device='cpu',
     torch.manual_seed(random_seed)
     np.random.seed(random_seed)
         
-    random_noise = torch.empty((n_samples, ld)).normal_()
+    random_noise = torch.empty((n_samples, ld)).uniform_(-1, 1)#.normal_()
 
         
     with torch.no_grad():
         decoded = vae.decoder(random_noise)[0].detach()
-        classes = classifier(decoded).detach()
-        out = torch.nn.Softmax(dim=1)(classes)
-        out_argmax = torch.max(out, dim=1)
+        # classes = classifier(decoded).detach()
+        # out = torch.nn.Softmax(dim=1)(classes)
+        # out_argmax = torch.max(out, dim=1)
         
 
-    return decoded, out_argmax[1]
+    return decoded#, out_argmax[1]
 
            
 def sample_latent_codes(ld, n_samples, vae, classifier, device='cpu', 
@@ -497,18 +498,40 @@ def plot_distributions(exp_vae, fixed_codes_dict, posX_gt_dict, posY_gt_dict):
         
         plt.subplots_adjust(hspace=0.5)
         plt.show()
-    
 
-i = 68
-d = vae(test_data[i].unsqueeze(0))[0].detach().numpy().squeeze()
-plt.figure(1)
-plt.imshow(test_data[i].squeeze())
-plt.show()
-plt.figure(2)
-plt.imshow(d)
-plt.show()
-decoded, classes = sample_prior(ld, 20, vae, classifier)
-for i in range(3, 15):
-    plt.figure(i)
-    plt.imshow(decoded[i].squeeze().detach())
+if False:
+    ld = 10
+    prefix = 'Non' if not causal else ''
+    exp_vae = 'VAEConv2d_{0}CausalDsprite_ber_shape2_scale5_ld{1}'.format(prefix, str(ld))
+    exp_classifier = prefix + 'CausalClassifier'
+    vae, classifier = load_models(exp_vae, exp_classifier, load_c=True)
+    print(' *- Loaded models:',  exp_vae, exp_classifier)
+    
+    import pickle
+    with open('datasets/test_causal_dsprite_shape2_scale5_imgs.pkl', 'rb') as f:
+        test_data = pickle.load(f)
+    
+    i = 48
+    dec = vae(test_data[i].unsqueeze(0))
+    d = vae(test_data[i].unsqueeze(0))[0].detach().numpy().squeeze()
+    plt.figure(1)
+    plt.imshow(test_data[i].squeeze())
     plt.show()
+    plt.figure(2)
+    plt.imshow(d)
+    plt.show()
+    
+    print(np.linalg.norm(dec[2].detach()))
+    latent_normal = torch.distributions.Normal(dec[2], torch.exp(0.5*dec[3]))
+    latent_samples = latent_normal.sample((20, 1)).squeeze()
+    dec_latent = vae.decoder(latent_samples)    
+    for i in range(3, 15):
+        plt.figure(i)
+        plt.imshow(dec_latent[0][i].squeeze().detach())
+        plt.show()
+    
+    decoded = sample_prior(ld, 20, vae, classifier)
+    for i in range(3, 15):
+        plt.figure(i)
+        plt.imshow(decoded[i].squeeze().detach())
+        plt.show()
