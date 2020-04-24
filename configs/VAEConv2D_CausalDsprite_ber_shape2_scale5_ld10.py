@@ -53,13 +53,13 @@ vae_opt = {
     'batch_size': batch_size,
     'snapshot': 3,
     'console_print': 1,
-    'beta_warmup': 20,
+    'beta_warmup': 50,
     'beta_min': 0,
-    'beta_max': 2,
+    'beta_max': 6,
     'beta_steps': 100,
     'kl_anneal': True,
     
-    'epochs': 50,
+    'epochs': 200,
     'lr_schedule': [(0, 1e-03), (10, 1e-04), (100, 1e-05)],
     'optim_type': 'Adam',
     'random_seed': 1201
