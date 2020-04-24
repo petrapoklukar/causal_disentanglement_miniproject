@@ -38,7 +38,7 @@ def generate_data_4_classifier(n_samples=10000, causal=False):
     
     d_sprite_idx,X_true_data,labels=caus_utils.calc_dsprite_idxs(
         num_samples=n_samples,seed=999,constant_factor=[0,0,0],causal=False,color=0,shape=2,scale=5)
-    D_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+    D_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=64)
     # with open('datasets/noncausal_dsprite_shape2_scale5_imgs_for_classifier.pkl', 'wb') as f:
     #     pickle.dump({'data': D_data, 'labels':labels}, f)
     print('Label min/max:', min(labels), max(labels))

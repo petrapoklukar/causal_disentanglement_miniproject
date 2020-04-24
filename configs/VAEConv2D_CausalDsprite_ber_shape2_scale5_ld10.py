@@ -27,7 +27,7 @@ config['data_train_opt'] = data_train_opt
 config['data_test_opt']  = data_test_opt
 
 vae_opt = {
-    'model': 'VAE_TinyResNet', # class name
+    'model': 'VAE_Conv2D', # class name
     'filename': 'vae',
     'num_workers': 4,
 
