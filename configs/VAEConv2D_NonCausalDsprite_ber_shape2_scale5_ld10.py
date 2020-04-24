@@ -13,13 +13,13 @@ config = {}
 # set the parameters related to the training and testing set
 data_train_opt = {}
 data_train_opt['batch_size'] = batch_size
-data_train_opt['dataset_name'] = 'causal_dsprite_shape2_scale5_imgs'
+data_train_opt['dataset_name'] = 'noncausal_dsprite_shape2_scale5_imgs'
 data_train_opt['split'] = 'train'
 data_train_opt['img_size'] = 64
 
 data_test_opt = {}
 data_test_opt['batch_size'] = batch_size
-data_test_opt['dataset_name'] = 'causal_dsprite_shape2_scale5_imgs'
+data_test_opt['dataset_name'] = 'noncausal_dsprite_shape2_scale5_imgs'
 data_test_opt['split'] = 'test'
 data_test_opt['img_size'] = 64
 
