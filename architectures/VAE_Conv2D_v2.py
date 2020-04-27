@@ -69,6 +69,7 @@ class VAE_Conv2D_v2(nn.Module):
             nn.ReLU(True),
             nn.Dropout(p=0.2),
             nn.ConvTranspose2d(32, 1, 4, 2, 1),
+            nn.Sigmoid(),
             TempPrintShape('Dec TransConv4'))
     
 
