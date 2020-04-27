@@ -34,6 +34,7 @@ nvidia-smi
 python train_VAE.py \
         --exp_vae=$config \
         --train=1 \
+        --chpnt_path="models/$config/vae_lastCheckpoint.pth" \
         --num_workers=0 \
         --compute_prd=0 \
         --cuda=True 
