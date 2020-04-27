@@ -40,12 +40,13 @@ vae_opt = {
     'image_size': 64,
 
     'batch_size': batch_size,
-    'snapshot': 500,
+    'model_snapshot': 50,
+    'image_snapshot': 2,
     'console_print': 1,
     'kl_anneal': False,
     
-    'epochs': 2000,
-    'max_epochs': 5000,
+    'epochs': 200,
+    'max_epochs': 500,
     'lr_schedule': [(0, 1e-04)],
     'optim_type': 'Adam',
     'random_seed': 1201

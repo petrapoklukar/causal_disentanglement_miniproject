@@ -42,7 +42,8 @@ class VAE_Algorithm_v2():
         self.batch_size = opt['batch_size']
         self.epochs = opt['epochs']
         self.current_epoch = None
-        self.snapshot = opt['snapshot']
+        self.snapshot = opt['model_snapshot']
+        self.image_snapshot = opt['image_snapshot']
         self.console_print = opt['console_print']
         self.lr_schedule = opt['lr_schedule']
         self.init_lr_schedule = opt['lr_schedule']
@@ -405,12 +406,20 @@ class VAE_Algorithm_v2():
                 print('   LR: {0:.6e}\n'.format(self.lr))
             
             # Print validation results when specified
+            if (self.current_epoch + 1) % self.image_snapshot == 0:
+                
+                # Plot reconstructions
+                self.plot_grid(dec_mean)
+                self.plot_grid(img, name="input")
+
+
+            # Print validation results when specified
             if (self.current_epoch + 1) % self.snapshot == 0:
 
                 # Plot reconstructions
                 self.plot_grid(dec_mean)
                 self.plot_grid(img, name="input")
-                self.model.eval()
+                self.model.eval() 
 
                 # Plot training and validation loss
                 self.save_checkpoint(epoch_loss[0], keep=True)
@@ -480,6 +489,7 @@ class VAE_Algorithm_v2():
                 'valid_losses': self.valid_losses,
                 'epoch_losses': self.epoch_losses,
                 'snapshot': self.snapshot,
+                'image_snapshot': self.image_snapshot,
                 'console_print': self.console_print,
                 'current_lr': self.lr,
                 'lr_update_epoch': self.lr_update_epoch,
@@ -506,11 +516,11 @@ class VAE_Algorithm_v2():
 
         self.start_epoch = checkpoint['last_epoch'] + 1
         self.snapshot = checkpoint['snapshot']
+        self.image_snapshot = checkpoint['image_snapshot']
         self.valid_losses = checkpoint['valid_losses']
         self.epoch_losses = checkpoint['epoch_losses']
         self.current_epoch = checkpoint['last_epoch']
 
-        self.snapshot = checkpoint['snapshot']
         self.console_print = checkpoint['console_print']
 
         print(('\nCheckpoint loaded.\n' +
