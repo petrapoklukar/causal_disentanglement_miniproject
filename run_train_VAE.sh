@@ -4,7 +4,7 @@ SOURCE_PATH="${HOME}/Workspace/causal_disentanglement_miniproject"
 AT="@"
 
 # Test the job before actually submitting 
-# SBATCH_OR_CAT=cat
+#SBATCH_OR_CAT=cat
 SBATCH_OR_CAT=sbatch
 
 for config in "VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld10" \
@@ -34,6 +34,7 @@ nvidia-smi
 python train_VAE.py \
         --exp_vae=$config \
         --train=1 \
+        --chpnt_path="models/$config/vae_lastCheckpoint.pth"
         --num_workers=0 \
         --compute_prd=0 \
         --cuda=True 
