@@ -200,7 +200,7 @@ class VAE_Algorithm_v2():
         plt.close()
     
     
-    def compute_loss(self, x, dec_mu, dec_logvar, enc_mu, enc_logvar):
+    def compute_loss(self, x, dec_mu, enc_mu, enc_logvar):
         """
         Computes the VAE loss on the training batch given the criterion when the
         likelihood is Bernoulli.
@@ -237,9 +237,9 @@ class VAE_Algorithm_v2():
             img = img.to(self.device)
             
             # VAE loss on img1
-            dec_mean, dec_logvar, enc_mean, enc_logvar = self.model(img)
+            dec_mean, enc_mean, enc_logvar = self.model(img)
             the_loss, rec_loss, kl_loss = self.compute_loss(
-                    img, dec_mean, dec_logvar, enc_mean, enc_logvar)
+                    img, dec_mean, enc_mean, enc_logvar)
 
             losses += self.format_loss([the_loss, rec_loss, kl_loss])
 
@@ -362,9 +362,9 @@ class VAE_Algorithm_v2():
                 img = img.to(self.device)
                 
                 # VAE loss on img
-                dec_mean, dec_logvar, enc_mean, enc_logvar = self.model(img)
+                dec_mean, enc_mean, enc_logvar = self.model(img)
                 the_loss, rec_loss, kl_loss = self.compute_loss(
-                        img, dec_mean, dec_logvar, enc_mean, enc_logvar)
+                        img, dec_mean, enc_mean, enc_logvar)
 
                 # Optimise the VAE for the complete loss
                 self.vae_optimiser.zero_grad()

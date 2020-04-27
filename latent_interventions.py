@@ -11,7 +11,7 @@ import os
 from importlib.machinery import SourceFileLoader
 import numpy as np
 # from architectures.VAE_TinyResNet import VAE_TinyResNet as vae_m
-from architectures.VAE_Conv2D import VAE_Conv2D as vae_m
+from architectures.VAE_Conv2D_v2 import VAE_Conv2D_v2 as vae_m
 from architectures.Classifier import Classifier as classifier_m
 import torch
 import matplotlib
@@ -26,7 +26,7 @@ def init_vae(opt, load_c=False):
     """Initialises the VAE model."""
     try:
         if load_c:
-            checkpoint = torch.load(opt['exp_dir'] + '/vae_checkpoint173.pth', map_location=opt['device'])
+            checkpoint = torch.load(opt['exp_dir'] + '/vae_checkpoint199.pth', map_location=opt['device'])
             trained_dict = checkpoint['model_state_dict']
         else:
             print('CAUSALLLLLLLLLLAHFIUEGFUASDGFJAHSDGF(/FHkjsf')
@@ -502,7 +502,7 @@ def plot_distributions(exp_vae, fixed_codes_dict, posX_gt_dict, posY_gt_dict):
 if False:
     ld = 10
     prefix = 'Non' if not causal else ''
-    exp_vae = 'VAEConv2d_{0}CausalDsprite_ber_shape2_scale5_ld{1}'.format(prefix, str(ld))
+    exp_vae = 'VAEConv2d_v2_{0}CausalDsprite_ber_shape2_scale5_ld{1}'.format(prefix, str(ld))
     exp_classifier = prefix + 'CausalClassifier'
     vae, classifier = load_models(exp_vae, exp_classifier, load_c=True)
     print(' *- Loaded models:',  exp_vae, exp_classifier)

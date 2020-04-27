@@ -95,8 +95,7 @@ class VAE_Conv2D_v2(nn.Module):
         Decoder forward step. Returns mean. Variance is fixed to 1.
         """
         x1 = self.dec_conv(z)
-        logvar = torch.zeros(x1.shape, device=self.device)
-        return x1, logvar
+        return x1
 
 
     def sample(self, mean, logvar, sample=False):
@@ -117,8 +116,8 @@ class VAE_Conv2D_v2(nn.Module):
         if latent_code:
             return z.squeeze()
         else:
-            out_mean, out_logvar = self.decoder(z)
-            return out_mean, out_logvar, latent_mean, latent_logvar
+            out_mean = self.decoder(z)
+            return out_mean, latent_mean, latent_logvar
         
         
 class TempPrintShape(nn.Module):
