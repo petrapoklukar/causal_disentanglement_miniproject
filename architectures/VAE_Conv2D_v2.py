@@ -197,7 +197,7 @@ def get_out_transpose2D(Hi, stride, padding, kernel_size, output_padding,
                         dilation=1):
     return (Hi-1)*stride-2*padding+dilation*(kernel_size-1)+output_padding+1
     
-if __name__ == '__main___':
+if __name__ == '__main__':
     size = 64
     opt = {
             'device': 'cpu',

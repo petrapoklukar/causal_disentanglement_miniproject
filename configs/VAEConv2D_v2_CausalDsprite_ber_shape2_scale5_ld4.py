@@ -13,13 +13,13 @@ config = {}
 # set the parameters related to the training and testing set
 data_train_opt = {}
 data_train_opt['batch_size'] = batch_size
-data_train_opt['dataset_name'] = 'noncausal_dsprite_shape2_scale5_imgs'
+data_train_opt['dataset_name'] = 'causal_dsprite_shape2_scale5_imgs'
 data_train_opt['split'] = 'test'
 data_train_opt['img_size'] = 64
 
 data_test_opt = {}
 data_test_opt['batch_size'] = batch_size
-data_test_opt['dataset_name'] = 'noncausal_dsprite_shape2_scale5_imgs'
+data_test_opt['dataset_name'] = 'causal_dsprite_shape2_scale5_imgs'
 data_test_opt['split'] = 'test'
 data_test_opt['img_size'] = 64
 
@@ -34,7 +34,7 @@ vae_opt = {
     'input_dim': 64*64*1,
     'image_size': 64,
     'input_channels': 1,
-    'latent_dim': 10,
+    'latent_dim': 4,
     'dropout': 0.2,
     'weight_init': 'normal_init',
     'image_size': 64,
@@ -46,8 +46,7 @@ vae_opt = {
     'kl_anneal': False,
     
     'epochs': 5000,
-    'min_epochs': 4000,
-    'max_epochs': 5001,
+    'max_epochs': 5000,
     'lr_schedule': [(0, 1e-04)],
     'optim_type': 'Adam',
     'random_seed': 1201

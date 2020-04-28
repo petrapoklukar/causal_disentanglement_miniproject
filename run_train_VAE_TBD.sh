@@ -7,14 +7,7 @@ AT="@"
 #SBATCH_OR_CAT=cat
 SBATCH_OR_CAT=sbatch
 
-for config in "VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld6" \
-	"VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld4" \
-	"VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld3" \
-	"VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld2" \
-	"VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld6" \
-	"VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld4" \
-	"VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld3" \
-	"VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld2"; do
+for config in "VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld10"; do
 
 RUNS_PATH="${SOURCE_PATH}/models/${config}"
 echo $RUNS_PATH
@@ -41,6 +34,7 @@ python train_VAE.py \
         --exp_vae=$config \
         --train=1 \
         --num_workers=0 \
+        --chpnt_path="models/${config}/vae_lastCheckpoint.pth" \
         --compute_prd=0 \
         --cuda=True 
 HERE
