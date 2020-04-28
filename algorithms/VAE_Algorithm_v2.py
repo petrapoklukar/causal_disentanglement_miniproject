@@ -224,7 +224,8 @@ class VAE_Algorithm_v2():
                 (1 + enc_logvar - enc_mu**2 - torch.exp(enc_logvar)),
                 dim=1) # batchsize
         batch_kl = torch.mean(kl_loss) # + KL term for minimization
-        return batch_rec + batch_kl, batch_rec, batch_kl
+        #return batch_rec + batch_kl, batch_rec, batch_kl
+        return batch_rec, batch_rec, batch_kl
 
 
     def compute_test_loss(self, valid_dataset):
