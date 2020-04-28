@@ -124,7 +124,7 @@ def calc_dsprite_idxs(num_samples,seed,constant_factor,causal=True,color=0,shape
     true_data=[]
     for i in range(latents.shape[0]):
         if causal:
-            true_data.append([latents[i][4],latents[i][5]])
+            true_data.append([latents[i][4],latents[i][5],latents[i][3]])
         if not causal:
             true_data.append([latents[i][4],latents[i][5],latents[i][3]])
         
@@ -138,6 +138,17 @@ def make_dataset_d_sprite(d_sprite_dataset,dsprite_idx,img_size=64):
     for i in range(ds_dataset.shape[0]):
         img=ds_dataset[i]
         # img=cv2.resize(img, (img_size,img_size), interpolation = cv2.INTER_AREA)
+        img_size_data.append(img)
+
+    return img_size_data
+
+
+def make_dataset_d_sprite_old(d_sprite_dataset,dsprite_idx,img_size=64):
+    ds_dataset=d_sprite_dataset[dsprite_idx]
+    img_size_data=[]
+    for i in range(ds_dataset.shape[0]):
+        img=ds_dataset[i]
+        img=cv2.resize(img, (img_size,img_size), interpolation = cv2.INTER_AREA)
         img_size_data.append(img)
 
     return img_size_data
