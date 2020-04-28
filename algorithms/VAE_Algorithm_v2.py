@@ -206,7 +206,7 @@ class VAE_Algorithm_v2():
         Computes the VAE loss on the training batch given the criterion when the
         likelihood is Bernoulli.
         """
-        criterion = nn.BCELoss(reduction='none')    
+        criterion = torch.nn.BCELoss(reduction='none')    
         batch_rec = torch.sum(criterion(dec_mu, x).view(-1, 784), dim=1) # batchsize
         batch_rec = torch.mean(batch_rec)
         
