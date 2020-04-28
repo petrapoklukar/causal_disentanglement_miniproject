@@ -68,11 +68,12 @@ def sample_prior(ld, n_samples, vae, classifier, device='cpu',
     torch.manual_seed(random_seed)
     np.random.seed(random_seed)
         
-    random_noise = torch.empty((n_samples, ld)).uniform_(-1, 1)#.normal_()
-
+    random_noise = torch.empty((n_samples, ld)).normal_() #.uniform_(-1, 1)
+    random_noise = random_noise.reshape(n_samples, ld, 1, 1)
         
     with torch.no_grad():
-        decoded = vae.decoder(random_noise)[0].detach()
+        decoded = vae.decoder(random_noise).detach()
+        # decoded = vae.decoder(random_noise)[0].detach()
         # classes = classifier(decoded).detach()
         # out = torch.nn.Softmax(dim=1)(classes)
         # out_argmax = torch.max(out, dim=1)
@@ -499,8 +500,9 @@ def plot_distributions(exp_vae, fixed_codes_dict, posX_gt_dict, posY_gt_dict):
         plt.subplots_adjust(hspace=0.5)
         plt.show()
 
-if False:
+if True:
     ld = 10
+    causal = False
     prefix = 'Non' if not causal else ''
     exp_vae = 'VAEConv2d_v2_{0}CausalDsprite_ber_shape2_scale5_ld{1}'.format(prefix, str(ld))
     exp_classifier = prefix + 'CausalClassifier'
@@ -522,12 +524,12 @@ if False:
     plt.show()
     
     print(np.linalg.norm(dec[2].detach()))
-    latent_normal = torch.distributions.Normal(dec[2], torch.exp(0.5*dec[3]))
-    latent_samples = latent_normal.sample((20, 1)).squeeze()
+    latent_normal = torch.distributions.Normal(dec[1], torch.exp(0.5*dec[2]))
+    latent_samples = latent_normal.sample((20, 1)).squeeze().view(20, ld, 1, 1)
     dec_latent = vae.decoder(latent_samples)    
     for i in range(3, 15):
         plt.figure(i)
-        plt.imshow(dec_latent[0][i].squeeze().detach())
+        plt.imshow(dec_latent[0].squeeze().detach())
         plt.show()
     
     decoded = sample_prior(ld, 20, vae, classifier)

@@ -51,7 +51,7 @@ class VAE_Algorithm_v2():
         self.vae_optimiser = None
         self.input_dim= opt['input_dim']
 
-        #assert(not opt['kl_anneal'])
+        assert(not opt['kl_anneal'])
         self.min_epochs = opt['min_epochs'] if 'min_epochs' in opt.keys() else 99
         self.max_epochs = opt['max_epochs'] if 'max_epochs' in opt.keys() else 199
 
@@ -224,8 +224,7 @@ class VAE_Algorithm_v2():
                 (1 + enc_logvar - enc_mu**2 - torch.exp(enc_logvar)),
                 dim=1) # batchsize
         batch_kl = torch.mean(kl_loss) # + KL term for minimization
-        #return batch_rec + batch_kl, batch_rec, batch_kl
-        return batch_rec, batch_rec, batch_kl
+        return batch_rec + batch_kl, batch_rec, batch_kl
 
 
     def compute_test_loss(self, valid_dataset):
