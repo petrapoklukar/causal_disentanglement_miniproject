@@ -207,7 +207,7 @@ class VAE_Algorithm_v2():
         likelihood is Bernoulli.
         """
         criterion = torch.nn.BCELoss(reduction='none')    
-        batch_rec = torch.sum(criterion(dec_mu, x).view(-1, 784), dim=1) # batchsize
+        batch_rec = torch.sum(criterion(dec_mu, x).view(-1, self.input_dim), dim=1) # batchsize
         batch_rec = torch.mean(batch_rec)
         
         #criterion = torch.nn.BCELoss()
