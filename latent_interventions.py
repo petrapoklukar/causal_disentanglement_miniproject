@@ -26,7 +26,7 @@ def init_vae(opt, load_c=False):
     """Initialises the VAE model."""
     try:
         if load_c:
-            checkpoint = torch.load(opt['exp_dir'] + '/vae_checkpoint199.pth', map_location=opt['device'])
+            checkpoint = torch.load(opt['exp_dir'] + '/vae_checkpoint1997.pth', map_location=opt['device'])
             trained_dict = checkpoint['model_state_dict']
         else:
             print('CAUSALLLLLLLLLLAHFIUEGFUASDGFJAHSDGF(/FHkjsf')
