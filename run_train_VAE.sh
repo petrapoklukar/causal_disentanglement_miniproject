@@ -7,7 +7,8 @@ AT="@"
 #SBATCH_OR_CAT=cat
 SBATCH_OR_CAT=sbatch
 
-for config in "VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld10_onlyRecon"; do
+for config in "VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld10" \
+	"VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld10"; do
 
 RUNS_PATH="${SOURCE_PATH}/models/${config}"
 echo $RUNS_PATH
