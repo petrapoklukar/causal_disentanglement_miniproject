@@ -51,7 +51,7 @@ class VAE_Algorithm_v2():
         self.vae_optimiser = None
         self.input_dim= opt['input_dim']
 
-        assert(not opt['kl_anneal'])
+        #assert(not opt['kl_anneal'])
         self.min_epochs = opt['min_epochs'] if 'min_epochs' in opt.keys() else 99
         self.max_epochs = opt['max_epochs'] if 'max_epochs' in opt.keys() else 199
 
