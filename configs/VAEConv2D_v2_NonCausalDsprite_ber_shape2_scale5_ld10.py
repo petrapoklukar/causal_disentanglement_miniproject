@@ -35,7 +35,7 @@ vae_opt = {
     'image_size': 64,
     'input_channels': 1,
     'latent_dim': 10,
-    'dropout': 0.3,
+    'dropout': 0.2,
     'weight_init': 'normal_init',
     'image_size': 64,
 
