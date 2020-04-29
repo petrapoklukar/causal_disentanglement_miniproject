@@ -9,7 +9,7 @@ SBATCH_OR_CAT=sbatch
 
 for ld in 2 3 4 6 10; do
 
-RUNS_PATH="${SOURCE_PATH}/models/${config}"
+RUNS_PATH="${SOURCE_PATH}/models/CausalClassifier_ld${ld}"
 echo $RUNS_PATH
 mkdir -p $RUNS_PATH
 
