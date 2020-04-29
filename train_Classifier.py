@@ -29,6 +29,7 @@ parser.add_argument('--num_workers', type=int, default=0,
 parser.add_argument('--cuda' , type=int, default=1, help='enables cuda')
 args_opt = parser.parse_args()
 
+
 # # # # Laptop TESTING
 # args_opt.classifier_config = 'CausalClassifier_ld2'
 # args_opt.vae_config = 'VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld2'
