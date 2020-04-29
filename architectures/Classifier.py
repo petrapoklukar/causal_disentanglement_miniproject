@@ -27,7 +27,7 @@ class TempPrintShape(nn.Module):
         self.message = message
 
     def forward(self, feat):
-        print(self.message, feat.shape)
+        # print(self.message, feat.shape)
         return feat
 
 
