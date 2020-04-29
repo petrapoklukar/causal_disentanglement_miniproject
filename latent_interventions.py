@@ -21,6 +21,8 @@ import causal_utils as caus_utils
 import itertools
 import csv
 import collections
+import matplotlib.patches as patches
+import cv2
 
 def init_vae(opt, load_c=False):
     """Initialises the VAE model."""
@@ -42,7 +44,8 @@ def init_classifier(opt):
     """Initialises the classifier."""
     try:
         instance = classifier_m(opt).to(opt['device'])
-        trained_dict = torch.load(opt['exp_dir'] + '/classifier_model.pt', map_location=opt['device'])
+        trained_dict = torch.load(opt['exp_dir'] + '/classifier_model.pt', 
+                                  map_location=opt['device'])
         instance.load_state_dict(trained_dict)
         return instance
     except:
@@ -65,6 +68,7 @@ def get_config(exp_name, key='vae_opt'):
             
 def sample_prior(ld, n_samples, vae, classifier, device='cpu', 
                         random_seed=1234, fixed_value=torch.empty(1).normal_()):
+    """Used only to test the models."""
     torch.manual_seed(random_seed)
     np.random.seed(random_seed)
         
@@ -77,8 +81,6 @@ def sample_prior(ld, n_samples, vae, classifier, device='cpu',
         # classes = classifier(decoded).detach()
         # out = torch.nn.Softmax(dim=1)(classes)
         # out_argmax = torch.max(out, dim=1)
-        
-
     return decoded#, out_argmax[1]
 
            
@@ -92,11 +94,12 @@ def sample_latent_codes(ld, n_samples, vae, classifier, device='cpu',
         # fixed_value = torch.empty(1).normal_()
         fixed_dim = fixed_value.expand((1, n_samples))
         
-        random_noise = torch.empty((n_samples, ld)).uniform_(-3, 3) 
+        random_noise = torch.empty((n_samples, ld)).normal_()#.uniform_(-5, 5) 
         random_noise[:, dim] = fixed_dim
+        random_noise = random_noise.reshape(n_samples, ld, 1, 1)
         
         with torch.no_grad():
-            decoded = vae.decoder(random_noise)[0].detach()
+            decoded = vae.decoder(random_noise).detach()
             classes = classifier(decoded).detach()
             out = torch.nn.Softmax(dim=1)(classes)
             out_argmax = torch.max(out, dim=1)
@@ -122,16 +125,16 @@ def generate_data_4_vae(n_samples, causal, constant_factor, pos_bins, classifier
     dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
     imgs = dataset_zip['imgs']
     
-    # if causal:
-    #     assert((pos_bins[5][-3] == 31 and constant_factor == [1, 0] and causal) or 
-    #            (pos_bins[5][1] == 31 and constant_factor == [0, 1] and causal))
-    # else:
-    #     assert((pos_bins[5][-1] == 39 and pos_bins[5][-3] == 31 and not causal and 
-    #             constant_factor == [1, 0, 0]) or 
-    #            (pos_bins[5][-1] == 39 and pos_bins[5][1] == 31 and not causal and 
-    #             constant_factor == [0, 1, 0]) or
-    #            (pos_bins[5][1] == 31 and pos_bins[5][3] == 31 and not causal and 
-    #             constant_factor == [0, 0, 1]))
+    if causal:
+        assert((pos_bins[5][-3] == 31 and constant_factor == [1, 0] and causal) or 
+                (pos_bins[5][1] == 31 and constant_factor == [0, 1] and causal))
+    else:
+        assert((pos_bins[5][-1] == 39 and pos_bins[5][-3] == 31 and not causal and 
+                constant_factor == [1, 0, 0]) or 
+                (pos_bins[5][-1] == 39 and pos_bins[5][1] == 31 and not causal and 
+                constant_factor == [0, 1, 0]) or
+                (pos_bins[5][1] == 31 and pos_bins[5][3] == 31 and not causal and 
+                constant_factor == [0, 0, 1]))
 
     final_dict = {}
     for i in range(len(pos_bins)):
@@ -142,7 +145,7 @@ def generate_data_4_vae(n_samples, causal, constant_factor, pos_bins, classifier
             posYclass_max=pos_bins[i][3], orient_min=pos_bins[i][4], 
             orient_max=pos_bins[i][5])
         D_data = caus_utils.make_dataset_d_sprite(
-            d_sprite_dataset=imgs, dsprite_idx=d_sprite_idx, img_size=256)
+            d_sprite_dataset=imgs, dsprite_idx=d_sprite_idx, img_size=64)
         D_data_tensor_list = list(map(lambda t: torch.tensor(t).float().unsqueeze(0), 
                                       D_data))
         D_data_tensor = torch.cat(D_data_tensor_list).unsqueeze(1)
@@ -256,8 +259,6 @@ def compute_argmin_mmd(latent_dict, posX_gt_dict, posY_gt_dict, posT_gt_dict,
             X_min.append(round(mmd_score.item(), 3))
             X_classes.append(Xgt_dim)
         
-        
-        
         Y_min = []
         Y_classes = []
         for Ygt_dim in posY_gt_dict.keys():
@@ -290,7 +291,8 @@ def compute_argmin_mmd(latent_dict, posX_gt_dict, posY_gt_dict, posT_gt_dict,
     return result_dict
 
 
-def log_mmd_score(ld, causal, alpha_list, n_samples, var_range):
+def log_mmd_score(ld, causal, alpha_list, n_samples, var_range, 
+                  n_dist_samples=100):
     """
     Computes MMD between the samples generated from a trained VAE where we 
     intervened on one dimension and ground truth samples where we kept one 
@@ -314,15 +316,15 @@ def log_mmd_score(ld, causal, alpha_list, n_samples, var_range):
     """
     # Load the VAE and the classifier
     prefix = 'Non' if not causal else ''
-    exp_vae = 'VAE_{0}CausalDsprite_ber_shape2_scale5_ld{1}'.format(prefix, str(ld))
-    exp_classifier = prefix + 'CausalClassifier'
+    exp_vae = 'VAEConv2d_v2_{0}CausalDsprite_ber_shape2_scale5_ld{1}'.format(prefix, str(ld))
+    exp_classifier = prefix + 'CausalClassifier_ld' + str(ld)
     vae, classifier = load_models(exp_vae, exp_classifier, load_c=True)
     print(' *- Loaded models:',  exp_vae, exp_classifier)
     
     # Generate the bin boundaries that correspond to each class.
     # Here step 4 equals the number of values in each bin when generatng data.
-    posX_bins = [(0, 31, 0, 31, 0, 39)]#[(i, i+3, 0, 31, 0, 39) for i in range(0,31,4)]
-    posY_bins = [(0, 31, 0, 31, 0, 39)] #[(0, 31, i, i+3, 0, 39) for i in range(0,31,4)]
+    posX_bins = [(i, i+3, 0, 31, 0, 39) for i in range(0,31,4)]
+    posY_bins = [(0, 31, i, i+3, 0, 39) for i in range(0,31,4)]
     factor_list = ['X', 'Y']
     
     if causal:
@@ -330,8 +332,10 @@ def log_mmd_score(ld, causal, alpha_list, n_samples, var_range):
 
         # Limit one factor to one class and vary the rest of the variables 
         # in the SCM. Get the class labels of these images from the classifier.
-        posX_gt_dict = generate_data_4_vae(100, True, [1,0], posX_bins, classifier)
-        posY_gt_dict = generate_data_4_vae(100, True, [0,1], posY_bins, classifier)
+        posX_gt_dict = generate_data_4_vae(
+            n_dist_samples, True, [1,0], posX_bins, classifier)
+        posY_gt_dict = generate_data_4_vae(
+            n_dist_samples, True, [0,1], posY_bins, classifier)
         # Rotation is depended on the X and Y positions in this case.
         posT_gt_dict = None
         
@@ -347,9 +351,12 @@ def log_mmd_score(ld, causal, alpha_list, n_samples, var_range):
         
         # Limit one factor to one class and vary the rest of the variables 
         # in the SCM. Get the class labels of these images from the classifier.
-        posX_gt_dict = generate_data_4_vae(100, False, [1, 0, 0], posX_bins, classifier)
-        posY_gt_dict = generate_data_4_vae(100, False, [0, 1, 0], posY_bins, classifier)
-        posT_gt_dict = generate_data_4_vae(100, False, [0, 0, 1], posT_bins, classifier)
+        posX_gt_dict = generate_data_4_vae(
+            n_dist_samples, False, [1, 0, 0], posX_bins, classifier)
+        posY_gt_dict = generate_data_4_vae(
+            n_dist_samples, False, [0, 1, 0], posY_bins, classifier)
+        posT_gt_dict = generate_data_4_vae(
+            n_dist_samples, False, [0, 0, 1], posT_bins, classifier)
         
     
     ldim_factor_cartesian = itertools.product([str(dim) for dim in range(ld)],
@@ -371,12 +378,13 @@ def log_mmd_score(ld, causal, alpha_list, n_samples, var_range):
         
         # dictionary of labels for each dimension being interveened
         fixed_codes_dict = sample_latent_codes(
-            ld, 100, vae, classifier, random_seed=2104, 
+            ld, n_dist_samples, vae, classifier, random_seed=2104, 
             fixed_value=equal_noise[value])
         
         # Compute MMD score for each alpha
         for alpha in alpha_list:      
-            print(' *- Noise index {0}/{1}, alpha {2}'.format(value, len(equal_noise), alpha))
+            print(' *- Noise index {0}/{1}, alpha {2}'.format(
+                value, len(equal_noise), alpha))
             result_dict = compute_argmin_mmd(
                 fixed_codes_dict, posX_gt_dict, posY_gt_dict, posT_gt_dict, 
                 result_dict, alpha=alpha)
@@ -421,17 +429,6 @@ def log_mmd_score(ld, causal, alpha_list, n_samples, var_range):
         for dim in range(ld):
             writer.writerow(list(max(get_res_key(dim, ratio_summary), key=lambda x:x[1])))
         
-                
-    
-alpha_list = [0.05, 0.1, 0.5, 1]
-var_range = 3
-n_samples = 49
-causal = False
-# for ld in [4]:
-#     log_mmd_score(ld, causal, alpha_list, n_samples, var_range)
-
-
-
 
 def plot_distributions(exp_vae, fixed_codes_dict, posX_gt_dict, posY_gt_dict):
 
@@ -460,8 +457,6 @@ def plot_distributions(exp_vae, fixed_codes_dict, posX_gt_dict, posY_gt_dict):
         
     plt.subplots_adjust(hspace=0.5)
     plt.show()
-    
-    
     
     for latent_dim in range(len(fixed_codes_dict)):
         plt.figure(latent_dim, figsize=(30, 100))
@@ -499,8 +494,81 @@ def plot_distributions(exp_vae, fixed_codes_dict, posX_gt_dict, posY_gt_dict):
         
         plt.subplots_adjust(hspace=0.5)
         plt.show()
+        
+        
+def convert_to_rec_coords(array, ld):
+    new_coords = []
+    for row in array:
+        score = float(row[1])
+        latent_i, factor = row[0].split('+')
+        factor_i = 1 if factor == 'Y' else 0
+        new_coords.append((0.5 + factor_i - score/2, 
+                           ld - int(latent_i) - 0.5 - score/2, 
+                           score))
+    return np.array(new_coords)
 
-if True:
+def plot_results(causal):
+    ld_list = [2, 3, 4, 6, 10]
+    num_factors = 2 if causal else 3
+    prefix = 'Non' if not causal else ''
+    
+    model_name = 'C-ld-{0}' if causal else 'NC-ld-{0}' 
+    result_d = {model_name.format(ld): [] for ld in ld_list}
+    
+    for ld in ld_list:
+        filename = 'corr_experiment/C{0}r15s100U_VAEConv2d_v2_{1}CausalDsprite_ber_shape2_scale5_ld{0}_mmds.csv'.format(
+            ld, prefix)
+        
+        with open(filename, newline='') as f:
+            csvread = csv.reader(f, delimiter=',')
+            csvfile = list(csvread)
+            res_index = csvfile.index(['Per dimension per factor winner'])
+            result_list = csvfile[res_index+1: res_index + 1 + num_factors*ld]
+            plot_results = convert_to_rec_coords(result_list, ld)
+        result_d[model_name.format(ld)] = plot_results
+    
+    fig1 = plt.figure()
+    plt.clf()
+    subplot_i = 0
+    for key in sorted(result_d.keys(), key=lambda x: int(x.split('-')[-1])):
+        subplot_i += 1
+        res = result_d[key]
+        ld = int(key.split('-')[-1])
+        
+        ax2 = fig1.add_subplot(1, len(ld_list), subplot_i, aspect='equal')
+        ax2.patch.set_facecolor('#888888')
+        ax2.patch.set_alpha(0.7)
+        ax2.set_title(key)
+        ax2.tick_params(axis=u'both', which=u'both',length=0)
+        ax2.set_xticks([0.5, 1.5])
+        ax2.set_xticklabels(['X', 'Y'])
+        ax2.set_yticks(np.arange(0.5, ld, 1))
+        ax2.set_yticklabels(np.array(range(ld))[::-1])
+        for rrow in range(len(res)):
+            ax2.add_patch(
+                 patches.Rectangle(
+                    (res[rrow][0], res[rrow][1]),
+                    res[rrow][2], res[rrow][2], fill=True, 
+                    color='#ffffff' ,
+                 ) ) 
+            ax2.axis([0, 2, 0, len(res)/2])
+    plt.subplots_adjust(wspace=0.7)
+    fig1.savefig('corr_experiment/{0}causal_mmd_results.png'.format(prefix), 
+                 facecolor=fig1.get_facecolor())
+    plt.show()
+        
+if __name__ == '__main_':
+    alpha_list = [0.001, 0.05, 0.1, 0.5, 1, 5]
+    var_range = 15
+    n_samples = 100
+    causal = True
+    for ld in [2, 3, 6, 10]:
+        log_mmd_score(ld, causal, alpha_list, n_samples, var_range, n_dist_samples=200)
+    
+
+
+# --- Testing if the models memorised data
+if False:
     ld = 2
     causal = True
     prefix = 'Non' if not causal else ''
