@@ -254,7 +254,7 @@ class Classifier_Algorithm():
         
         self.criterion = torch.nn.CrossEntropyLoss().to(self.device)
         self.softmax = torch.nn.Softmax(dim=1).to(self.device)
-        es = ES.EarlyStopping(patience=300)
+        es = ES.EarlyStopping(patience=50)
         num_parameters = self.count_parameters()
         self.opt['num_parameters'] = num_parameters
         print(' *- Model parameter/training samples: {0}'.format(

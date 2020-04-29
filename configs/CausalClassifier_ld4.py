@@ -56,6 +56,8 @@ model_opt = {
     'console_print': 1,
     
     'epochs': 100,
+    'min_epochs': 50,
+    'max_epochs': 100,
     'lr_schedule': [(0, 1e-03)],
     'optim_type': 'Adam',
     'random_seed': 1201

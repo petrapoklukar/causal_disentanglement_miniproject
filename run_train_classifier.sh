@@ -9,7 +9,7 @@ SBATCH_OR_CAT=sbatch
 
 for ld in 2 3 4 6 10; do
 
-RUNS_PATH="${SOURCE_PATH}/models/CausalClassifier_ld${ld}"
+RUNS_PATH="${SOURCE_PATH}/models/NonCausalClassifier_ld${ld}"
 echo $RUNS_PATH
 mkdir -p $RUNS_PATH
 
@@ -31,8 +31,8 @@ conda activate JigsawPuzzle_VAE
 nvidia-smi
 
 python train_classifier.py \
-        --classifier_config="CausalClassifier_ld${ld}" \
-        --vae_config="VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld${ld}" \
+        --classifier_config="NonCausalClassifier_ld${ld}" \
+        --vae_config="VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld${ld}" \
         --generate_data=1 \
         --train=1 \
         --num_workers=0 \
