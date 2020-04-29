@@ -7,11 +7,7 @@ AT="@"
 #SBATCH_OR_CAT=cat
 SBATCH_OR_CAT=sbatch
 
-for config in "VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld6" \
-	"VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld4" \
-	"VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld3" \
-	"VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld2" \
-	"VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld6" \
+for config in "VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld6" \
 	"VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld4" \
 	"VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld3" \
 	"VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld2"; do
