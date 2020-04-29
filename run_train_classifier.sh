@@ -31,7 +31,7 @@ conda activate JigsawPuzzle_VAE
 nvidia-smi
 
 python train_classifier.py \
-        --classifier_config="CausalClassifier_ld${ld} \
+        --classifier_config="CausalClassifier_ld${ld}"" \
         --vae_config="VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld${ld}" \
         --generate_data=1 \
         --train=1 \
