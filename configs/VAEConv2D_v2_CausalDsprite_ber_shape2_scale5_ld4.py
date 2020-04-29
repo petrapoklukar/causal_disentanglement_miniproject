@@ -37,7 +37,6 @@ vae_opt = {
     'latent_dim': 4,
     'dropout': 0.2,
     'weight_init': 'normal_init',
-    'image_size': 64,
 
     'batch_size': batch_size,
     'model_snapshot': 333,
@@ -55,3 +54,4 @@ vae_opt = {
 
 config['vae_opt'] = vae_opt
 config['algorithm_type'] = 'VAE_Algorithm_v2'
+

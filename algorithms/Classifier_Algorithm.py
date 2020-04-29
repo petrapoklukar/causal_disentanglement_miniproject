@@ -278,6 +278,7 @@ class Classifier_Algorithm():
                 imgs = imgs.to(self.device)
                 labels = labels.to(self.device)
                 
+                
                 loss, accuracy = self.compute_loss(imgs, labels)
 
                 # Optimise the VAE for the complete loss

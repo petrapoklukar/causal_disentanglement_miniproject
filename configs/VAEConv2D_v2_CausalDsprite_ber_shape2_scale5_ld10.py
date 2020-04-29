@@ -37,7 +37,6 @@ vae_opt = {
     'latent_dim': 10,
     'dropout': 0.2,
     'weight_init': 'normal_init',
-    'image_size': 64,
 
     'batch_size': batch_size,
     'model_snapshot': 333,

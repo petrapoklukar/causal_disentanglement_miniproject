@@ -4,10 +4,10 @@ SOURCE_PATH="${HOME}/Workspace/causal_disentanglement_miniproject"
 AT="@"
 
 # Test the job before actually submitting 
-# SBATCH_OR_CAT=cat
+#SBATCH_OR_CAT=cat
 SBATCH_OR_CAT=sbatch
 
-for config in "NonCausalClassifier"; do
+for ld in 2 3 4 6 10; do
 
 RUNS_PATH="${SOURCE_PATH}/models/${config}"
 echo $RUNS_PATH
@@ -31,9 +31,11 @@ conda activate JigsawPuzzle_VAE
 nvidia-smi
 
 python train_classifier.py \
-        --config=$config \
+        --classifier_config="CausalClassifier_ld${ld} \
+        --vae_config="VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld${ld}" \
+        --generate_data=1 \
         --train=1 \
         --num_workers=0 \
-        --cuda=True 
+        --cuda=1 
 HERE
 done

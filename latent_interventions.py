@@ -26,7 +26,7 @@ def init_vae(opt, load_c=False):
     """Initialises the VAE model."""
     try:
         if load_c:
-            checkpoint = torch.load(opt['exp_dir'] + '/vae_checkpoint1997.pth', map_location=opt['device'])
+            checkpoint = torch.load(opt['exp_dir'] + '/vae_checkpoint665.pth', map_location=opt['device'])
             trained_dict = checkpoint['model_state_dict']
         else:
             print('CAUSALLLLLLLLLLAHFIUEGFUASDGFJAHSDGF(/FHkjsf')
@@ -501,8 +501,8 @@ def plot_distributions(exp_vae, fixed_codes_dict, posX_gt_dict, posY_gt_dict):
         plt.show()
 
 if True:
-    ld = 10
-    causal = False
+    ld = 2
+    causal = True
     prefix = 'Non' if not causal else ''
     exp_vae = 'VAEConv2d_v2_{0}CausalDsprite_ber_shape2_scale5_ld{1}'.format(prefix, str(ld))
     exp_classifier = prefix + 'CausalClassifier'
