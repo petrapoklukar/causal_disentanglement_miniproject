@@ -34,7 +34,7 @@ python train_VAE.py \
         --exp_vae=$config \
         --train=1 \
         --num_workers=0 \
-        --chpnt_path="models/${config}/vae_lastCheckpoint.pth" \
+        --chpnt_path="models/${config}/vae_checkpoint1997.pth" \
         --compute_prd=0 \
         --cuda=True 
 HERE

@@ -46,9 +46,9 @@ vae_opt = {
     'kl_anneal': False,
     
     'epochs': 5000,
-    'min_epochs': 4000,
+    'min_epochs': 4500,
     'max_epochs': 5001,
-    'lr_schedule': [(0, 1e-04)],
+    'lr_schedule': [(0, 1e-04), (2029, 1e-05), (4027, 1e-6)],
     'optim_type': 'Adam',
     'random_seed': 1201
 }
