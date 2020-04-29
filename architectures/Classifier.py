@@ -27,7 +27,7 @@ class TempPrintShape(nn.Module):
         self.message = message
 
     def forward(self, feat):
-        # print(self.message, feat.shape)
+        print(self.message, feat.shape)
         return feat
 
 
@@ -39,7 +39,9 @@ class Classifier(nn.Module):
         self.n_classes = opt['n_classes']
         self.device = opt['device']
         self.input_channels = opt['input_channels']
-        
+        self.last_lin = 6400 if opt['image_size'] == 256 else 64*4*4
+        self.last_pool = 5 if opt['image_size'] == 256 else 3
+
         #--- Encoder network
         self.conv = nn.Sequential(
             TempPrintShape('Input'),
@@ -51,10 +53,10 @@ class Classifier(nn.Module):
             nn.Conv2d(32, 64, 5, stride=1, padding=2),
             nn.ReLU(),
             TempPrintShape('Output of conv1'),
-            nn.MaxPool2d(5),
+            nn.MaxPool2d(self.last_pool),
             TempPrintShape('Output of lin'),
             ConvToLin(),
-            nn.Linear(6400, self.n_classes),
+            nn.Linear(self.last_lin, self.n_classes),
             TempPrintShape('Output'))
         
         #--- Weight init
@@ -119,7 +121,7 @@ def count_parameters(model):
 
 
 if __name__ == '__main__':
-    size = 256
+    size = 64
     opt = {
             'device': 'cpu',
             'input_channels': 1,
@@ -127,7 +129,7 @@ if __name__ == '__main__':
             'n_classes': 64,
             'dropout': 0.2,
             'weight_init': 'normal_init',
-            'image_size': 256
+            'image_size': size
             }
 
     net = create_model(opt)
