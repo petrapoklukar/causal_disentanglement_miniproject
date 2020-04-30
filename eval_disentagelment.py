@@ -3,7 +3,7 @@ import argparse
 import os
 import sys
 from importlib.machinery import SourceFileLoader
-from algorithms import VAE_Algorithm as alg
+from algorithms import VAE_Algorithm_v2 as alg
 import torch
 from torch.autograd import Variable
 import matplotlib.pyplot as plt
@@ -145,9 +145,11 @@ def obtain_representation(test_set,config_file,checkpoint_file,dsprite=True):
         x=torch.tensor(img).float().permute(2, 0, 1)
         x=x.unsqueeze(0)
         x = Variable(x).to(device)
-        dec_mean1, dec_logvar1, z, enc_logvar1=vae_algorithm.model.forward(x)
+        #dec_mean1, dec_logvar1, z, enc_logvar1=vae_algorithm.model.forward(x)
+        dec_mean1, z, enc_logvar1=vae_algorithm.model.forward(x)
+        
         decoded_dim.append(z[0].cpu().detach().numpy())
-
+    decoded_dim=np.squeeze(np.array(decoded_dim))
     return decoded_dim
 
 
@@ -312,15 +314,22 @@ def d_sprite_tests(causal):
 
     if causal:
 
-        config_files=["VAE_CausalDsprite_ber_shape2_scale5_ld2","VAE_CausalDsprite_ber_shape2_scale5_ld3","VAE_CausalDsprite_ber_shape2_scale5_ld4","VAE_CausalDsprite_ber_shape2_scale5_ld6","VAE_CausalDsprite_ber_shape2_scale5_ld10"]
+        checkpoint_files=["vae_checkpoint0.pth","vae_checkpoint1.pth","vae_checkpoint2.pth","vae_checkpoint3.pth","vae_checkpoint332.pth","vae_checkpoint665.pth","vae_lastCheckpoint.pth"]  
+
+        #config_files=["VAE_CausalDsprite_ber_shape2_scale5_ld2","VAE_CausalDsprite_ber_shape2_scale5_ld3","VAE_CausalDsprite_ber_shape2_scale5_ld4","VAE_CausalDsprite_ber_shape2_scale5_ld6","VAE_CausalDsprite_ber_shape2_scale5_ld10"]
+        #m_names=["C-ld-2","C-ld-3","C-ld-4","C-ld-6","C-ld-10"]
+        config_files=["VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld2","VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld3","VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld4"
+        ,"VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld6","VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld10"]
         m_names=["C-ld-2","C-ld-3","C-ld-4","C-ld-6","C-ld-10"]
 
 
         d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=54321,constant_factor=[1,0],causal=causal,color=0,shape=2,scale=5)
         fix_X_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+        X_true_data=np.array(X_true_data)[:,:2]
         
         d_sprite_idx,Y_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=54321,constant_factor=[0,1],causal=causal,color=0,shape=2,scale=5)
         fix_Y_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+        Y_true_data=np.array(Y_true_data)[:,:2]
 
         data_sets.append(fix_X_data)
         data_sets.append(fix_Y_data)
@@ -331,8 +340,16 @@ def d_sprite_tests(causal):
     
     if not causal:
 
-        config_files=["VAE_NonCausalDsprite_ber_shape2_scale5_ld2","VAE_NonCausalDsprite_ber_shape2_scale5_ld3","VAE_NonCausalDsprite_ber_shape2_scale5_ld4"
-        ,"VAE_NonCausalDsprite_ber_shape2_scale5_ld6","VAE_NonCausalDsprite_ber_shape2_scale5_ld10"]
+        config_files=["VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld2","VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld3","VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld4"
+        ,"VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld6","VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld10"]
+
+
+        checkpoint_files_t=["vae_checkpoint"+ str(i) + ".pth" for i in range(332,4680,333)]
+        checkpoint_files=["vae_checkpoint0.pth","vae_checkpoint1.pth","vae_checkpoint2.pth","vae_checkpoint3.pth"] 
+        checkpoint_files.extend(checkpoint_files_t)
+        checkpoint_files_t=["vae_lastCheckpoint.pth"]
+        checkpoint_files.extend(checkpoint_files_t)
+
         m_names=["NC-ld-2","NC-ld-3","NC-ld-4","NC-ld-6","NC-ld-10"]
     
 

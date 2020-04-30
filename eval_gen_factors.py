@@ -3,7 +3,7 @@ import argparse
 import os
 import sys
 from importlib.machinery import SourceFileLoader
-from algorithms import VAE_Algorithm as alg
+from algorithms import VAE_Algorithm_v2 as alg
 import torch
 from torch.autograd import Variable
 import matplotlib.pyplot as plt
@@ -70,9 +70,11 @@ def obtain_representation(test_set,config_file,checkpoint_file,dsprite=True):
         x=torch.tensor(img).float().permute(2, 0, 1)
         x=x.unsqueeze(0)
         x = Variable(x).to(device)
-        dec_mean1, dec_logvar1, z, enc_logvar1=vae_algorithm.model.forward(x)
+        #dec_mean1, dec_logvar1, z, enc_logvar1=vae_algorithm.model.forward(x)
+        dec_mean1, z, enc_logvar1=vae_algorithm.model.forward(x)
+        
         decoded_dim.append(z[0].cpu().detach().numpy())
-
+    decoded_dim=np.squeeze(np.array(decoded_dim))
     return decoded_dim
 
 
@@ -128,7 +130,6 @@ def fit_visualise_quantify(regressor, params, err_fn, importances_attr,z_encodes
             # fit model
             model = regressor(**params[i][j])
             model.fit(X_train, y_train)
-
             # predict
             y_train_pred = model.predict(X_train)
             #y_dev_pred   = model.predict(X_dev)
@@ -246,14 +247,15 @@ def random_forest(z_encodes_train,z_encodes_test,gt_labels_train,gt_labels_test,
 
 def main():
 
-    causal = True
+    causal = False
 
     if causal:      
 
-        config_files=["VAE_CausalDsprite_ber_shape2_scale5_ld2","VAE_CausalDsprite_ber_shape2_scale5_ld3","VAE_CausalDsprite_ber_shape2_scale5_ld4","VAE_CausalDsprite_ber_shape2_scale5_ld6","VAE_CausalDsprite_ber_shape2_scale5_ld10"]
+        config_files=["VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld2","VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld3",
+        "VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld4","VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld6","VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld10"]
         model_names=["C-ld-2","C-ld-3","C-ld-4","C-ld-6","C-ld-10"]
         #checkpoint_files=["vae_checkpoint"+ str(i) + ".pth" for i in range(50)]  
-        checkpoint_files=["vae_checkpoint47.pth"]
+        checkpoint_files=["vae_lastCheckpoint.pth"]
 
 
         dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
@@ -265,6 +267,18 @@ def main():
         data_sets=[]
         data_sets_true=[]
         d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=10000,seed=12345,constant_factor=[0,0],causal=causal,color=0,shape=2,scale=5)
+        X_true_data=np.array(X_true_data)[:,:2]
+        #add a random g dimesnoion?
+        #r_gen_data=[]
+        #for r in range(len(X_true_data)):
+        #	r_gen_data.append(random.uniform(0, 1))
+        #X_true_data=np.array(X_true_data)
+        #r_gen_data=np.array(r_gen_data)
+        #print(X_true_data.shape)
+        #print(r_gen_data.shape)
+        #X_true_data=np.c_[ X_true_data, r_gen_data] 
+
+
         X_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
         print(len(X_data))
         X_data_t=X_data[8500:]
@@ -275,18 +289,18 @@ def main():
     
     if not causal:
         # the custem girls dataset
-        config_files=["VAE_NonCausalDsprite_ber_shape2_scale5_ld2","VAE_NonCausalDsprite_ber_shape2_scale5_ld3","VAE_NonCausalDsprite_ber_shape2_scale5_ld4"
-        ,"VAE_NonCausalDsprite_ber_shape2_scale5_ld6","VAE_NonCausalDsprite_ber_shape2_scale5_ld10"]
-        model_names=["NC_ds_ld2","NC_ds_ld3","NC_ds_ld4","NC_ds_ld6","NC_ds_ld10",]
+        #config_files=["VAE_NonCausalDsprite_ber_shape2_scale5_ld2","VAE_NonCausalDsprite_ber_shape2_scale5_ld3","VAE_NonCausalDsprite_ber_shape2_scale5_ld4"
+        #,"VAE_NonCausalDsprite_ber_shape2_scale5_ld6","VAE_NonCausalDsprite_ber_shape2_scale5_ld10"]
+        #model_names=["NC_ds_ld2","NC_ds_ld3","NC_ds_ld4","NC_ds_ld6","NC_ds_ld10",]
 
-        config_files=["VAE_NonCausalDsprite_ber_shape2_scale5_ld2","VAE_NonCausalDsprite_ber_shape2_scale5_ld3","VAE_NonCausalDsprite_ber_shape2_scale5_ld4"
-        ,"VAE_NonCausalDsprite_ber_shape2_scale5_ld6","VAE_NonCausalDsprite_ber_shape2_scale5_ld10"]
+        config_files=["VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld2","VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld3","VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld4"
+        ,"VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld6","VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld10"]
         model_names=["NC-ld-2","NC-ld-3","NC-ld-4","NC-ld-6","NC-ld-10"]
 
         
 
         #checkpoint_files=["vae_checkpoint"+ str(i) + ".pth" for i in range(50)]  
-        checkpoint_files=["vae_checkpoint47.pth"]
+        checkpoint_files=["vae_lastCheckpoint.pth"]
 
 
         dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
@@ -326,6 +340,7 @@ def main():
             print(config_file)
             print(checkpoint_file)
             zs_train= obtain_representation(X_data_train,config_file,checkpoint_file)
+            
             #plt.hist(zs_train, bins='auto')
             #plt.show()
             print(config_file)
