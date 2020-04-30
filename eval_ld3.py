@@ -3,7 +3,7 @@ import argparse
 import os
 import sys
 from importlib.machinery import SourceFileLoader
-from algorithms import VAE_Algorithm as alg
+from algorithms import VAE_Algorithm_v2 as alg
 import torch
 from torch.autograd import Variable
 import matplotlib.pyplot as plt
@@ -59,9 +59,11 @@ def obtain_representation(test_set,config_file,checkpoint_file,dsprite=True):
         x=torch.tensor(img).float().permute(2, 0, 1)
         x=x.unsqueeze(0)
         x = Variable(x).to(device)
-        dec_mean1, dec_logvar1, z, enc_logvar1=vae_algorithm.model.forward(x)
+        #dec_mean1, dec_logvar1, z, enc_logvar1=vae_algorithm.model.forward(x)
+        dec_mean1, z, enc_logvar1=vae_algorithm.model.forward(x)
+        
         decoded_dim.append(z[0].cpu().detach().numpy())
-
+    decoded_dim=np.squeeze(np.array(decoded_dim))
     return decoded_dim
 
 
@@ -80,10 +82,10 @@ def main():
 
     if causal:      
 
-        config_file="VAE_CausalDsprite_ber_shape2_scale5_ld3"
+        config_file="VAEConv2D_v2_CausalDsprite_ber_shape2_scale5_ld3"
         model_name="C-ld-3"
         #checkpoint_files=["vae_checkpoint"+ str(i) + ".pth" for i in range(50)]  
-        checkpoint_file="vae_checkpoint47.pth"
+        checkpoint_file="vae_lastCheckpoint.pth"
 
         dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
 
@@ -96,7 +98,7 @@ def main():
         #find corrsbonding axes X
         z_x=-1
         d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=7,constant_factor=[1,0],causal=causal,color=0,shape=2,scale=5)
-        X_data=caus_utils.make_dataset_d_sprite_old(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+        X_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
         zs_train= obtain_representation(X_data,config_file,checkpoint_file)
         zs_train=np.array(zs_train)
         zs_std=np.std(zs_train,axis=0)
@@ -107,7 +109,7 @@ def main():
         #find corrsbonding axes X
         z_y=-1
         d_sprite_idx,Y_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=7,constant_factor=[0,1],causal=causal,color=0,shape=2,scale=5)
-        Y_data=caus_utils.make_dataset_d_sprite_old(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+        Y_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
         zs_train= obtain_representation(Y_data,config_file,checkpoint_file)
         zs_train=np.array(zs_train)
         zs_std=np.std(zs_train,axis=0)
@@ -123,7 +125,7 @@ def main():
 
         #time to learn some causal relationships!!!!
         d_sprite_idx,true_data,_=caus_utils.calc_dsprite_idxs(num_samples=10000,seed=12345,constant_factor=[0,0],causal=causal,color=0,shape=2,scale=5)
-        data=caus_utils.make_dataset_d_sprite_old(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+        data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
         zs_data= obtain_representation(data,config_file,checkpoint_file)
 
 
@@ -158,10 +160,10 @@ def main():
     
     if not causal:        
 
-        config_file="VAE_NonCausalDsprite_ber_shape2_scale5_ld3"
+        config_file="VAEConv2D_v2_NonCausalDsprite_ber_shape2_scale5_ld3"
         model_name="NC-ld-3"
         #checkpoint_files=["vae_checkpoint"+ str(i) + ".pth" for i in range(50)]  
-        checkpoint_file="vae_checkpoint47.pth"
+        checkpoint_file="vae_lastCheckpoint.pth"
 
         dataset_zip = np.load('datasets/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
 
