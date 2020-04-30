@@ -397,37 +397,64 @@ def log_mmd_score(ld, causal, alpha_list, n_samples, var_range,
     results = collections.OrderedDict(sorted(result_dict.items()))
     filename = 'corr_experiment/{0}C{1}r{2}s{3}U_{4}_mmds.csv'.format(
         prefix, ld, var_range, n_samples, exp_vae)
-    header = ['latent_dim + gt_factor', 'unique_classes', 'ratio', 'alpha',
+    header = ['latent_dim + gt_factor', 'ratio_recall', 'ratio',
+              'unique_classes', 'calsses_count', 'alpha',
               'mmds_mean', 'std_mmds', 'latent_dim_range', 'count', 'n_samples']
+    
+    weight = 0.5
+    def num_classes(fac):
+        if 'X' in fac or 'Y' in fac:
+            return 8
+        else: return 4
+    
     with open(filename, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=',')
         writer.writerow([exp_vae])
         writer.writerow(header)
         # Compute the average MMD ratio across all alphas
         ratio_summary = {fac: [] for fac in results.keys()}
+        ratio_recall_summary = {fac: [] for fac in results.keys()}
         for fac, alpha_dict in results.items():            
             for alpha, mmd_dict in alpha_dict.items(): 
                 count = len(mmd_dict['unique_samples'])
                 ratio = round(count/(n_samples +1), 3)
                 assert(count == len(mmd_dict['MMD_score']))
                 unique_classes = sorted(list(set(mmd_dict['unique_samples'])))
+                unique_classes_recall = len(unique_classes)
+                ratio_recall = weight * (unique_classes_recall/num_classes(fac)) + \
+                    weight * ratio
                 mmd_mean = round(np.mean(mmd_dict['MMD_score']), 3)
                 mmd_std = round(np.std(mmd_dict['MMD_score']), 3)
                 ratio_summary[fac].append(ratio)
+                ratio_recall_summary[fac].append(ratio_recall)
                 writer.writerow([
-                    fac, unique_classes, ratio, alpha, mmd_mean, 
+                    fac, ratio_recall, ratio, unique_classes, 
+                    unique_classes_recall, alpha, mmd_mean, 
                     mmd_std, var_range, count, n_samples])
             ratio_summary[fac] = round(np.mean(ratio_summary[fac]), 3)
+            ratio_recall_summary[fac] = round(np.mean(ratio_recall_summary[fac]), 3)
+        
         
         writer.writerow([])
         writer.writerow(['Per dimension per factor winner'])
+        writer.writerow(['latent_dim + gt_factor', 'ratio_recall', 'ratio'])
         for k, v in ratio_summary.items():
-            writer.writerow([k, v])
+            writer.writerow([k, ratio_recall_summary[k], v])
         
         writer.writerow([])
-        writer.writerow(['Per dimension winner'])
+        writer.writerow(['Per dimension winner: ratio_recall'])
+        writer.writerow(['latent_dim + gt_factor', 'ratio_recall'])
         for dim in range(ld):
-            writer.writerow(list(max(get_res_key(dim, ratio_summary), key=lambda x:x[1])))
+            writer.writerow(list(max(get_res_key(dim, ratio_recall_summary), 
+                                     key=lambda x:x[1])))
+        
+        
+        writer.writerow([])
+        writer.writerow(['Per dimension winner: ratio'])
+        writer.writerow(['latent_dim + gt_factor', 'ratio'])
+        for dim in range(ld):
+            writer.writerow(list(max(get_res_key(dim, ratio_summary), 
+                                     key=lambda x:x[1])))
         
 
 def plot_distributions(exp_vae, fixed_codes_dict, posX_gt_dict, posY_gt_dict):
@@ -557,17 +584,17 @@ def plot_results(causal):
                  facecolor=fig1.get_facecolor())
     plt.show()
         
-if __name__ == '__main_':
-    alpha_list = [0.001, 0.05, 0.1, 0.5, 1, 5]
+if __name__ == '__main__':
+    alpha_list = [0.5, 0.75, 1, 1.5, 2]
     var_range = 15
-    n_samples = 100
+    n_samples = 200
     causal = True
-    for ld in [2, 3, 6, 10]:
+    for ld in [2, 3, 4, 6, 10]:
         log_mmd_score(ld, causal, alpha_list, n_samples, var_range, n_dist_samples=200)
     
 
 
-if True:
+if False:
     # plot the reconstruction image for the report
     causal = True
     prefix = 'Non' if not causal else ''
