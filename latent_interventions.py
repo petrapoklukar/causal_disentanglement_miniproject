@@ -569,8 +569,8 @@ if __name__ == '__main_':
 
 # --- Testing if the models memorised data
 if False:
-    ld = 2
-    causal = True
+    ld = 10
+    causal = False
     prefix = 'Non' if not causal else ''
     exp_vae = 'VAEConv2d_v2_{0}CausalDsprite_ber_shape2_scale5_ld{1}'.format(prefix, str(ld))
     exp_classifier = prefix + 'CausalClassifier'
