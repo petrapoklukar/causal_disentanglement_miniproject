@@ -567,6 +567,64 @@ if __name__ == '__main_':
     
 
 
+if True:
+    # plot the reconstruction image for the report
+    causal = True
+    prefix = 'Non' if not causal else ''
+    
+    import pickle
+    with open('datasets/test_causal_dsprite_shape2_scale5_imgs.pkl', 'rb') as f:
+        test_data = pickle.load(f)
+        
+        
+    i, j, k = 54, 34, 8
+    plt.figure(1)
+    plt.clf()
+    plt.subplot(3,6,1)
+    plt.imshow(test_data[i].squeeze(), cmap='gray', vmin=0, vmax=1)
+    plt.title('Original')
+    plt.axis('off')
+    
+    plt.subplot(3,6,1+6)
+    plt.imshow(test_data[j].squeeze(), cmap='gray', vmin=0, vmax=1)
+    plt.axis('off')
+    
+    plt.subplot(3,6,1+2*6)
+    plt.imshow(test_data[k].squeeze(), cmap='gray', vmin=0, vmax=1)
+    plt.axis('off')
+    
+    ld_list = [2, 3, 4, 6, 10]
+    for ld_ind in range(len(ld_list)):
+        ld = ld_list[ld_ind]
+        exp_vae = 'VAEConv2d_v2_{0}CausalDsprite_ber_shape2_scale5_ld{1}'.format(prefix, str(ld))
+        exp_classifier = 'CausalClassifier_ld' + str(ld)
+        vae, classifier = load_models(exp_vae, exp_classifier, load_c=True)
+        print(' *- Loaded models:',  exp_vae, exp_classifier)
+    
+        deci = vae(test_data[i].unsqueeze(0))[0].detach().squeeze()
+        decj = vae(test_data[j].unsqueeze(0))[0].detach().squeeze()
+        deck = vae(test_data[k].unsqueeze(0))[0].detach().squeeze()
+        
+        plt.subplot(3, 6, ld_ind + 2)
+        plt.imshow(deci, cmap='gray', vmin=0, vmax=1)
+        plt.title('C-ld-{0}'.format(str(ld)))
+        plt.axis('off')
+        
+        plt.subplot(3, 6, ld_ind + 2 + 6)
+        plt.imshow(decj, cmap='gray', vmin=0, vmax=1)
+        plt.axis('off')
+        
+        plt.subplot(3, 6, ld_ind + 2 + 2*6)
+        plt.imshow(deck, cmap='gray', vmin=0, vmax=1)
+        plt.axis('off')
+    plt.subplots_adjust(wspace=0.02, hspace=-0.59)
+    #plt.subplots_adjust(wspace=-0.36, hspace=-0.74)
+    #plt.tight_layout()
+    plt.show()
+    plt.savefig('corr_experiment/noncausal_reconstructions1.png')
+        
+
+    
 # --- Testing if the models memorised data
 if False:
     ld = 10

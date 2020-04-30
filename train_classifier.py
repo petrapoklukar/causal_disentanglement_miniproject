@@ -6,14 +6,6 @@ Created on Thu Apr 30 09:27:30 2020
 @author: petrapoklukar
 """
 
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Apr 16 21:02:25 2020
-@author: petrapoklukar
-"""
-
-from __future__ import print_function
 import argparse
 import os
 from importlib.machinery import SourceFileLoader
