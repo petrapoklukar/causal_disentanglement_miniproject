@@ -37,7 +37,6 @@ vae_opt = {
     'latent_dim': 4,
     'dropout': 0.2,
     'weight_init': 'normal_init',
-    'image_size': 64,
 
     'batch_size': batch_size,
     'model_snapshot': 333,
@@ -46,6 +45,7 @@ vae_opt = {
     'kl_anneal': False,
     
     'epochs': 5000,
+    'min_epochs': 873,
     'max_epochs': 5000,
     'lr_schedule': [(0, 1e-04)],
     'optim_type': 'Adam',
@@ -54,3 +54,4 @@ vae_opt = {
 
 config['vae_opt'] = vae_opt
 config['algorithm_type'] = 'VAE_Algorithm_v2'
+
