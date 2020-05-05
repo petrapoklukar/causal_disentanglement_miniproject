@@ -323,19 +323,19 @@ def d_sprite_tests(causal):
         m_names=["C-ld-2","C-ld-3","C-ld-4","C-ld-6","C-ld-10"]
 
 
-        d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=54321,constant_factor=[1,0],causal=causal,color=0,shape=2,scale=5)
+        d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=10000,seed=54321,constant_factor=[0,0],causal=causal,color=0,shape=2,scale=5)
         fix_X_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
         X_true_data=np.array(X_true_data)[:,:2]
         
-        d_sprite_idx,Y_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=54321,constant_factor=[0,1],causal=causal,color=0,shape=2,scale=5)
-        fix_Y_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
-        Y_true_data=np.array(Y_true_data)[:,:2]
+        #d_sprite_idx,Y_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=5000,seed=54321,constant_factor=[0,0],causal=causal,color=0,shape=2,scale=5)
+        #fix_Y_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+        #Y_true_data=np.array(Y_true_data)[:,:2]
 
         data_sets.append(fix_X_data)
-        data_sets.append(fix_Y_data)
+        #data_sets.append(fix_Y_data)
 
         data_sets_true.append(X_true_data)
-        data_sets_true.append(Y_true_data)
+        #data_sets_true.append(Y_true_data)
 
     
     if not causal:
@@ -353,22 +353,22 @@ def d_sprite_tests(causal):
         m_names=["NC-ld-2","NC-ld-3","NC-ld-4","NC-ld-6","NC-ld-10"]
     
 
-        d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=54321,constant_factor=[1,0,0],causal=causal,color=0,shape=2,scale=5)
+        d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=10000,seed=54321,constant_factor=[0,0,0],causal=causal,color=0,shape=2,scale=5)
         fix_X_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
         
-        d_sprite_idx,Y_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=54321,constant_factor=[0,1,0],causal=causal,color=0,shape=2,scale=5)
-        fix_Y_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+        #d_sprite_idx,Y_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=5000,seed=54321,constant_factor=[0,0,0],causal=causal,color=0,shape=2,scale=5)
+        #fix_Y_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
 
-        d_sprite_idx,O_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=54321,constant_factor=[0,0,1],causal=causal,color=0,shape=2,scale=5)
-        fix_O_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+        #d_sprite_idx,O_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=5000,seed=54321,constant_factor=[0,0,0],causal=causal,color=0,shape=2,scale=5)
+        #fix_O_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
     
         data_sets.append(fix_X_data)
-        data_sets.append(fix_Y_data)
-        data_sets.append(fix_O_data)
+        #data_sets.append(fix_Y_data)
+        #data_sets.append(fix_O_data)
 
         data_sets_true.append(X_true_data)
-        data_sets_true.append(Y_true_data)
-        data_sets_true.append(O_true_data)
+        #data_sets_true.append(Y_true_data)
+        #data_sets_true.append(O_true_data)
 
 
     #do it
@@ -403,16 +403,10 @@ def d_sprite_tests(causal):
         plt.xticks(x, checkpoint_files, size='small',rotation='vertical')
         plt.xlabel('model checkpoints')
         plt.ylim(0, 1.1)
-        if d==0 and not causal:
-            plt.title("Non-Causal data - X fixed")
-        if d==1 and not causal:
-            plt.title("Non-Causal data - Y fixed")
-        if d==2 and not causal:
-            plt.title("Non-Causal data - O fixed")
-        if d==0 and  causal:
-            plt.title("Causal data - X fixed")
-        if d==1 and  causal:
-            plt.title("Causal data - Y fixed")
+        if not causal:
+            plt.title("Non-Causal data")
+        if causal:
+            plt.title("Causal data")
 
         if causal:
             plt.savefig("causal_" + str(d) + "_disentagelment_dsprite.png",bbox_inches='tight')
