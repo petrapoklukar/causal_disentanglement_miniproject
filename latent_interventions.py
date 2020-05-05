@@ -397,37 +397,64 @@ def log_mmd_score(ld, causal, alpha_list, n_samples, var_range,
     results = collections.OrderedDict(sorted(result_dict.items()))
     filename = 'corr_experiment/{0}C{1}r{2}s{3}U_{4}_mmds.csv'.format(
         prefix, ld, var_range, n_samples, exp_vae)
-    header = ['latent_dim + gt_factor', 'unique_classes', 'ratio', 'alpha',
+    header = ['latent_dim + gt_factor', 'ratio_recall', 'ratio',
+              'unique_classes', 'calsses_count', 'alpha',
               'mmds_mean', 'std_mmds', 'latent_dim_range', 'count', 'n_samples']
+    
+    weight = 0.5
+    def num_classes(fac):
+        if 'X' in fac or 'Y' in fac:
+            return 8
+        else: return 4
+    
     with open(filename, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=',')
         writer.writerow([exp_vae])
         writer.writerow(header)
         # Compute the average MMD ratio across all alphas
         ratio_summary = {fac: [] for fac in results.keys()}
+        ratio_recall_summary = {fac: [] for fac in results.keys()}
         for fac, alpha_dict in results.items():            
             for alpha, mmd_dict in alpha_dict.items(): 
                 count = len(mmd_dict['unique_samples'])
                 ratio = round(count/(n_samples +1), 3)
                 assert(count == len(mmd_dict['MMD_score']))
                 unique_classes = sorted(list(set(mmd_dict['unique_samples'])))
+                unique_classes_recall = len(unique_classes)
+                ratio_recall = weight * (unique_classes_recall/num_classes(fac)) + \
+                    weight * ratio
                 mmd_mean = round(np.mean(mmd_dict['MMD_score']), 3)
                 mmd_std = round(np.std(mmd_dict['MMD_score']), 3)
                 ratio_summary[fac].append(ratio)
+                ratio_recall_summary[fac].append(ratio_recall)
                 writer.writerow([
-                    fac, unique_classes, ratio, alpha, mmd_mean, 
+                    fac, ratio_recall, ratio, unique_classes, 
+                    unique_classes_recall, alpha, mmd_mean, 
                     mmd_std, var_range, count, n_samples])
             ratio_summary[fac] = round(np.mean(ratio_summary[fac]), 3)
+            ratio_recall_summary[fac] = round(np.mean(ratio_recall_summary[fac]), 3)
+        
         
         writer.writerow([])
         writer.writerow(['Per dimension per factor winner'])
+        writer.writerow(['latent_dim + gt_factor', 'ratio_recall', 'ratio'])
         for k, v in ratio_summary.items():
-            writer.writerow([k, v])
+            writer.writerow([k, ratio_recall_summary[k], v])
         
         writer.writerow([])
-        writer.writerow(['Per dimension winner'])
+        writer.writerow(['Per dimension winner: ratio_recall'])
+        writer.writerow(['latent_dim + gt_factor', 'ratio_recall'])
         for dim in range(ld):
-            writer.writerow(list(max(get_res_key(dim, ratio_summary), key=lambda x:x[1])))
+            writer.writerow(list(max(get_res_key(dim, ratio_recall_summary), 
+                                     key=lambda x:x[1])))
+        
+        
+        writer.writerow([])
+        writer.writerow(['Per dimension winner: ratio'])
+        writer.writerow(['latent_dim + gt_factor', 'ratio'])
+        for dim in range(ld):
+            writer.writerow(list(max(get_res_key(dim, ratio_summary), 
+                                     key=lambda x:x[1])))
         
 
 def plot_distributions(exp_vae, fixed_codes_dict, posX_gt_dict, posY_gt_dict):
@@ -496,10 +523,10 @@ def plot_distributions(exp_vae, fixed_codes_dict, posX_gt_dict, posY_gt_dict):
         plt.show()
         
         
-def convert_to_rec_coords(array, ld):
+def convert_to_rec_coords(array, ld, score_ind=1):
     new_coords = []
     for row in array:
-        score = float(row[1])
+        score = float(row[score_ind])
         latent_i, factor = row[0].split('+')
         factor_i = 1 if factor == 'Y' else 0
         new_coords.append((0.5 + factor_i - score/2, 
@@ -507,8 +534,9 @@ def convert_to_rec_coords(array, ld):
                            score))
     return np.array(new_coords)
 
-def plot_results(causal):
+def plot_results(causal, ratio_recal=True):
     ld_list = [2, 3, 4, 6, 10]
+    score_ind = 1 if ratio_recal else 2
     num_factors = 2 if causal else 3
     prefix = 'Non' if not causal else ''
     
@@ -516,15 +544,15 @@ def plot_results(causal):
     result_d = {model_name.format(ld): [] for ld in ld_list}
     
     for ld in ld_list:
-        filename = 'corr_experiment/C{0}r15s100U_VAEConv2d_v2_{1}CausalDsprite_ber_shape2_scale5_ld{0}_mmds.csv'.format(
+        filename = 'corr_experiment/C{0}r15s200U_VAEConv2d_v2_{1}CausalDsprite_ber_shape2_scale5_ld{0}_mmds.csv'.format(
             ld, prefix)
         
         with open(filename, newline='') as f:
             csvread = csv.reader(f, delimiter=',')
             csvfile = list(csvread)
             res_index = csvfile.index(['Per dimension per factor winner'])
-            result_list = csvfile[res_index+1: res_index + 1 + num_factors*ld]
-            plot_results = convert_to_rec_coords(result_list, ld)
+            result_list = csvfile[res_index + 2: res_index + 2 + num_factors*ld]
+            plot_results = convert_to_rec_coords(result_list, ld, score_ind)
         result_d[model_name.format(ld)] = plot_results
     
     fig1 = plt.figure()
@@ -553,20 +581,79 @@ def plot_results(causal):
                  ) ) 
             ax2.axis([0, 2, 0, len(res)/2])
     plt.subplots_adjust(wspace=0.7)
-    fig1.savefig('corr_experiment/{0}causal_mmd_results.png'.format(prefix), 
+    fig1.savefig('corr_experiment/r15s200U_{0}causal_mmd_{1}results.png'.format(
+        prefix, int(ratio_recal)), 
                  facecolor=fig1.get_facecolor())
     plt.show()
         
 if __name__ == '__main_':
-    alpha_list = [0.001, 0.05, 0.1, 0.5, 1, 5]
+    alpha_list = [0.5, 0.75, 1, 1.5, 2]
     var_range = 15
-    n_samples = 100
+    n_samples = 200
     causal = True
-    for ld in [2, 3, 6, 10]:
+    for ld in [2, 3, 4, 6, 10]:
         log_mmd_score(ld, causal, alpha_list, n_samples, var_range, n_dist_samples=200)
     
 
 
+if False:
+    # plot the reconstruction image for the report
+    causal = True
+    prefix = 'Non' if not causal else ''
+    
+    import pickle
+    with open('datasets/test_causal_dsprite_shape2_scale5_imgs.pkl', 'rb') as f:
+        test_data = pickle.load(f)
+        
+        
+    i, j, k = 54, 34, 8
+    plt.figure(1)
+    plt.clf()
+    plt.subplot(3,6,1)
+    plt.imshow(test_data[i].squeeze(), cmap='gray', vmin=0, vmax=1)
+    plt.title('Original')
+    plt.axis('off')
+    
+    plt.subplot(3,6,1+6)
+    plt.imshow(test_data[j].squeeze(), cmap='gray', vmin=0, vmax=1)
+    plt.axis('off')
+    
+    plt.subplot(3,6,1+2*6)
+    plt.imshow(test_data[k].squeeze(), cmap='gray', vmin=0, vmax=1)
+    plt.axis('off')
+    
+    ld_list = [2, 3, 4, 6, 10]
+    for ld_ind in range(len(ld_list)):
+        ld = ld_list[ld_ind]
+        exp_vae = 'VAEConv2d_v2_{0}CausalDsprite_ber_shape2_scale5_ld{1}'.format(prefix, str(ld))
+        exp_classifier = 'CausalClassifier_ld' + str(ld)
+        vae, classifier = load_models(exp_vae, exp_classifier, load_c=True)
+        print(' *- Loaded models:',  exp_vae, exp_classifier)
+    
+        deci = vae(test_data[i].unsqueeze(0))[0].detach().squeeze()
+        decj = vae(test_data[j].unsqueeze(0))[0].detach().squeeze()
+        deck = vae(test_data[k].unsqueeze(0))[0].detach().squeeze()
+        
+        plt.subplot(3, 6, ld_ind + 2)
+        plt.imshow(deci, cmap='gray', vmin=0, vmax=1)
+        plt.title('C-ld-{0}'.format(str(ld)))
+        plt.axis('off')
+        
+        plt.subplot(3, 6, ld_ind + 2 + 6)
+        plt.imshow(decj, cmap='gray', vmin=0, vmax=1)
+        plt.axis('off')
+        
+        plt.subplot(3, 6, ld_ind + 2 + 2*6)
+        plt.imshow(deck, cmap='gray', vmin=0, vmax=1)
+        plt.axis('off')
+    plt.subplots_adjust(wspace=0.02, hspace=-0.59)
+    #plt.subplots_adjust(wspace=-0.36, hspace=-0.74)
+    #plt.tight_layout()
+    plt.show()
+    plt.savefig('corr_experiment/noncausal_reconstructions1.png')
+        
+
+    
 # --- Testing if the models memorised data
 if False:
     ld = 10
