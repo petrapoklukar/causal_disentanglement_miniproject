@@ -129,11 +129,11 @@ def generate_data_4_vae(n_samples, causal, constant_factor, pos_bins, classifier
         assert((pos_bins[5][-3] == 31 and constant_factor == [1, 0] and causal) or 
                 (pos_bins[5][1] == 31 and constant_factor == [0, 1] and causal))
     else:
-        assert((pos_bins[5][-1] == 39 and pos_bins[5][-3] == 31 and not causal and 
+        assert((pos_bins[2][-1] == 39 and pos_bins[2][-3] == 31 and 
                 constant_factor == [1, 0, 0]) or 
-                (pos_bins[5][-1] == 39 and pos_bins[5][1] == 31 and not causal and 
+                (pos_bins[2][-1] == 39 and pos_bins[2][1] == 31 and 
                 constant_factor == [0, 1, 0]) or
-                (pos_bins[5][1] == 31 and pos_bins[5][3] == 31 and not causal and 
+                (pos_bins[2][1] == 31 and pos_bins[2][3] == 31 and 
                 constant_factor == [0, 0, 1]))
 
     final_dict = {}
@@ -525,10 +525,11 @@ def plot_distributions(exp_vae, fixed_codes_dict, posX_gt_dict, posY_gt_dict):
         
 def convert_to_rec_coords(array, ld, score_ind=1):
     new_coords = []
+    factor_i_dict = {'X': 0, 'Y': 1, 'T': 2}
     for row in array:
         score = float(row[score_ind])
         latent_i, factor = row[0].split('+')
-        factor_i = 1 if factor == 'Y' else 0
+        factor_i = factor_i_dict[factor]
         new_coords.append((0.5 + factor_i - score/2, 
                            ld - int(latent_i) - 0.5 - score/2, 
                            score))
@@ -536,15 +537,21 @@ def convert_to_rec_coords(array, ld, score_ind=1):
 
 def plot_results(causal, ratio_recal=True):
     ld_list = [2, 3, 4, 6, 10]
+    ld_list = [10]
     score_ind = 1 if ratio_recal else 2
     num_factors = 2 if causal else 3
     prefix = 'Non' if not causal else ''
+    x_ticks = [0.5, 1.5]
+    xticklabels = ['X', 'Y']
+    if not causal:
+        x_ticks.append(2.5)
+        xticklabels.append('O')
     
     model_name = 'C-ld-{0}' if causal else 'NC-ld-{0}' 
     result_d = {model_name.format(ld): [] for ld in ld_list}
     
     for ld in ld_list:
-        filename = 'corr_experiment/C{0}r15s200U_VAEConv2d_v2_{1}CausalDsprite_ber_shape2_scale5_ld{0}_mmds.csv'.format(
+        filename = 'corr_experiment/{1}C{0}r15s200U_VAEConv2d_v2_{1}CausalDsprite_ber_shape2_scale5_ld{0}_mmds.csv'.format(
             ld, prefix)
         
         with open(filename, newline='') as f:
@@ -568,8 +575,8 @@ def plot_results(causal, ratio_recal=True):
         ax2.patch.set_alpha(0.7)
         ax2.set_title(key)
         ax2.tick_params(axis=u'both', which=u'both',length=0)
-        ax2.set_xticks([0.5, 1.5])
-        ax2.set_xticklabels(['X', 'Y'])
+        ax2.set_xticks(x_ticks)
+        ax2.set_xticklabels(xticklabels)
         ax2.set_yticks(np.arange(0.5, ld, 1))
         ax2.set_yticklabels(np.array(range(ld))[::-1])
         for rrow in range(len(res)):
@@ -579,10 +586,10 @@ def plot_results(causal, ratio_recal=True):
                     res[rrow][2], res[rrow][2], fill=True, 
                     color='#ffffff' ,
                  ) ) 
-            ax2.axis([0, 2, 0, len(res)/2])
+            ax2.axis([0, len(x_ticks), 0, len(res)/len(x_ticks)])
     plt.subplots_adjust(wspace=0.7)
-    fig1.savefig('corr_experiment/r15s200U_{0}causal_mmd_{1}results.png'.format(
-        prefix, int(ratio_recal)), 
+    fig1.savefig('corr_experiment/r15s200N_{0}causal_mmd_{1}results.png'.format(
+        prefix, 'ration_recall' if ratio_recal else 'ratio'), 
                  facecolor=fig1.get_facecolor())
     plt.show()
         
@@ -590,8 +597,8 @@ if __name__ == '__main_':
     alpha_list = [0.5, 0.75, 1, 1.5, 2]
     var_range = 15
     n_samples = 200
-    causal = True
-    for ld in [2, 3, 4, 6, 10]:
+    causal = False
+    for ld in [10]:
         log_mmd_score(ld, causal, alpha_list, n_samples, var_range, n_dist_samples=200)
     
 
