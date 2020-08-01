@@ -176,7 +176,7 @@ def main():
         #find corrsbonding axes X
         z_x=-1
         d_sprite_idx,X_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=7,constant_factor=[1,0,0],causal=causal,color=0,shape=2,scale=5)
-        X_data=caus_utils.make_dataset_d_sprite_old(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+        X_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
         zs_train= obtain_representation(X_data,config_file,checkpoint_file)
         zs_train=np.array(zs_train)
         zs_std=np.std(zs_train,axis=0)
@@ -187,7 +187,7 @@ def main():
         #find corrsbonding axes X
         z_y=-1
         d_sprite_idx,Y_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=7,constant_factor=[0,1,0],causal=causal,color=0,shape=2,scale=5)
-        Y_data=caus_utils.make_dataset_d_sprite_old(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+        Y_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
         zs_train= obtain_representation(Y_data,config_file,checkpoint_file)
         zs_train=np.array(zs_train)
         zs_std=np.std(zs_train,axis=0)
@@ -198,7 +198,7 @@ def main():
         #find corrsbonding axes O
         z_y=-1
         d_sprite_idx,O_true_data,_=caus_utils.calc_dsprite_idxs(num_samples=1000,seed=7,constant_factor=[0,0,1],causal=causal,color=0,shape=2,scale=5)
-        O_data=caus_utils.make_dataset_d_sprite_old(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+        O_data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
         zs_train= obtain_representation(O_data,config_file,checkpoint_file)
         zs_train=np.array(zs_train)
         zs_std=np.std(zs_train,axis=0)
@@ -215,7 +215,7 @@ def main():
 
         #time to learn some causal relationships!!!!
         d_sprite_idx,true_data,_=caus_utils.calc_dsprite_idxs(num_samples=10000,seed=12345,constant_factor=[0,0,0],causal=causal,color=0,shape=2,scale=5)
-        data=caus_utils.make_dataset_d_sprite_old(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
+        data=caus_utils.make_dataset_d_sprite(d_sprite_dataset=imgs,dsprite_idx=d_sprite_idx,img_size=256)
         zs_data= obtain_representation(data,config_file,checkpoint_file)
 
         #normalize data
